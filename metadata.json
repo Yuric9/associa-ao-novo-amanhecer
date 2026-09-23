@@ -1,0 +1,6 @@
+{
+  "name": "Associação Novo Amanhecer",
+  "description": "Portal institucional e comunitário da Associação Novo Amanhecer: acolhimento, projetos sociais, doações via PIX, voluntariado e transparência.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
