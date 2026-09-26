@@ -71,6 +71,7 @@ export async function sendSystemEmail(msg: EmailMessage): Promise<boolean> {
         to: [msg.destinatario],
         subject: msg.assunto,
         text: msg.corpo,
+        signal: AbortSignal.timeout(10_000),
       }),
     });
 
