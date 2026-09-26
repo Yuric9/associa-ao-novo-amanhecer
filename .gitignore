@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+# Banco de dados local (contém dados pessoais e senhas) - nunca versionar
+data/*.db
+data/*.db-*
