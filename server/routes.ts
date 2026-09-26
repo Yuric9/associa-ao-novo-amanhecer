@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db, logAudit, isUserAdmin, getUserRoles, assignUserRole } from './db.js';
-import { authenticateToken, requireRole, requireAdmin, JWT_SECRET, AuthenticatedRequest } from './auth.js';
+import crypto from 'node:crypto';
+import { db, logAudit, getUserRoles, assignUserRole } from './db.js';
+import { authenticateToken, requireRole, requireAdmin, JWT_SECRET, AuthenticatedRequest, resolvePrimaryRole, getOptionalUser } from './auth.js';
 import {
   validateCPF,
   validatePhone,
@@ -19,6 +20,7 @@ import {
   notifyCoordinationNewDonation,
   sendDonationConfirmation,
   getCoordinationEmail,
+  sendSystemEmail,
 } from './email.js';
 
 export const apiRouter = Router();
@@ -73,7 +75,10 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
 
   // Obter papéis exclusivamente a partir da tabela separada user_roles
   const roles = getUserRoles(user.id);
-  const primaryRole = isUserAdmin(user.id) ? 'admin' : (roles[0] || 'equipe');
+  const primaryRole = resolvePrimaryRole(user.id, roles);
+  if (!primaryRole) {
+    return res.status(403).json({ error: 'Sua conta não possui nenhum perfil de acesso atribuído. Contate a coordenação.' });
+  }
 
   // Gerar token JWT seguro com validade de 24 horas
   const token = jwt.sign(
@@ -86,6 +91,7 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
   res.cookie('ana_token', token, {
     httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 24 * 60 * 60 * 1000,
   });
 
@@ -141,11 +147,17 @@ apiRouter.post('/auth/request-password-reset', (req: Request, res: Response) => 
     return res.status(400).json({ error: 'Por favor, informe um endereço de e-mail válido.' });
   }
 
+  const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
+  if (!checkRateLimit(clientIp, 'password_reset', 5, 15)) {
+    return res.status(429).json({ error: 'Muitas solicitações. Aguarde alguns minutos e tente novamente.' });
+  }
+
   const user = db.prepare('SELECT id, nome, email FROM users WHERE LOWER(email) = LOWER(?)')
     .get(email.trim()) as { id: string; nome: string; email: string } | undefined;
 
   if (user) {
-    const token = `rst-${Date.now()}-${Math.random().toString(36).substring(2, 12)}`;
+    // Código imprevisível (antes usava Math.random, que é adivinhável)
+    const token = crypto.randomBytes(24).toString('base64url');
     const expiresAt = Date.now() + 60 * 60 * 1000;
     const now = new Date().toISOString();
 
@@ -163,14 +175,22 @@ apiRouter.post('/auth/request-password-reset', (req: Request, res: Response) => 
       ipAddress: req.ip || '127.0.0.1',
     });
 
-    return res.json({
-      message: 'Se o e-mail estiver cadastrado, as instruções para redefinição foram geradas com sucesso.',
-      resetToken: token,
-    });
+    // O código vai SOMENTE para o e-mail do usuário. Antes ele era devolvido na resposta,
+    // o que permitia a qualquer pessoa trocar a senha de qualquer conta (inclusive do admin).
+    // O corpo gravado no histórico não contém o código.
+    sendSystemEmail({
+      tipo: 'AVISO_SISTEMA',
+      destinatario: user.email,
+      assunto: 'Código para redefinir sua senha - Associação Novo Amanhecer',
+      corpo: `Olá, ${user.nome}. Foi solicitada a redefinição da sua senha. O código foi enviado e expira em 1 hora.`,
+    }).catch(() => undefined);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[DEV] Código de redefinição para ${user.email}: ${token}`);
+    }
   }
 
   return res.json({
-    message: 'Se o e-mail estiver cadastrado, as instruções para redefinição foram geradas com sucesso.',
+    message: 'Se o e-mail estiver cadastrado, você receberá um código de redefinição válido por 1 hora.',
   });
 });
 
@@ -178,7 +198,12 @@ apiRouter.post('/auth/request-password-reset', (req: Request, res: Response) => 
 apiRouter.post('/auth/reset-password', (req: Request, res: Response) => {
   const { token, newPassword } = req.body;
 
-  if (!token || !newPassword || newPassword.length < 8) {
+  const resetIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
+  if (!checkRateLimit(resetIp, 'password_reset_confirm', 10, 15)) {
+    return res.status(429).json({ error: 'Muitas tentativas. Aguarde alguns minutos.' });
+  }
+
+  if (typeof token !== 'string' || typeof newPassword !== 'string' || !token || !newPassword || newPassword.length < 8) {
     return res.status(400).json({
       error: 'A nova senha deve possuir pelo menos 8 caracteres para garantir a segurança.',
     });
@@ -200,8 +225,9 @@ apiRouter.post('/auth/reset-password', (req: Request, res: Response) => {
   db.prepare('UPDATE users SET password_hash = ?, atualizado_em = ? WHERE id = ?')
     .run(newHash, now, resetRecord.user_id);
 
-  db.prepare('UPDATE password_resets SET usado = 1 WHERE token = ?')
-    .run(token);
+  // Invalida este e quaisquer outros códigos pendentes do mesmo usuário
+  db.prepare('UPDATE password_resets SET usado = 1 WHERE user_id = ?')
+    .run(resetRecord.user_id);
 
   logAudit({
     userId: resetRecord.user_id,
@@ -420,6 +446,12 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
     });
   }
 
+  // Formulário público sempre entra como 'Pendente'. Só a equipe logada pode definir outro status
+  // (antes qualquer visitante podia se cadastrar já como 'Aprovado').
+  const staff = getOptionalUser(req);
+  const canSetStatus = !!staff && ['admin', 'coordenador', 'equipe'].includes(staff.role);
+  const finalStatus = canSetStatus && status ? status : 'Pendente';
+
   const id = `ben-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString().split('T')[0];
 
@@ -436,7 +468,7 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
     sanitizeString(email || '', 100),
     sanitizeString(endereco || 'Trindade - GO', 200),
     sanitizeString(projeto || 'Aulas de Ballet Solidário', 100),
-    sanitizeString(status || 'Pendente', 30),
+    sanitizeString(finalStatus, 30),
     sanitizeString(observacoes || '', 500),
     clientIp,
     now,
@@ -653,7 +685,9 @@ apiRouter.post('/volunteers', (req: Request, res: Response) => {
 // 4. MIGRAÇÃO AUTOMÁTICA SEGURA DO LOCALSTORAGE PARA O BANCO DE DADOS
 // =========================================================================
 
-apiRouter.post('/sync/migrate-from-local', (req: Request, res: Response) => {
+// Restrito ao Administrador: antes era aberto a qualquer visitante, sem limite, permitindo
+// inserir cadastros em massa e 'ressuscitar' registros excluídos a partir do cache do navegador.
+apiRouter.post('/sync/migrate-from-local', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
   const { beneficiaries, volunteers } = req.body;
   let migratedBeneficiaries = 0;
   let migratedVolunteers = 0;
@@ -743,6 +777,8 @@ apiRouter.put('/projects', authenticateToken, requireRole(['admin', 'equipe', 'c
     return res.status(400).json({ error: 'Formato inválido de projetos.' });
   }
 
+  db.exec('BEGIN');
+  try {
   db.exec('DELETE FROM projects');
   const stmt = db.prepare(`
     INSERT INTO projects (id, titulo, descricao, foto_url, ativo, ordem, detalhes, idade_publico, horario, coordenador)
@@ -762,6 +798,12 @@ apiRouter.put('/projects', authenticateToken, requireRole(['admin', 'equipe', 'c
       p.horario || '',
       p.coordenador || ''
     );
+  }
+    db.exec('COMMIT');
+  } catch (err) {
+    db.exec('ROLLBACK');
+    console.error('Erro ao salvar projetos:', err);
+    return res.status(400).json({ error: 'Não foi possível salvar os projetos. Nenhuma alteração foi aplicada.' });
   }
 
   logAudit({
@@ -787,6 +829,8 @@ apiRouter.put('/gallery', authenticateToken, requireRole(['admin', 'equipe', 'co
     return res.status(400).json({ error: 'Formato inválido de fotos.' });
   }
 
+  db.exec('BEGIN');
+  try {
   db.exec('DELETE FROM gallery');
   const stmt = db.prepare(`
     INSERT INTO gallery (id, foto_url, legenda, ordem, categoria, data)
@@ -795,6 +839,12 @@ apiRouter.put('/gallery', authenticateToken, requireRole(['admin', 'equipe', 'co
 
   for (const g of photos) {
     stmt.run(g.id, g.foto_url, g.legenda, g.ordem || 1, g.categoria || 'geral', g.data || '');
+  }
+    db.exec('COMMIT');
+  } catch (err) {
+    db.exec('ROLLBACK');
+    console.error('Erro ao salvar galeria:', err);
+    return res.status(400).json({ error: 'Não foi possível salvar a galeria. Nenhuma alteração foi aplicada.' });
   }
 
   logAudit({
@@ -910,7 +960,7 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
   }
 
   const numValor = parseFloat(valor);
-  if (isNaN(numValor) || numValor < 1) {
+  if (!Number.isFinite(numValor) || numValor < 1 || numValor > 1_000_000) {
     return res.status(400).json({ error: 'O valor da doação deve ser de no mínimo R$ 1,00.' });
   }
 
@@ -923,7 +973,7 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
 
   db.prepare(`
     INSERT INTO donations (id, nome, email, telefone, valor, mensagem, metodo, status, ip_origem, criado_em, atualizado_em)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'Confirmado', ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendente', ?, ?, ?)
   `).run(
     id,
     sanitizeString(nome, 100),
@@ -965,14 +1015,14 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
   }
 
   return res.status(201).json({
-    message: 'Doação registrada com sucesso! Agradecemos de coração pelo seu apoio.',
+    message: 'Doação registrada! Assim que a equipe confirmar o recebimento, ela entra nos números de transparência. Obrigado pelo apoio!',
     id,
     valor: numValor,
   });
 });
 
 // Listar doações (Protegido por Autenticação)
-apiRouter.get('/donations', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.get('/donations', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), (req: AuthenticatedRequest, res: Response) => {
   const donations = db.prepare('SELECT * FROM donations ORDER BY criado_em DESC').all();
   return res.json(donations);
 });
@@ -981,6 +1031,11 @@ apiRouter.get('/donations', authenticateToken, (req: AuthenticatedRequest, res: 
 apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { status, mensagem } = req.body;
+
+  const allowedStatus = ['Confirmado', 'Pendente', 'Cancelado'];
+  if (status !== undefined && !allowedStatus.includes(status)) {
+    return res.status(400).json({ error: 'Status inválido. Use: Confirmado, Pendente ou Cancelado.' });
+  }
 
   const current = db.prepare('SELECT * FROM donations WHERE id = ?').get(id) as any;
   if (!current) {
@@ -994,7 +1049,7 @@ apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coor
         mensagem = COALESCE(?, mensagem),
         atualizado_em = ?
     WHERE id = ?
-  `).run(status, mensagem, now, id);
+  `).run(status ?? null, typeof mensagem === 'string' ? sanitizeString(mensagem, 500) : null, now, id);
 
   logAudit({
     userId: req.user?.id,
@@ -1083,7 +1138,8 @@ apiRouter.put('/coordination-email', authenticateToken, requireAdmin, (req: Auth
 });
 
 // Histórico de E-mails Enviados pelo Sistema
-apiRouter.get('/emails/logs', authenticateToken, (_req: Request, res: Response) => {
+// Os e-mails contêm CPF/telefone completos: voluntários não podem ler este histórico.
+apiRouter.get('/emails/logs', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), (_req: Request, res: Response) => {
   const logs = db.prepare('SELECT * FROM email_logs ORDER BY enviado_em DESC LIMIT 100').all();
   return res.json(logs);
 });
