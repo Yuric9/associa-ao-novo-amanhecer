@@ -315,7 +315,7 @@ export function initDatabase() {
 
   // Popular Beneficiários se vazio
   const countBeneficiaries = db.prepare('SELECT COUNT(*) as count FROM beneficiaries').get() as { count: number };
-  if (seedDemoData && countBeneficiaries.count === 0)
+  if (seedDemoData && countBeneficiaries.count === 0) {
     const stmt = db.prepare(`
       INSERT INTO beneficiaries (id, nome, cpf, nascimento, telefone, email, endereco, projeto, status, observacoes, consentimento_lgpd, criado_em, atualizado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
@@ -340,7 +340,7 @@ export function initDatabase() {
 
   // Popular Voluntários se vazio
   const countVolunteers = db.prepare('SELECT COUNT(*) as count FROM volunteers').get() as { count: number };
-  if (seedDemoData && countVolunteers.count === 0)
+  if (seedDemoData && countVolunteers.count === 0) {
     const stmt = db.prepare(`
       INSERT INTO volunteers (id, nome, telefone, email, area, disponibilidade, ativo, data_inicio, habilidades, observacoes, consentimento_lgpd, criado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
@@ -364,7 +364,7 @@ export function initDatabase() {
 
   // Popular Doações Iniciais se vazio para alimentar os indicadores reais
   const countDonations = db.prepare('SELECT COUNT(*) as count FROM donations').get() as { count: number };
-  if (seedDemoData && countDonations.count === 0)
+  if (seedDemoData && countDonations.count === 0) {
     const stmt = db.prepare(`
       INSERT INTO donations (id, nome, email, telefone, valor, mensagem, metodo, status, ip_origem, criado_em, atualizado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
