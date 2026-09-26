@@ -16,6 +16,7 @@ import {
   Check,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { api } from '../../services/api';
 import { Beneficiary, ProjectCard } from '../../types';
 import {
   validateCPF,
@@ -30,6 +31,7 @@ interface CadastroBeneficiarioProps {
   beneficiaries: Beneficiary[];
   onAddBeneficiary: (beneficiary: Beneficiary) => void;
   defaultProject?: string;
+  onOpenPrivacidade?: () => void;
 }
 
 export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
@@ -37,6 +39,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
   beneficiaries,
   onAddBeneficiary,
   defaultProject,
+  onOpenPrivacidade,
 }) => {
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
@@ -61,6 +64,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
   const [projeto, setProjeto] = useState(defaultProject || 'Aulas de Ballet Solidário');
   const [observacoes, setObservacoes] = useState('');
+
+  // Estados de Segurança e LGPD
+  const [consentimentoLgpd, setConsentimentoLgpd] = useState(true);
+  const [hpSecurityCheck, setHpSecurityCheck] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Estados de feedback
   const [existingBeneficiary, setExistingBeneficiary] = useState<Beneficiary | null>(null);
@@ -157,18 +166,25 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
     setTelefone(formatPhone(e.target.value));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCpfError('');
+    setSubmitError('');
     setExistingBeneficiary(null);
 
-    // 1. Validação Matemática Real de CPF (Módulo 11)
+    // 1. Validação de Consentimento LGPD Obrigatório
+    if (!consentimentoLgpd) {
+      setSubmitError('É obrigatório concordar com o tratamento de dados (LGPD) para prosseguir com o cadastro.');
+      return;
+    }
+
+    // 2. Validação Matemática Real de CPF (Módulo 11)
     if (!validateCPF(cpf)) {
       setCpfError('CPF inválido. Por favor, verifique os dígitos verificadores informados.');
       return;
     }
 
-    // 2. Controle de Duplicidade Real por CPF limpo
+    // 3. Controle de Duplicidade Real por CPF limpo
     const rawCpf = cleanDigits(cpf);
     const foundExisting = beneficiaries.find(
       (b) => cleanDigits(b.cpf) === rawCpf
@@ -179,54 +195,75 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
       return;
     }
 
-    // 3. Montar endereço completo
+    // 4. Montar endereço completo
     const finalEndereco = getFormattedAddress() || 'Trindade - GO';
 
-    // 4. Criação de Novo Beneficiário com Status Pendente
-    const newBeneficiary: Beneficiary = {
-      id: `ben-${Date.now()}`,
-      nome: nome.trim(),
-      cpf: formatCPF(cpf),
-      nascimento,
-      telefone: telefone.trim(),
-      email: email.trim() || 'Não informado',
-      endereco: finalEndereco,
-      projeto,
-      status: 'Pendente',
-      observacoes: observacoes.trim(),
-      criado_em: new Date().toISOString().split('T')[0],
-    };
-
-    onAddBeneficiary(newBeneficiary);
-    setSubmittedBeneficiary(newBeneficiary);
-
+    // 5. Criação no Banco de Dados Real no Servidor
+    setIsSubmitting(true);
     try {
-      confetti({
-        particleCount: 90,
-        spread: 60,
-        origin: { y: 0.6 },
+      const res = await api.createBeneficiary({
+        nome: nome.trim(),
+        cpf: formatCPF(cpf),
+        nascimento,
+        telefone: telefone.trim(),
+        email: email.trim() || 'Não informado',
+        endereco: finalEndereco,
+        projeto,
+        status: 'Pendente',
+        observacoes: observacoes.trim(),
+        consentimento_lgpd: true,
+        hp_security_check: hpSecurityCheck,
       });
-    } catch {
-      // Ignorar se falhar animação
-    }
 
-    // Limpar formulário
-    setNome('');
-    setCpf('');
-    setNascimento('');
-    setTelefone('');
-    setEmail('');
-    setCep('');
-    setLogradouro('');
-    setNumero('');
-    setComplemento('');
-    setBairro('');
-    setCidade('Trindade');
-    setUf('GO');
-    setCepSuccess(false);
-    setCepError('');
-    setManualEndereco('');
-    setObservacoes('');
+      const newBeneficiary: Beneficiary = {
+        id: res.id || `ben-${Date.now()}`,
+        nome: nome.trim(),
+        cpf: formatCPF(cpf),
+        nascimento,
+        telefone: telefone.trim(),
+        email: email.trim() || 'Não informado',
+        endereco: finalEndereco,
+        projeto,
+        status: 'Pendente',
+        observacoes: observacoes.trim(),
+        criado_em: new Date().toISOString().split('T')[0],
+      };
+
+      onAddBeneficiary(newBeneficiary);
+      setSubmittedBeneficiary(newBeneficiary);
+
+      try {
+        confetti({
+          particleCount: 90,
+          spread: 60,
+          origin: { y: 0.6 },
+        });
+      } catch {
+        // Ignorar se falhar animação
+      }
+
+      // Limpar formulário
+      setNome('');
+      setCpf('');
+      setNascimento('');
+      setTelefone('');
+      setEmail('');
+      setCep('');
+      setLogradouro('');
+      setNumero('');
+      setComplemento('');
+      setBairro('');
+      setCidade('Trindade');
+      setUf('GO');
+      setCepSuccess(false);
+      setCepError('');
+      setManualEndereco('');
+      setObservacoes('');
+    } catch (err: any) {
+      setSubmitError(err.message || 'Erro ao enviar cadastro ao servidor.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -686,17 +723,71 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
               />
             </div>
 
+            {/* Proteção Anti-Spam (Honeypot para robôs) */}
+            <div className="hidden" aria-hidden="true">
+              <label>Não preencha este campo de segurança</label>
+              <input
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={hpSecurityCheck}
+                onChange={(e) => setHpSecurityCheck(e.target.value)}
+              />
+            </div>
+
+            {/* Aviso de Privacidade e Consentimento Obrigatório LGPD */}
+            <div className="p-4 bg-orange-50/70 border border-orange-200 rounded-2xl">
+              <label className="flex items-start gap-3 cursor-pointer text-xs text-slate-700 select-none">
+                <input
+                  type="checkbox"
+                  required
+                  checked={consentimentoLgpd}
+                  onChange={(e) => setConsentimentoLgpd(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer"
+                />
+                <span className="leading-relaxed">
+                  Autorizo e concordo com o tratamento dos dados pessoais e cadastrais informados acima pela <strong>Associação Beneficente Novo Amanhecer</strong> (CNPJ 35.157.094/0001-91) para fins exclusivos de inscrição, organização de turmas e prestação de contas dos projetos sociais, em integral conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)</strong>.
+                  {onOpenPrivacidade && (
+                    <button
+                      type="button"
+                      onClick={onOpenPrivacidade}
+                      className="text-orange-700 underline font-bold ml-1.5 hover:text-orange-900 cursor-pointer"
+                    >
+                      Ler Política de Privacidade
+                    </button>
+                  )}
+                </span>
+              </label>
+            </div>
+
+            {submitError && (
+              <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                <span>{submitError}</span>
+              </div>
+            )}
+
             {/* Botão de Envio */}
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-4 px-6 text-sm font-extrabold text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 rounded-2xl shadow-md shadow-orange-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5"
+                disabled={isSubmitting}
+                className="w-full py-4 px-6 text-sm font-extrabold text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 disabled:opacity-60 rounded-2xl shadow-md shadow-orange-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5"
               >
-                <UserPlus className="w-5 h-5" />
-                <span>Confirmar Inscrição Gratuita</span>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Enviando dados com segurança...</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-5 h-5" />
+                    <span>Confirmar Inscrição Gratuita</span>
+                  </>
+                )}
               </button>
               <p className="text-[11px] text-slate-500 text-center mt-2">
-                Ao enviar, seu cadastro entrará na fila de análise da Associação Novo Amanhecer. Seus dados estão seguros.
+                Ao enviar, seu cadastro entrará na fila de análise da Associação Novo Amanhecer. Seus dados estão seguros e protegidos.
               </p>
             </div>
           </form>

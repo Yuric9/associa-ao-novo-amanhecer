@@ -1,8 +1,8 @@
 import Papa from 'papaparse';
-import { Beneficiary, ProjectCard, SiteContent } from '../types';
+import { Beneficiary, ProjectCard, SiteContent, Volunteer, Donation } from '../types';
 
 /**
- * Utilitário profissional para geração e download de planilhas CSV
+ * Utilitário profissional para geração e download de planilhas CSV e Excel
  * com suporte a UTF-8 BOM para perfeita compatibilidade com Microsoft Excel e Google Sheets.
  */
 

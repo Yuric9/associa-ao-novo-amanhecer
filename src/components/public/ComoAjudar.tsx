@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, HandHeart, Briefcase, Copy, Check, QrCode, Sparkles, MessageCircle } from 'lucide-react';
 import { SiteContent } from '../../types';
+import { generatePixPayload, generateQrCodeDataUrl } from '../../utils/pix';
+import { DoacaoModal } from './DoacaoModal';
 
 interface ComoAjudarProps {
   content: SiteContent;
   onOpenVoluntarioModal: () => void;
   onOpenParceiroModal: () => void;
+  onOpenDoacaoModal?: () => void;
 }
 
 export const ComoAjudar: React.FC<ComoAjudarProps> = ({
@@ -15,6 +18,23 @@ export const ComoAjudar: React.FC<ComoAjudarProps> = ({
 }) => {
   const [copiedKey, setCopiedKey] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [isDoacaoModalOpen, setIsDoacaoModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (content.contato_pix_chave) {
+      const payload = generatePixPayload({
+        key: content.contato_pix_chave,
+        name: 'ASSOC NOVO AMANHECER',
+        city: 'TRINDADE',
+      });
+      generateQrCodeDataUrl(payload)
+        .then((url) => setQrCodeUrl(url))
+        .catch(() => {
+          generateQrCodeDataUrl(content.contato_pix_chave).then((url) => setQrCodeUrl(url));
+        });
+    }
+  }, [content.contato_pix_chave]);
 
   const handleCopyPix = () => {
     navigator.clipboard.writeText(content.contato_pix_chave);
@@ -70,12 +90,20 @@ export const ComoAjudar: React.FC<ComoAjudarProps> = ({
 
             <div className="space-y-2">
               <button
-                onClick={handleCopyPix}
+                onClick={() => setIsDoacaoModalOpen(true)}
                 className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-extrabold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <Heart className="w-4 h-4 fill-white" />
+                <span>Fazer Doação Solidária</span>
+              </button>
+
+              <button
+                onClick={handleCopyPix}
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-amber-900 bg-amber-100/80 hover:bg-amber-200/80 rounded-xl transition-colors cursor-pointer"
               >
                 {copiedKey ? (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 text-emerald-600" />
                     <span>Chave CNPJ Copiada!</span>
                   </>
                 ) : (
@@ -97,24 +125,17 @@ export const ComoAjudar: React.FC<ComoAjudarProps> = ({
               {showQrCode && (
                 <div className="pt-3 flex flex-col items-center animate-in fade-in duration-200">
                   <div className="p-3 bg-white border border-slate-200 rounded-2xl shadow-xs">
-                    <svg className="w-32 h-32" viewBox="0 0 100 100" fill="none">
-                      <rect width="100" height="100" fill="white" />
-                      <rect x="10" y="10" width="24" height="24" rx="2" fill="#0f172a" />
-                      <rect x="14" y="14" width="16" height="16" fill="white" />
-                      <rect x="18" y="18" width="8" height="8" fill="#d97706" />
-                      <rect x="66" y="10" width="24" height="24" rx="2" fill="#0f172a" />
-                      <rect x="70" y="14" width="16" height="16" fill="white" />
-                      <rect x="74" y="18" width="8" height="8" fill="#d97706" />
-                      <rect x="10" y="66" width="24" height="24" rx="2" fill="#0f172a" />
-                      <rect x="14" y="70" width="16" height="16" fill="white" />
-                      <rect x="18" y="74" width="8" height="8" fill="#d97706" />
-                      <rect x="42" y="18" width="8" height="8" fill="#0f172a" />
-                      <rect x="42" y="34" width="16" height="16" fill="#ea580c" />
-                      <rect x="66" y="42" width="10" height="10" fill="#0f172a" />
-                      <rect x="22" y="44" width="12" height="12" fill="#0f172a" />
-                      <rect x="40" y="68" width="14" height="14" fill="#0f172a" />
-                      <rect x="68" y="68" width="12" height="12" fill="#ea580c" />
-                    </svg>
+                    {qrCodeUrl ? (
+                      <img
+                        src={qrCodeUrl}
+                        alt="QR Code PIX Oficial"
+                        className="w-36 h-36 object-contain"
+                      />
+                    ) : (
+                      <div className="w-36 h-36 flex items-center justify-center bg-slate-50 text-xs text-slate-400">
+                        Carregando QR Code...
+                      </div>
+                    )}
                   </div>
                   <span className="text-[10px] text-slate-500 mt-1">
                     Escaneie no app do seu banco
@@ -205,6 +226,13 @@ export const ComoAjudar: React.FC<ComoAjudarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Modal Interativo de Doação com QR Code e Registro de Intenção */}
+      <DoacaoModal
+        isOpen={isDoacaoModalOpen}
+        onClose={() => setIsDoacaoModalOpen(false)}
+        content={content}
+      />
     </section>
   );
 };

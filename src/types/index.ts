@@ -81,10 +81,36 @@ export interface SiteContent {
   instagram_url: string;
 }
 
+export type UserRole = 'admin' | 'equipe' | 'coordenador' | 'voluntario';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  nome: string;
+  role: UserRole;
+  roles?: string[];
+  ativo?: number;
+  criado_em?: string;
+}
+
+export interface AuditLogItem {
+  id: string;
+  user_id?: string;
+  user_email?: string;
+  user_role?: string;
+  action: string;
+  entity: string;
+  entity_id?: string;
+  details?: string;
+  ip_address?: string;
+  created_at: string;
+}
+
 export interface AdminUser {
   id: string;
   email: string;
   nome: string;
+  role?: UserRole;
   criado_em: string;
 }
 
@@ -127,3 +153,28 @@ export interface Volunteer {
   habilidades?: string;
   observacoes?: string;
 }
+
+export interface Donation {
+  id: string;
+  nome: string;
+  email?: string;
+  telefone?: string;
+  valor: number;
+  mensagem?: string;
+  metodo: string;
+  status: 'Confirmado' | 'Pendente' | 'Cancelado';
+  ip_origem?: string;
+  criado_em: string;
+  atualizado_em: string;
+}
+
+export interface SystemStats {
+  totalBeneficiarios: number;
+  familiasAtendidas: number;
+  totalVoluntarios: number;
+  totalProjetos: number;
+  totalDoacoesMes: number;
+  countDoacoesMes: number;
+  statusMap: Record<string, number>;
+}
+
