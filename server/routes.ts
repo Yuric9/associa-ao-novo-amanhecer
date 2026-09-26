@@ -182,7 +182,8 @@ apiRouter.post('/auth/request-password-reset', (req: Request, res: Response) => 
       tipo: 'AVISO_SISTEMA',
       destinatario: user.email,
       assunto: 'Código para redefinir sua senha - Associação Novo Amanhecer',
-      corpo: `Olá, ${user.nome}. Foi solicitada a redefinição da sua senha. O código foi enviado e expira em 1 hora.`,
+      corpo: `Olá, ${user.nome}. Foi solicitada a redefinição da sua senha. Seu código de redefinição é: ${token}. Ele expira em 1 hora. Se você não pediu, ignore este e-mail.`,
+      corpoLog: 'Código de redefinição enviado (oculto no histórico).',
     }).catch(() => undefined);
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[DEV] Código de redefinição para ${user.email}: ${token}`);
