@@ -24,7 +24,7 @@ import {
   BarChart3,
   HandHeart,
 } from 'lucide-react';
-import { Beneficiary, ProjectCard, GalleryPhoto, SiteContent, AdminUser, StatusEmailNotification, Volunteer } from '../../types';
+import { Beneficiary, ProjectCard, GalleryPhoto, SiteContent, AdminUser, StatusEmailNotification, Volunteer, AuthUser } from '../../types';
 import { NovoAmanhecerLogo } from '../brand/NovoAmanhecerLogo';
 import { BeneficiariosCrud } from './BeneficiariosCrud';
 import { ProjetosCrud } from './ProjetosCrud';
@@ -42,6 +42,7 @@ import {
 
 interface AdminDashboardProps {
   currentEmail: string;
+  currentUser?: AuthUser;
   onLogout: () => void;
   onBackToSite: () => void;
 
@@ -74,6 +75,7 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   currentEmail,
+  currentUser,
   onLogout,
   onBackToSite,
   beneficiaries,
@@ -91,6 +93,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onRequestEmailNotification,
   onRestoreAll,
 }) => {
+  const userRole = currentUser?.role || 'admin';
+  const isVolunteer = userRole === 'voluntario';
+  const isCoordinator = userRole === 'coordenador';
+  const isAdmin = userRole === 'admin';
+
   const [activeTab, setActiveTab] = useState<
     'visao-geral' | 'graficos' | 'beneficiarios' | 'projetos' | 'voluntarios' | 'conteudo' | 'galeria' | 'usuarios' | 'backup'
   >('visao-geral');
@@ -253,7 +260,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
               <div className="flex items-center gap-2">
                 <span className="hidden md:inline text-xs text-slate-400">
-                  Logado como <strong className="text-white">{currentEmail}</strong>
+                  <strong className="text-white">{currentUser?.nome || currentEmail}</strong>
+                </span>
+
+                <span
+                  className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                    isAdmin
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      : isCoordinator
+                      ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                      : 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+                  }`}
+                  title={
+                    isAdmin
+                      ? 'Acesso total de Administrador'
+                      : isCoordinator
+                      ? 'Acesso de Coordenação'
+                      : 'Acesso de Voluntário Operacional (Dados restritos por LGPD)'
+                  }
+                >
+                  {isAdmin ? 'Admin Geral' : isCoordinator ? 'Coordenação' : 'Voluntário (LGPD Ativo)'}
                 </span>
 
                 <button
@@ -325,65 +351,75 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span>Cards de Projetos ({projects.length})</span>
             </button>
 
-            <button
-              onClick={() => setActiveTab('voluntarios')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'voluntarios'
-                  ? 'bg-rose-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <HandHeart className="w-3.5 h-3.5" />
-              <span>Voluntários ({volunteers.length})</span>
-            </button>
+            {(!isVolunteer) && (
+              <button
+                onClick={() => setActiveTab('voluntarios')}
+                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'voluntarios'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <HandHeart className="w-3.5 h-3.5" />
+                <span>Voluntários ({volunteers.length})</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveTab('conteudo')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'conteudo'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Textos do Site (CMS)</span>
-            </button>
+            {(!isVolunteer) && (
+              <button
+                onClick={() => setActiveTab('conteudo')}
+                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'conteudo'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Textos do Site (CMS)</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveTab('galeria')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'galeria'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <ImageIcon className="w-3.5 h-3.5" />
-              <span>Galeria ({gallery.length})</span>
-            </button>
+            {(!isVolunteer) && (
+              <button
+                onClick={() => setActiveTab('galeria')}
+                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'galeria'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <ImageIcon className="w-3.5 h-3.5" />
+                <span>Galeria ({gallery.length})</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveTab('usuarios')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'usuarios'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Admins</span>
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('usuarios')}
+                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'usuarios'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span>Admins & Papéis</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveTab('backup')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'backup'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Backup & Dados</span>
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('backup')}
+                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'backup'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Backup & Dados</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -754,9 +790,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* ABA: USUÁRIOS ADMIN */}
         {activeTab === 'usuarios' && (
           <AdminUsers
-            admins={admins}
-            onUpdateAdmins={onUpdateAdmins}
             currentEmail={currentEmail}
+            currentUserRole={userRole}
           />
         )}
 
@@ -771,6 +806,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onRestoreAll={onRestoreAll}
           />
         )}
+
+        {/* Rodapé do Painel Administrativo com Assinatura */}
+        <footer className="pt-8 pb-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div>
+            Painel de Gestão Administrativa · Associação Novo Amanhecer
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-slate-400 font-medium">Desenvolvido por</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 shadow-2xs">
+              <span className="w-4 h-4 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-black text-[9px] flex items-center justify-center shadow-xs">
+                YC
+              </span>
+              <span className="font-bold text-xs text-slate-800">
+                YC Soluções e Tecnologias
+              </span>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   );

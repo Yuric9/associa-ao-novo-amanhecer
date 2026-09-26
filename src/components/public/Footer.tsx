@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, MapPin, Phone, Mail, Instagram, Shield, MessageCircle, ExternalLink } from 'lucide-react';
+import { Heart, MapPin, Phone, Mail, Instagram, Shield, MessageCircle, ExternalLink, Code2, Sparkles } from 'lucide-react';
 import { SiteContent } from '../../types';
 import { NovoAmanhecerLogo } from '../brand/NovoAmanhecerLogo';
 
@@ -7,9 +7,10 @@ interface FooterProps {
   content: SiteContent;
   onOpenAdmin: () => void;
   onOpenCadastro: () => void;
+  onOpenPrivacidade?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCadastro }) => {
+export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCadastro, onOpenPrivacidade }) => {
   return (
     <footer id="contato" className="bg-slate-950 text-slate-300 pt-16 pb-12 border-t border-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,13 +139,22 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCada
           </div>
         </div>
 
-        {/* Barra Inferior */}
+        {/* Barra Inferior Institucional */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
           <div>
             © {new Date().getFullYear()} Associação Novo Amanhecer · Setor Ponta Kayana, Trindade/GO. CNPJ {content.contato_cnpj}.
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            {onOpenPrivacidade && (
+              <button
+                onClick={onOpenPrivacidade}
+                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-orange-300 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"
+              >
+                <span>Privacidade & LGPD</span>
+              </button>
+            )}
+
             <button
               onClick={onOpenAdmin}
               className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"
@@ -152,6 +162,26 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCada
               <Shield className="w-3.5 h-3.5 text-amber-500" />
               <span>Acesso ao Painel Administrativo</span>
             </button>
+          </div>
+        </div>
+
+        {/* Assinatura Profissional do Desenvolvedor (YC Soluções e Tecnologias) */}
+        <div className="mt-8 pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <div className="text-[11px] text-slate-500 text-center sm:text-left">
+            Todos os direitos reservados à comunidade e voluntários de Trindade/GO.
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-slate-400 font-medium">Desenvolvido por</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-amber-500/40 hover:bg-slate-900 text-slate-200 transition-all shadow-xs group">
+              <span className="w-5 h-5 rounded-lg bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 text-slate-950 font-black text-[10px] flex items-center justify-center shadow-xs">
+                YC
+              </span>
+              <span className="font-bold text-xs tracking-tight text-white group-hover:text-amber-300 transition-colors">
+                YC Soluções e Tecnologias
+              </span>
+              <Code2 className="w-3.5 h-3.5 text-amber-400/80 group-hover:text-amber-300 transition-colors" />
+            </div>
           </div>
         </div>
       </div>
