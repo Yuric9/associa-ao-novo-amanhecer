@@ -13,7 +13,6 @@ import { Sobre } from './components/public/Sobre';
 import { ImpactoNumeros } from './components/public/ImpactoNumeros';
 import { ProjetosSection } from './components/public/ProjetosSection';
 import { GaleriaLightbox } from './components/public/GaleriaLightbox';
-import { InstagramFeed } from './components/public/InstagramFeed';
 import { ComoAjudar } from './components/public/ComoAjudar';
 import { TransparenciaSection } from './components/public/TransparenciaSection';
 import { CadastroBeneficiario } from './components/public/CadastroBeneficiario';
@@ -33,7 +32,6 @@ import {
   INITIAL_PROJECTS,
   INITIAL_GALLERY,
   INITIAL_ADMINS,
-  INITIAL_INSTAGRAM_POSTS,
 } from './data/initialData';
 import {
   SiteContent,
@@ -42,7 +40,6 @@ import {
   Beneficiary,
   AdminUser,
   StatusEmailNotification,
-  InstagramPost,
   Volunteer,
   AuthUser,
 } from './types';
@@ -66,12 +63,6 @@ export default function App() {
   const [gallery, setGallery] = useState<GalleryPhoto[]>(() => {
     const saved = localStorage.getItem('ana_trindade_gallery');
     return saved ? JSON.parse(saved) : INITIAL_GALLERY;
-  });
-
-  // Estado do Feed de Fotos do Instagram
-  const [instagramPosts, setInstagramPosts] = useState<InstagramPost[]>(() => {
-    const saved = localStorage.getItem('ana_trindade_instagram');
-    return saved ? JSON.parse(saved) : INITIAL_INSTAGRAM_POSTS;
   });
 
   // Estado dos Beneficiários Cadastrados (Banco de Dados Seguro)
@@ -414,16 +405,21 @@ export default function App() {
 
   // Visão Pública do Site Institucional
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-800">
-      {/* Toast Notification */}
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
+      <a href="#inicio" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2">
+        Pular para o conteúdo
+      </a>
+
       {toastMessage && (
-        <div className="fixed top-24 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in slide-in-from-top duration-300 max-w-sm">
-          <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+        <div
+          role="status"
+          className="fixed right-4 top-20 z-50 flex max-w-sm items-center gap-2.5 rounded-md bg-ink px-4 py-3 text-sm text-white"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-sun" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Menu Fixo e Enxuto */}
       <Navbar
         content={content}
         onOpenCadastro={handleOpenCadastro}
@@ -432,50 +428,17 @@ export default function App() {
       />
 
       <main className="flex-1">
-        {/* 1. Hero */}
-        <Hero
-          content={content}
-          onOpenCadastro={() => handleOpenCadastro()}
-        />
-
-        {/* 2. Sobre (História, Missão, Visão, Valores) */}
-        <Sobre content={content} />
-
-        {/* 3. Números de Impacto */}
+        <Hero content={content} onOpenCadastro={() => handleOpenCadastro()} />
         <ImpactoNumeros content={content} />
-
-        {/* 4. Projetos Sociais em Cards Gerenciáveis (Ballet, Futebol, Book, Festas) */}
-        <ProjetosSection
-          projects={projects}
-          onOpenCadastro={handleOpenCadastro}
-        />
-
-        {/* 5. Galeria de Fotos com Lightbox */}
-        <GaleriaLightbox
-          photos={gallery}
-          instagramUrl={content.instagram_url}
-        />
-
-        {/* 6. Feed de Fotos e Stories do Instagram em Tempo Real (@anovoamanhecer) */}
-        <InstagramFeed
-          posts={instagramPosts}
-          content={content}
-          onRefresh={() => {
-            showToast('Feed do Instagram atualizado com sucesso!');
-          }}
-        />
-
-        {/* 7. Como Ajudar (Doar PIX, Ser Voluntário, Ser Parceiro) */}
+        <ProjetosSection projects={projects} onOpenCadastro={handleOpenCadastro} />
+        <GaleriaLightbox photos={gallery} instagramUrl={content.instagram_url} />
+        <Sobre content={content} />
         <ComoAjudar
           content={content}
           onOpenVoluntarioModal={() => setIsVoluntarioModalOpen(true)}
           onOpenParceiroModal={() => setIsParceiroModalOpen(true)}
         />
-
-        {/* 7. Transparência & Prestação de Contas */}
         <TransparenciaSection content={content} />
-
-        {/* 8. Cadastro de Beneficiários com Validação Real, Anti-Spam e LGPD */}
         <CadastroBeneficiario
           projects={projects}
           beneficiaries={beneficiaries}

@@ -271,14 +271,14 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cabeçalho */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800 mb-2">
+          <div className="flex items-center justify-center gap-2 text-xs font-bold text-brand mb-2">
             <span>Inscrição Solidária</span>
             <span aria-hidden="true">·</span>
             <span>Sem Custos</span>
             <span aria-hidden="true">·</span>
             <span>Trindade - GO</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
             Cadastro de Beneficiários da Comunidade
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-600">
@@ -288,10 +288,10 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
         {/* Feedback: CPF Já Cadastrado (Controle de Duplicidade Inteligente) */}
         {existingBeneficiary && (
-          <div className="mb-8 p-6 bg-amber-50 border-2 border-amber-300 rounded-3xl shadow-sm animate-in fade-in duration-300">
+          <div className="mb-8 p-6 bg-sand border-2 border-line rounded-lg shadow-sm animate-in fade-in duration-300">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-amber-200 text-amber-900 flex items-center justify-center shrink-0 mt-0.5">
-                <AlertCircle className="w-6 h-6 text-amber-800" />
+              <div className="w-10 h-10 rounded-lg bg-brand-soft text-brand flex items-center justify-center shrink-0 mt-0.5">
+                <AlertCircle className="w-6 h-6 text-brand" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -299,17 +299,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     Este CPF já possui cadastro registrado!
                   </h3>
                   <span
-                    className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                      existingBeneficiary.status === 'Aprovado'
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                        : existingBeneficiary.status === 'Em análise'
-                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                        : existingBeneficiary.status === 'Atendido/Entregue'
-                        ? 'bg-blue-100 text-blue-900 border border-blue-300'
-                        : existingBeneficiary.status === 'Recusado'
-                        ? 'bg-red-100 text-red-900 border border-red-300'
-                        : 'bg-slate-100 text-slate-800 border border-slate-300'
-                    }`}
+                    className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${ existingBeneficiary.status === 'Aprovado' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : existingBeneficiary.status === 'Em análise' ? 'bg-brand-soft text-brand border border-line' : existingBeneficiary.status === 'Atendido/Entregue' ? 'bg-brand-soft text-brand border border-line' : existingBeneficiary.status === 'Recusado' ? 'bg-red-100 text-red-900 border border-red-300' : 'bg-slate-100 text-slate-800 border border-slate-300' }`}
                   >
                     Status Atual: {existingBeneficiary.status}
                   </span>
@@ -321,17 +311,17 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                 </p>
 
                 {existingBeneficiary.observacoes && (
-                  <p className="text-xs text-slate-600 mt-1 italic bg-white/70 p-2.5 rounded-xl border border-amber-200/60">
+                  <p className="text-xs text-slate-600 mt-1 italic bg-white/70 p-2.5 rounded-md border border-line">
                     <strong>Anotação da equipe:</strong> {existingBeneficiary.observacoes}
                   </p>
                 )}
 
-                <div className="mt-4 pt-3 border-t border-amber-200/80 flex flex-wrap items-center gap-3">
+                <div className="mt-4 pt-3 border-t border-line flex flex-wrap items-center gap-3">
                   <a
                     href="https://wa.me/5562993418820?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20ou%20atualizar%20meu%20cadastro%20na%20Associa%C3%A7%C3%A3o%20Novo%20Amanhecer."
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>Falar no WhatsApp para Atualizar Dados</span>
@@ -340,7 +330,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   <button
                     type="button"
                     onClick={() => setExistingBeneficiary(null)}
-                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-amber-100 rounded-xl transition-colors"
+                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-brand-soft rounded-md transition-colors"
                   >
                     Tentar outro CPF
                   </button>
@@ -352,13 +342,13 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
         {/* Feedback: Sucesso no Novo Cadastro */}
         {submittedBeneficiary && (
-          <div className="mb-8 p-6 bg-emerald-50 border-2 border-emerald-300 rounded-3xl shadow-sm animate-in fade-in duration-300">
+          <div className="mb-8 p-6 bg-emerald-50 border-2 border-emerald-300 rounded-lg shadow-sm animate-in fade-in duration-300">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-7 h-7 text-emerald-600" />
               </div>
               <div className="flex-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                <span className="text-xs font-bold text-emerald-800">
                   Cadastro Enviado com Sucesso!
                 </span>
                 <h3 className="text-xl font-bold text-slate-900 mt-0.5">
@@ -367,16 +357,16 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                 <p className="text-xs sm:text-sm text-slate-700 mt-2">
                   Recebemos a inscrição de <strong>{submittedBeneficiary.nome}</strong> para o projeto{' '}
                   <strong>{submittedBeneficiary.projeto}</strong>. O cadastro foi registrado com status{' '}
-                  <strong className="text-amber-700">Pendente</strong> e está na fila de aprovação da nossa coordenação.
+                  <strong className="text-brand">Pendente</strong> e está na fila de aprovação da nossa coordenação.
                 </p>
-                <div className="mt-3 text-xs text-slate-600 bg-white/80 p-3 rounded-xl border border-emerald-200">
+                <div className="mt-3 text-xs text-slate-600 bg-white/80 p-3 rounded-md border border-emerald-200">
                   Nossa equipe entrará em contato via WhatsApp no número <strong>{submittedBeneficiary.telefone}</strong> para confirmar a turma, data do ensaio ou entrega dos materiais.
                 </div>
                 <div className="mt-4 flex gap-3">
                   <button
                     type="button"
                     onClick={() => setSubmittedBeneficiary(null)}
-                    className="px-4 py-2 text-xs font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 rounded-xl transition-colors cursor-pointer"
+                    className="px-4 py-2 text-xs font-bold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 rounded-md transition-colors cursor-pointer"
                   >
                     Fazer Outro Cadastro
                   </button>
@@ -387,12 +377,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
         )}
 
         {/* Formulário Principal de Cadastro */}
-        <div className="bg-amber-50/30 p-6 sm:p-10 rounded-3xl border border-amber-200/80 shadow-xs">
+        <div className="bg-sand p-6 sm:p-10 rounded-lg border border-line shadow-xs">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Nome Completo e CPF */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Nome Completo *
                 </label>
                 <input
@@ -401,12 +391,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   placeholder="Nome do(a) participante ou responsável"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                   <span>CPF (com validação real) *</span>
                   <span className="text-[10px] text-slate-400 font-normal">Apenas números</span>
                 </label>
@@ -417,11 +407,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   maxLength={14}
                   value={cpf}
                   onChange={handleCpfChange}
-                  className={`w-full px-4 py-2.5 text-xs sm:text-sm bg-white border rounded-xl focus:outline-none focus:ring-2 shadow-2xs ${
-                    cpfError
-                      ? 'border-red-400 focus:ring-red-500 bg-red-50/20'
-                      : 'border-slate-200 focus:ring-amber-500'
-                  }`}
+                  className={`w-full px-4 py-2.5 text-xs sm:text-sm bg-white border rounded-md focus:outline-none focus:ring-2 shadow-2xs ${ cpfError ? 'border-red-400 focus:ring-red-500 bg-red-50/20' : 'border-slate-200 focus:ring-amber-500' }`}
                 />
                 {cpfError && (
                   <p className="text-[11px] text-red-600 font-semibold mt-1 flex items-center gap-1">
@@ -435,7 +421,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
             {/* Data de Nascimento e Telefone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Data de Nascimento *
                 </label>
                 <input
@@ -443,12 +429,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   required
                   value={nascimento}
                   onChange={(e) => setNascimento(e.target.value)}
-                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs text-slate-800"
+                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs text-slate-800"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Telefone / WhatsApp *
                 </label>
                 <input
@@ -458,14 +444,14 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   maxLength={15}
                   value={telefone}
                   onChange={handlePhoneChange}
-                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                 />
               </div>
             </div>
 
             {/* E-mail de Contato */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 E-mail de Contato (Opcional)
               </label>
               <input
@@ -473,19 +459,19 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                 placeholder="exemplo@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
               />
             </div>
 
             {/* SEÇÃO DE ENDEREÇO COM INTEGRAÇÃO VIACEP */}
-            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-amber-200/90 shadow-2xs space-y-4">
+            <div className="bg-white p-5 sm:p-6 rounded-lg border border-line shadow-2xs space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-amber-100 flex items-center justify-center text-amber-800">
+                  <div className="w-7 h-7 rounded-lg bg-brand-soft flex items-center justify-center text-brand">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <h4 className="text-xs font-bold text-slate-900">
                       Endereço de Residência
                     </h4>
                     <p className="text-[11px] text-slate-500">
@@ -498,10 +484,10 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   <button
                     type="button"
                     onClick={handleQuickFillSedeCep}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-brand hover:text-brand bg-sand hover:bg-brand-soft border border-line px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                     title="Preencher com o CEP do Setor Ponta Kayana"
                   >
-                    <Sparkles className="w-3 h-3 text-amber-600" />
+                    <Sparkles className="w-3 h-3 text-brand" />
                     <span>CEP Ponta Kayana (75384-155)</span>
                   </button>
                   <button
@@ -516,7 +502,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
               {manualAddressMode ? (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
                     Endereço Completo Manual *
                   </label>
                   <input
@@ -525,7 +511,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     placeholder="Ex: Rua 14, Qd. 05, Lt. 12, Setor Maysa II, Trindade - GO"
                     value={manualEndereco}
                     onChange={(e) => setManualEndereco(e.target.value)}
-                    className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                    className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                   />
                 </div>
               ) : (
@@ -533,10 +519,10 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   {/* Campo de CEP com indicador de busca ViaCEP */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div className="sm:col-span-1">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                         <span>CEP *</span>
                         {isCepLoading && (
-                          <span className="text-[10px] text-amber-700 flex items-center gap-1 font-normal">
+                          <span className="text-[10px] text-brand flex items-center gap-1 font-normal">
                             <Loader2 className="w-3 h-3 animate-spin" />
                             Buscando...
                           </span>
@@ -556,37 +542,31 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                           maxLength={9}
                           value={cep}
                           onChange={handleCepChange}
-                          className={`w-full px-4 py-2.5 text-xs sm:text-sm bg-white border rounded-xl focus:outline-none focus:ring-2 font-mono shadow-2xs ${
-                            cepError
-                              ? 'border-amber-400 focus:ring-amber-500 bg-amber-50/20'
-                              : cepSuccess
-                              ? 'border-emerald-300 focus:ring-emerald-500'
-                              : 'border-slate-200 focus:ring-amber-500'
-                          }`}
+                          className={`w-full px-4 py-2.5 text-xs sm:text-sm bg-white border rounded-md focus:outline-none focus:ring-2 font-mono shadow-2xs ${ cepError ? 'border-line focus:ring-brand bg-sand' : cepSuccess ? 'border-emerald-300 focus:ring-emerald-500' : 'border-slate-200 focus:ring-amber-500' }`}
                         />
                         <button
                           type="button"
                           onClick={() => fetchAddressByCep(cep)}
                           disabled={cleanDigits(cep).length !== 8 || isCepLoading}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-amber-700 disabled:opacity-30 transition-colors cursor-pointer"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-brand disabled:opacity-30 transition-colors cursor-pointer"
                           title="Buscar CEP na API ViaCEP"
                         >
                           {isCepLoading ? (
-                            <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+                            <Loader2 className="w-4 h-4 animate-spin text-brand" />
                           ) : (
                             <Search className="w-4 h-4" />
                           )}
                         </button>
                       </div>
                       {cepError && (
-                        <p className="text-[11px] text-amber-700 font-medium mt-1">
+                        <p className="text-[11px] text-brand font-medium mt-1">
                           {cepError}
                         </p>
                       )}
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Rua / Avenida / Alameda *
                       </label>
                       <input
@@ -595,7 +575,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                         placeholder="Ex: Alameda das Rosas, Rua 12, etc."
                         value={logradouro}
                         onChange={(e) => setLogradouro(e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                       />
                     </div>
                   </div>
@@ -603,7 +583,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   {/* Número e Complemento / Quadra e Lote */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Número / Lote *
                       </label>
                       <input
@@ -613,12 +593,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                         placeholder="Ex: 16, S/N, Lt. 04"
                         value={numero}
                         onChange={(e) => setNumero(e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                       />
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Complemento / Quadra (Opcional)
                       </label>
                       <input
@@ -626,7 +606,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                         placeholder="Ex: Qd. 14, Chácara 26/27, Casa 2, Fundos"
                         value={complemento}
                         onChange={(e) => setComplemento(e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                       />
                     </div>
                   </div>
@@ -634,7 +614,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   {/* Bairro, Cidade e UF */}
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Bairro / Setor *
                       </label>
                       <input
@@ -643,12 +623,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                         placeholder="Ex: Setor Ponta Kayana"
                         value={bairro}
                         onChange={(e) => setBairro(e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                       />
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Cidade *
                       </label>
                       <input
@@ -656,12 +636,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                         required
                         value={cidade}
                         onChange={(e) => setCidade(e.target.value)}
-                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs"
+                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
                         Estado (UF) *
                       </label>
                       <input
@@ -670,17 +650,17 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                         maxLength={2}
                         value={uf}
                         onChange={(e) => setUf(e.target.value.toUpperCase())}
-                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs text-center font-bold"
+                        className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs text-center font-bold"
                       />
                     </div>
                   </div>
 
                   {/* Prévia do Endereço Formatado */}
                   {getFormattedAddress() && (
-                    <div className="mt-2 p-2.5 bg-amber-50/60 rounded-xl border border-amber-200/60 text-xs text-amber-950 flex items-start gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
+                    <div className="mt-2 p-2.5 bg-sand rounded-md border border-line text-xs text-brand flex items-start gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-[10px] uppercase tracking-wider text-amber-800 block">
+                        <span className="font-bold text-[10px] text-brand block">
                           Prévia do Endereço que será Cadastrado:
                         </span>
                         <span className="font-medium">{getFormattedAddress()}</span>
@@ -693,13 +673,13 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
             {/* Projeto de Interesse */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Projeto Social Desejado *
               </label>
               <select
                 value={projeto}
                 onChange={(e) => setProjeto(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs text-slate-900 font-semibold"
+                className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs text-slate-900 font-semibold"
               >
                 {activeProjects.map((p) => (
                   <option key={p.id} value={p.titulo}>
@@ -711,7 +691,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
             {/* Observações */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Observações / Informações Importantes (Opcional)
               </label>
               <textarea
@@ -719,7 +699,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                 placeholder="Ex: Tamanho de roupa/calçado para o ballet ou futebol; meses de gestação para o Book Solidário; restrições de saúde..."
                 value={observacoes}
                 onChange={(e) => setObservacoes(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-2xs text-slate-800"
+                className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs text-slate-800"
               />
             </div>
 
@@ -736,14 +716,14 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
             </div>
 
             {/* Aviso de Privacidade e Consentimento Obrigatório LGPD */}
-            <div className="p-4 bg-orange-50/70 border border-orange-200 rounded-2xl">
+            <div className="p-4 bg-sand border border-line rounded-lg">
               <label className="flex items-start gap-3 cursor-pointer text-xs text-slate-700 select-none">
                 <input
                   type="checkbox"
                   required
                   checked={consentimentoLgpd}
                   onChange={(e) => setConsentimentoLgpd(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer"
+                  className="mt-0.5 w-4 h-4 rounded text-brand focus:ring-brand border-slate-300 cursor-pointer"
                 />
                 <span className="leading-relaxed">
                   Autorizo e concordo com o tratamento dos dados pessoais e cadastrais informados acima pela <strong>Associação Beneficente Novo Amanhecer</strong> (CNPJ 35.157.094/0001-91) para fins exclusivos de inscrição, organização de turmas e prestação de contas dos projetos sociais, em integral conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)</strong>.
@@ -751,7 +731,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     <button
                       type="button"
                       onClick={onOpenPrivacidade}
-                      className="text-orange-700 underline font-bold ml-1.5 hover:text-orange-900 cursor-pointer"
+                      className="text-brand underline font-bold ml-1.5 hover:text-brand cursor-pointer"
                     >
                       Ler Política de Privacidade
                     </button>
@@ -761,7 +741,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
             </div>
 
             {submitError && (
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 flex items-start gap-2">
+              <div className="p-3.5 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                 <span>{submitError}</span>
               </div>
@@ -772,7 +752,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 px-6 text-sm font-extrabold text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 disabled:opacity-60 rounded-2xl shadow-md shadow-orange-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer hover:-translate-y-0.5"
+                className="w-full py-4 px-6 text-sm font-bold text-white bg-brand disabled:opacity-60 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Heart, MapPin, Phone, Mail, Instagram, Shield, MessageCircle, ExternalLink, Code2, Sparkles } from 'lucide-react';
 import { SiteContent } from '../../types';
 import { NovoAmanhecerLogo } from '../brand/NovoAmanhecerLogo';
 
@@ -10,178 +9,82 @@ interface FooterProps {
   onOpenPrivacidade?: () => void;
 }
 
+const onlyDigits = (v: string) => (v || '').replace(/\D/g, '');
+
+const Icon: React.FC<{ d: string }> = ({ d }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+    <path d={d} />
+  </svg>
+);
+
+const PHONE = 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2';
+const CHAT = 'M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z';
+const MAIL = 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm-1 2 9 6 9-6';
+
 export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCadastro, onOpenPrivacidade }) => {
+  const tel = onlyDigits(content.contato_telefone);
+  const wa = onlyDigits(content.contato_whatsapp);
+  const mesmoNumero = tel && tel === wa;
+
   return (
-    <footer id="contato" className="bg-slate-950 text-slate-300 pt-16 pb-12 border-t border-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
-          {/* Apresentação da Associação & Logo Oficial */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-slate-900/60 p-3 rounded-2xl border border-slate-800 inline-block">
-              <div className="[&_span.text-slate-900]:text-white [&_span.text-amber-700]:text-amber-400 [&_span.text-slate-500]:text-slate-400">
-                <NovoAmanhecerLogo size="md" showText={true} />
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              Associação comunitária sem fins lucrativos que acolhe crianças, famílias e gestantes com ballet, futebol, ensaios fotográficos de gestantes e grandes celebrações na comunidade de Trindade.
-            </p>
-
-            <div className="text-xs text-slate-300 space-y-1.5 font-mono">
-              <div><strong className="text-slate-400 font-sans">CNPJ:</strong> {content.contato_cnpj}</div>
-              <div><strong className="text-slate-400 font-sans">Chave PIX:</strong> {content.contato_pix_chave}</div>
-            </div>
-
-            <div className="pt-2">
-              <a
-                href={content.instagram_url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-amber-400 border border-slate-800 transition-colors"
-              >
-                <Instagram className="w-4 h-4 text-pink-400" />
-                <span>@anovoamanhecer no Instagram</span>
-                <ExternalLink className="w-3 h-3 text-slate-500" />
-              </a>
-            </div>
-          </div>
-
-          {/* Navegação Rápida */}
-          <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Navegação
-            </div>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <a href="#inicio" className="hover:text-amber-400 transition-colors">
-                  Início
-                </a>
-              </li>
-              <li>
-                <a href="#sobre" className="hover:text-amber-400 transition-colors">
-                  Nossa História
-                </a>
-              </li>
-              <li>
-                <a href="#projetos" className="hover:text-amber-400 transition-colors">
-                  Projetos Sociais
-                </a>
-              </li>
-              <li>
-                <a href="#galeria" className="hover:text-amber-400 transition-colors">
-                  Galeria de Fotos
-                </a>
-              </li>
-              <li>
-                <a href="#como-ajudar" className="hover:text-amber-400 transition-colors">
-                  Como Ajudar (PIX)
-                </a>
-              </li>
-              <li>
-                <a href="#transparencia" className="hover:text-amber-400 transition-colors">
-                  Transparência & Estatuto
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Projetos Sociais */}
-          <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Nossos Pilares
-            </div>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li>Aulas de Ballet Solidário</li>
-              <li>Escolinha de Futebol Comunitário</li>
-              <li>Projeto Book Solidário de Gestantes</li>
-              <li>Festas em Datas Comemorativas</li>
-              <li className="pt-3">
-                <button
-                  onClick={onOpenCadastro}
-                  className="text-amber-400 hover:text-amber-300 font-bold transition-colors cursor-pointer text-left"
-                >
-                  Fazer Inscrição no Cadastro →
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contato & Localização Oficial Informada */}
-          <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Sede Comunitária Oficial
-            </div>
-            <div className="space-y-3 text-xs text-slate-400">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                <span className="leading-snug">{content.contato_endereco}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>{content.contato_telefone}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-emerald-500 shrink-0" />
-                <a
-                  href={`https://wa.me/55${content.contato_whatsapp.replace(/\D/g, '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-white transition-colors"
-                >
-                  WhatsApp: {content.contato_whatsapp}
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-amber-500 shrink-0" />
-                <span className="truncate">{content.contato_email}</span>
-              </div>
-            </div>
-          </div>
+    <footer id="contato" className="border-t border-line bg-white">
+      <div className="container-site grid grid-cols-1 gap-10 py-14 sm:py-16 lg:grid-cols-12 lg:gap-8">
+        <div className="flex flex-col gap-4 lg:col-span-4">
+          <NovoAmanhecerLogo size="md" />
+          <p className="max-w-sm text-[15px] leading-relaxed text-muted">{content.contato_endereco}</p>
         </div>
 
-        {/* Barra Inferior Institucional */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-          <div>
-            © {new Date().getFullYear()} Associação Novo Amanhecer · Setor Ponta Kayana, Trindade/GO. CNPJ {content.contato_cnpj}.
-          </div>
+        <div className="flex flex-col gap-3 text-[15px] lg:col-span-4 lg:col-start-6">
+          <span className="text-[13px] font-semibold text-muted">Contato</span>
+          {wa && (
+            <a href={`https://wa.me/55${wa}`} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 hover:text-brand">
+              <Icon d={CHAT} />
+              {mesmoNumero ? 'Telefone e WhatsApp' : 'WhatsApp'} {content.contato_whatsapp}
+            </a>
+          )}
+          {tel && !mesmoNumero && (
+            <a href={`tel:+55${tel}`} className="flex items-center gap-2.5 hover:text-brand">
+              <Icon d={PHONE} />
+              {content.contato_telefone}
+            </a>
+          )}
+          {content.contato_email && (
+            <a href={`mailto:${content.contato_email}`} className="flex items-center gap-2.5 break-all hover:text-brand">
+              <Icon d={MAIL} />
+              {content.contato_email}
+            </a>
+          )}
+        </div>
 
-          <div className="flex items-center gap-4 flex-wrap">
-            {onOpenPrivacidade && (
-              <button
-                onClick={onOpenPrivacidade}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-orange-300 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"
-              >
-                <span>Privacidade & LGPD</span>
-              </button>
-            )}
-
-            <button
-              onClick={onOpenAdmin}
-              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-300 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800"
-            >
-              <Shield className="w-3.5 h-3.5 text-amber-500" />
-              <span>Acesso ao Painel Administrativo</span>
+        <div className="flex flex-col gap-3 text-[15px] lg:col-span-3 lg:col-start-10">
+          <span className="text-[13px] font-semibold text-muted">Acompanhe</span>
+          <a href={content.instagram_url} target="_blank" rel="noreferrer" className="hover:text-brand">
+            Instagram @anovoamanhecer
+          </a>
+          <button onClick={onOpenCadastro} className="text-left hover:text-brand">
+            Inscrever uma criança
+          </button>
+          <a href="#transparencia" className="hover:text-brand">
+            Transparência
+          </a>
+          {onOpenPrivacidade && (
+            <button onClick={onOpenPrivacidade} className="text-left hover:text-brand">
+              Política de privacidade
             </button>
-          </div>
+          )}
         </div>
+      </div>
 
-        {/* Assinatura Profissional do Desenvolvedor (YC Soluções e Tecnologias) */}
-        <div className="mt-8 pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <div className="text-[11px] text-slate-500 text-center sm:text-left">
-            Todos os direitos reservados à comunidade e voluntários de Trindade/GO.
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-slate-400 font-medium">Desenvolvido por</span>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800/90 hover:border-amber-500/40 hover:bg-slate-900 text-slate-200 transition-all shadow-xs group">
-              <span className="w-5 h-5 rounded-lg bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 text-slate-950 font-black text-[10px] flex items-center justify-center shadow-xs">
-                YC
-              </span>
-              <span className="font-bold text-xs tracking-tight text-white group-hover:text-amber-300 transition-colors">
-                YC Soluções e Tecnologias
-              </span>
-              <Code2 className="w-3.5 h-3.5 text-amber-400/80 group-hover:text-amber-300 transition-colors" />
-            </div>
+      <div className="border-t border-line">
+        <div className="container-site flex flex-col gap-3 py-6 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            © {new Date().getFullYear()} Associação Novo Amanhecer · CNPJ {content.contato_cnpj}
+          </span>
+          <div className="flex items-center gap-5">
+            <span>Desenvolvido por YC Soluções e Tecnologias</span>
+            <button onClick={onOpenAdmin} className="hover:text-ink">
+              Área da equipe
+            </button>
           </div>
         </div>
       </div>
