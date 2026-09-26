@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "novo-amanhecer",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-01",
+
+  // Site React compilado pelo Vite (npm run build → dist/).
+  // /api/* vai para o Worker; o resto é servido direto, com index.html nas rotas do React.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Banco D1 (já criado na conta da Cloudflare).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "novo-amanhecer-db",
+      "database_id": "e256256a-b66e-48df-85b4-80f4487fbf2d",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Permite importar o arquivo .sql como texto (estrutura do banco).
+  "rules": [{ "type": "Text", "globs": ["**/*.sql"], "fallthrough": true }],
+
+  "observability": { "enabled": true },
+
+  // Variáveis públicas. Segredos (JWT_SECRET, ADMIN_INITIAL_PASSWORD, RESEND_API_KEY)
+  // ficam em Settings → Variables and Secrets no painel, NUNCA aqui.
+  "vars": {
+    "ADMIN_EMAIL": "coordenacao@novoamanhecer.org.br",
+    "EMAIL_FROM": "",
+    "COORDINATION_EMAIL": "",
+    "SEED_DEMO_DATA": "false",
+    "DEV_MODE": "false"
+  }
+}

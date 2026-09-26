@@ -1,4 +1,5 @@
-import { db, logAudit } from './db.js';
+import { db, logAudit } from './db';
+import { cfg } from './env';
 
 export interface EmailMessage {
   tipo: 'NOVO_BENEFICIARIO' | 'NOVO_VOLUNTARIO' | 'NOVA_DOACAO' | 'CONFIRMACAO_BENEFICIARIO' | 'CONFIRMACAO_VOLUNTARIO' | 'CONFIRMACAO_DOACAO' | 'AVISO_SISTEMA';
@@ -11,15 +12,15 @@ export interface EmailMessage {
 /**
  * Obtém o e-mail oficial configurado para receber notificações da coordenação.
  */
-export function getCoordinationEmail(): string {
+export async function getCoordinationEmail(): Promise<string> {
   // 1. Variável de ambiente (se definida)
-  if (process.env.COORDINATION_EMAIL && process.env.COORDINATION_EMAIL.trim()) {
-    return process.env.COORDINATION_EMAIL.trim();
+  if (cfg('COORDINATION_EMAIL')) {
+    return cfg('COORDINATION_EMAIL');
   }
 
   // 2. E-mail de contato cadastrado no CMS (site_content)
   try {
-    const row = db.prepare('SELECT content_json FROM site_content WHERE id = ?').get('main') as { content_json: string } | undefined;
+    const row = await db.prepare('SELECT content_json FROM site_content WHERE id = ?').get<{ content_json: string }>('main');
     if (row && row.content_json) {
       const parsed = JSON.parse(row.content_json);
       if (parsed.contato_email && parsed.contato_email.includes('@')) {
@@ -41,13 +42,13 @@ export function getCoordinationEmail(): string {
 export async function sendSystemEmail(msg: EmailMessage): Promise<boolean> {
   const id = `email-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   const now = new Date().toISOString();
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  const emailFrom = process.env.EMAIL_FROM?.trim();
+  const apiKey = cfg('RESEND_API_KEY');
+  const emailFrom = cfg('EMAIL_FROM');
   const corpoLog = msg.corpoLog ?? msg.corpo;
 
   if (!apiKey || !emailFrom) {
     try {
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO email_logs (id, tipo, destinatario, assunto, corpo, status, enviado_em)
         VALUES (?, ?, ?, ?, ?, 'NAO_ENVIADO', ?)
       `).run(id, msg.tipo, msg.destinatario, msg.assunto, corpoLog, now);
@@ -80,12 +81,12 @@ export async function sendSystemEmail(msg: EmailMessage): Promise<boolean> {
       throw new Error(`Resend respondeu ${response.status}: ${errorBody}`);
     }
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO email_logs (id, tipo, destinatario, assunto, corpo, status, enviado_em)
       VALUES (?, ?, ?, ?, ?, 'ENVIADO', ?)
     `).run(id, msg.tipo, msg.destinatario, msg.assunto, corpoLog, now);
 
-    logAudit({
+    await logAudit({
       action: 'EMAIL_SENT',
       entity: 'NOTIFICATION',
       entityId: id,
@@ -97,7 +98,7 @@ export async function sendSystemEmail(msg: EmailMessage): Promise<boolean> {
   } catch (err: any) {
     console.error(`[EMAIL ERROR] Falha ao enviar e-mail para ${msg.destinatario}:`, err);
     try {
-      db.prepare(`
+      await db.prepare(`
         INSERT INTO email_logs (id, tipo, destinatario, assunto, corpo, status, enviado_em)
         VALUES (?, ?, ?, ?, ?, 'FALHOU', ?)
       `).run(id, msg.tipo, msg.destinatario, msg.assunto, corpoLog, now);
@@ -119,7 +120,7 @@ export async function notifyCoordinationNewBeneficiary(beneficiary: {
   endereco?: string;
   email?: string;
 }) {
-  const coordEmail = getCoordinationEmail();
+  const coordEmail = await getCoordinationEmail();
   const assunto = `[Novo Cadastro] Inscrição recebida: ${beneficiary.nome} (${beneficiary.projeto})`;
   const corpo = `
 Olá, Coordenação da Associação Novo Amanhecer!
@@ -197,7 +198,7 @@ export async function notifyCoordinationNewVolunteer(volunteer: {
   area: string;
   disponibilidade: string;
 }) {
-  const coordEmail = getCoordinationEmail();
+  const coordEmail = await getCoordinationEmail();
   const assunto = `[Novo Voluntário] Interesse em apoiar: ${volunteer.nome} (${volunteer.area})`;
   const corpo = `
 Olá, Coordenação da Associação Novo Amanhecer!
@@ -269,7 +270,7 @@ export async function notifyCoordinationNewDonation(donation: {
   email?: string;
   telefone?: string;
 }) {
-  const coordEmail = getCoordinationEmail();
+  const coordEmail = await getCoordinationEmail();
   const valorFormatado = Number(donation.valor).toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
