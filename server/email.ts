@@ -320,13 +320,13 @@ export async function sendDonationConfirmation(donation: {
     currency: 'BRL',
   });
 
-  const assunto = `Agradecimento pela sua doação de ${valorFormatado} à Associação Novo Amanhecer`;
+  const assunto = `Obrigado pela sua doação de ${valorFormatado} à Associação Novo Amanhecer`;
   const corpo = `
 Olá, ${donation.nome}!
 
-Recebemos com imensa alegria a sua contribuição de ${valorFormatado} via ${donation.metodo} para a Associação Novo Amanhecer.
+Registramos a sua doação de ${valorFormatado} via ${donation.metodo} para a Associação Novo Amanhecer. Assim que nossa equipe confirmar o recebimento no extrato da entidade, ela passa a contar nos números de transparência do portal.
 
-Cada centavo doado se transforma diretamente em:
+Cada doação se transforma diretamente em:
 - Sapatilhas e figurinos para as alunas do Ballet Solidário;
 - Bolas, redes e chuteiras para as turmas de Futebol Comunitário;
 - Kits completos de enxoval para as mães atendidas no Book de Gestantes;
