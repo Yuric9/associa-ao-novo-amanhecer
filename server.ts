@@ -11,6 +11,11 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
+
+  // Atrás de proxy/CDN (Render, Railway, Cloud Run etc.) o IP real vem no X-Forwarded-For.
+  // Sem isso, o limite de tentativas contava todos os visitantes como um único IP.
+  app.set('trust proxy', process.env.TRUST_PROXY ? Number(process.env.TRUST_PROXY) || process.env.TRUST_PROXY : 1);
+  app.disable('x-powered-by');
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   // Inicializar banco de dados SQLite persistente
