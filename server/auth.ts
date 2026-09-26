@@ -1,8 +1,54 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'node:crypto';
 import { db, isUserAdmin, getUserRoles } from './db.js';
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'ana_trindade_jwt_secret_key_2026_super_secure_hash';
+// O segredo JWT NUNCA pode ficar fixo no código (o repositório é público).
+// Em produção é obrigatório definir JWT_SECRET; em desenvolvimento geramos um aleatório por execução.
+function resolveJwtSecret(): string {
+  const fromEnv = process.env.JWT_SECRET?.trim();
+  if (fromEnv && fromEnv.length >= 32) return fromEnv;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET não definido (ou com menos de 32 caracteres). Defina-o nas variáveis de ambiente do servidor.');
+  }
+  console.warn('[AUTH] JWT_SECRET não definido: usando segredo aleatório temporário (as sessões caem ao reiniciar).');
+  return crypto.randomBytes(48).toString('hex');
+}
+
+export const JWT_SECRET = resolveJwtSecret();
+
+export type AppRole = 'admin' | 'equipe' | 'coordenador' | 'voluntario';
+
+/**
+ * Papel principal do usuário. Usuário sem nenhum papel NÃO recebe privilégios
+ * (antes caía em 'equipe' e ganhava acesso a dados de beneficiários).
+ */
+export function resolvePrimaryRole(userId: string, roles: string[]): AppRole | null {
+  if (isUserAdmin(userId)) return 'admin';
+  const valid: AppRole[] = ['coordenador', 'equipe', 'voluntario'];
+  return (valid.find((r) => roles.includes(r)) as AppRole | undefined) ?? null;
+}
+
+/** Lê o token (header Bearer ou cookie) sem exigir login. Retorna o usuário ativo ou null. */
+export function getOptionalUser(req: Request): AuthRequestUser | null {
+  const authHeader = req.headers['authorization'];
+  const token = (authHeader && authHeader.startsWith('Bearer '))
+    ? authHeader.split(' ')[1]
+    : (req as any).cookies?.ana_token;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    const user = db.prepare('SELECT id, nome, email, ativo FROM users WHERE id = ?')
+      .get(decoded.id) as { id: string; nome: string; email: string; ativo: number } | undefined;
+    if (!user || user.ativo !== 1) return null;
+    const roles = getUserRoles(user.id);
+    const role = resolvePrimaryRole(user.id, roles);
+    if (!role) return null;
+    return { id: user.id, nome: user.nome, email: user.email, role, roles };
+  } catch {
+    return null;
+  }
+}
 
 export interface AuthRequestUser {
   id: string;
@@ -48,9 +94,12 @@ export function authenticateToken(req: AuthenticatedRequest, res: Response, next
 
     // Obter papéis a partir da tabela separada user_roles (nunca salva no perfil do usuário)
     const roles = getUserRoles(user.id);
-    const primaryRole = isUserAdmin(user.id)
-      ? 'admin'
-      : (roles[0] as 'admin' | 'equipe' | 'coordenador' | 'voluntario') || 'equipe';
+    const primaryRole = resolvePrimaryRole(user.id, roles);
+    if (!primaryRole) {
+      return res.status(403).json({
+        error: 'Sua conta não possui nenhum perfil de acesso atribuído. Contate a coordenação.',
+      });
+    }
 
     req.user = {
       id: user.id,
@@ -92,8 +141,7 @@ export function requireRole(allowedRoles: ('admin' | 'equipe' | 'coordenador' | 
 
     const hasPermission =
       isUserAdmin(req.user.id) ||
-      req.user.roles.some((r) => allowedRoles.includes(r as any)) ||
-      allowedRoles.includes(req.user.role);
+      req.user.roles.some((r) => allowedRoles.includes(r as any));
 
     if (!hasPermission) {
       return res.status(403).json({
