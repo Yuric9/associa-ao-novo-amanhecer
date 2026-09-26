@@ -32,10 +32,8 @@ import {
   INITIAL_SITE_CONTENT,
   INITIAL_PROJECTS,
   INITIAL_GALLERY,
-  INITIAL_BENEFICIARIES,
   INITIAL_ADMINS,
   INITIAL_INSTAGRAM_POSTS,
-  INITIAL_VOLUNTEERS,
 } from './data/initialData';
 import {
   SiteContent,
@@ -48,7 +46,7 @@ import {
   Volunteer,
   AuthUser,
 } from './types';
-import { api, getStoredUser } from './services/api';
+import { api, getStoredUser, LEGACY_PII_KEYS } from './services/api';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function App() {
@@ -77,10 +75,8 @@ export default function App() {
   });
 
   // Estado dos Beneficiários Cadastrados (Banco de Dados Seguro)
-  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>(() => {
-    const saved = localStorage.getItem('ana_trindade_beneficiarios');
-    return saved ? JSON.parse(saved) : INITIAL_BENEFICIARIES;
-  });
+  // Dados pessoais NÃO ficam salvos no navegador: vêm sempre do servidor após o login.
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
 
   // Estado dos Administradores
   const [admins, setAdmins] = useState<AdminUser[]>(() => {
@@ -89,10 +85,7 @@ export default function App() {
   });
 
   // Estado dos Voluntários da Equipe
-  const [volunteers, setVolunteers] = useState<Volunteer[]>(() => {
-    const saved = localStorage.getItem('ana_trindade_voluntarios');
-    return saved ? JSON.parse(saved) : INITIAL_VOLUNTEERS;
-  });
+  const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
 
   // Usuário Autenticado e Papel Real (RBAC via Servidor)
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => getStoredUser());
@@ -216,26 +209,14 @@ export default function App() {
     verifySession();
   }, []);
 
-  // Migração Automática dos Dados do localStorage para o Banco de Dados SQLite na Nuvem
+  // Limpeza do cache antigo com dados pessoais. A antiga "migração automática" reenviava esse
+  // cache a cada visita e fazia beneficiários excluídos reaparecerem no banco.
   useEffect(() => {
-    const runMigration = async () => {
-      try {
-        const savedBens = localStorage.getItem('ana_trindade_beneficiarios');
-        const savedVols = localStorage.getItem('ana_trindade_voluntarios');
-        const bens = savedBens ? JSON.parse(savedBens) : [];
-        const vols = savedVols ? JSON.parse(savedVols) : [];
-
-        if ((Array.isArray(bens) && bens.length > 0) || (Array.isArray(vols) && vols.length > 0)) {
-          await api.migrateFromLocalStorage({
-            beneficiaries: bens,
-            volunteers: vols,
-          });
-        }
-      } catch (err) {
-        console.error('Erro ao migrar dados locais:', err);
-      }
-    };
-    runMigration();
+    try {
+      LEGACY_PII_KEYS.forEach((k) => localStorage.removeItem(k));
+    } catch {
+      // navegador sem acesso ao armazenamento
+    }
   }, []);
 
   // Carga e Sincronização Inicial de Conteúdos Públicos do Banco de Dados SQLite
@@ -281,11 +262,9 @@ export default function App() {
 
         if (dbBeneficiaries && Array.isArray(dbBeneficiaries)) {
           setBeneficiaries(dbBeneficiaries);
-          localStorage.setItem('ana_trindade_beneficiarios', JSON.stringify(dbBeneficiaries));
         }
         if (dbVolunteers && Array.isArray(dbVolunteers)) {
           setVolunteers(dbVolunteers);
-          localStorage.setItem('ana_trindade_voluntarios', JSON.stringify(dbVolunteers));
         }
       } catch {
         // Silencioso se sem permissão
@@ -313,6 +292,8 @@ export default function App() {
       // Ignorar erro de logout
     }
     setAuthUser(null);
+    setBeneficiaries([]);
+    setVolunteers([]);
     navigateTo('/login');
     showToast('Sessão administrativa encerrada com segurança.');
   };
