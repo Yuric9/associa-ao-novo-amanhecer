@@ -267,6 +267,25 @@ export function initDatabase() {
     }
   }
 
+  // Invalidar senhas legadas que foram publicadas anteriormente no GitHub.
+  const legacyPasswords = [
+    { email: 'admin@novoamanhecer.org.br', password: 'Admin@2026!NovoAmanhecer' },
+    { email: 'coordenacao@novoamanhecer.org.br', password: 'Coord@2026!NovoAmanhecer' },
+    { email: 'equipe@novoamanhecer.org.br', password: 'Equipe@2026!' },
+  ];
+
+  for (const legacy of legacyPasswords) {
+    const user = db.prepare('SELECT id, password_hash FROM users WHERE LOWER(email) = LOWER(?)')
+      .get(legacy.email) as { id: string; password_hash: string } | undefined;
+
+    if (user && bcrypt.compareSync(legacy.password, user.password_hash)) {
+      const randomPasswordHash = bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 10);
+      db.prepare('UPDATE users SET password_hash = ?, atualizado_em = ? WHERE id = ?')
+        .run(randomPasswordHash, now, user.id);
+      console.warn(`[SECURITY] A conta ${legacy.email} teve a senha antiga invalidada. Use "Esqueci minha senha" para definir uma nova senha.`);
+    }
+  }
+
   // Dados de demonstração (beneficiários, voluntários e doações fictícios) não devem
   // aparecer em produção, para não misturar com cadastros reais nem inflar a transparência.
   const seedDemoData = process.env.NODE_ENV !== 'production' || process.env.SEED_DEMO_DATA === 'true';
