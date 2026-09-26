@@ -2,6 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
 import bcrypt from 'bcryptjs';
+import crypto from 'node:crypto';
 import {
   INITIAL_SITE_CONTENT,
   INITIAL_PROJECTS,
@@ -223,51 +224,28 @@ export function initDatabase() {
     JSON.stringify(['beneficiarios:read_masked', 'projetos:read'])
   );
 
-  // Verificar e Criar a Conta da Coordenação como Primeiro Usuário Admin
-  const coordUser = db.prepare('SELECT id FROM users WHERE LOWER(email) = ?').get('coordenacao@novoamanhecer.org.br') as { id: string } | undefined;
   const now = new Date().toISOString();
 
-  if (!coordUser) {
-    const hashCoord = bcrypt.hashSync('Coord@2026!NovoAmanhecer', 10);
-    const coordId = 'usr-coordenacao-admin';
-    db.prepare(`
-      INSERT INTO users (id, nome, email, password_hash, ativo, criado_em, atualizado_em)
-      VALUES (?, ?, ?, ?, 1, ?, ?)
-    `).run(
-      coordId,
-      'Coordenação Geral',
-      'coordenacao@novoamanhecer.org.br',
-      hashCoord,
-      now,
-      now
-    );
+  // Conta administrativa inicial — criada SOMENTE quando não existe nenhum usuário.
+  // Antes, três contas com senhas fixas (publicadas no GitHub) eram recriadas a cada
+  // inicialização, permitindo que qualquer pessoa entrasse como administrador.
+  const countUsers = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
+  if (countUsers.count === 0) {
+    const adminEmail = (process.env.ADMIN_EMAIL || 'coordenacao@novoamanhecer.org.br').trim().toLowerCase();
+    const envPassword = process.env.ADMIN_INITIAL_PASSWORD?.trim();
+    const initialPassword = envPassword && envPassword.length >= 12
+      ? envPassword
+      : crypto.randomBytes(12).toString('base64url');
+    const adminId = 'usr-coordenacao-admin';
 
-    // Associar papel de Administrador na tabela separada user_roles
-    db.prepare(`
-      INSERT OR REPLACE INTO user_roles (user_id, role_id, atribuido_em)
-      VALUES (?, ?, ?)
-    `).run(coordId, 'admin', now);
-  } else {
-    // Garantir que a coordenação tem papel de admin na tabela separada
-    db.prepare(`
-      INSERT OR IGNORE INTO user_roles (user_id, role_id, atribuido_em)
-      VALUES (?, ?, ?)
-    `).run(coordUser.id, 'admin', now);
-  }
-
-  // Garantir também conta administrativa admin@novoamanhecer.org.br
-  const adminUser = db.prepare('SELECT id FROM users WHERE LOWER(email) = ?').get('admin@novoamanhecer.org.br') as { id: string } | undefined;
-  if (!adminUser) {
-    const hashAdmin = bcrypt.hashSync('Admin@2026!NovoAmanhecer', 10);
-    const adminId = 'usr-admin-principal';
     db.prepare(`
       INSERT INTO users (id, nome, email, password_hash, ativo, criado_em, atualizado_em)
       VALUES (?, ?, ?, ?, 1, ?, ?)
     `).run(
       adminId,
-      'Administrador Geral',
-      'admin@novoamanhecer.org.br',
-      hashAdmin,
+      'Coordenação Geral',
+      adminEmail,
+      bcrypt.hashSync(initialPassword, 10),
       now,
       now
     );
@@ -276,40 +254,22 @@ export function initDatabase() {
       INSERT OR REPLACE INTO user_roles (user_id, role_id, atribuido_em)
       VALUES (?, ?, ?)
     `).run(adminId, 'admin', now);
-  } else {
-    db.prepare(`
-      INSERT OR IGNORE INTO user_roles (user_id, role_id, atribuido_em)
-      VALUES (?, ?, ?)
-    `).run(adminUser.id, 'admin', now);
+
+    if (!envPassword) {
+      console.log('\n==================================================================');
+      console.log(' Conta administrativa inicial criada:');
+      console.log(`   E-mail: ${adminEmail}`);
+      console.log(`   Senha:  ${initialPassword}`);
+      console.log(' Anote e troque esta senha após o primeiro acesso.');
+      console.log('==================================================================\n');
+    } else {
+      console.log(`[SEED] Conta administrativa inicial criada para ${adminEmail} (senha de ADMIN_INITIAL_PASSWORD).`);
+    }
   }
 
-  // Garantir usuário da equipe
-  const equipeUser = db.prepare('SELECT id FROM users WHERE LOWER(email) = ?').get('equipe@novoamanhecer.org.br') as { id: string } | undefined;
-  if (!equipeUser) {
-    const hashEquipe = bcrypt.hashSync('Equipe@2026!', 10);
-    const equipeId = 'usr-equipe-1';
-    db.prepare(`
-      INSERT INTO users (id, nome, email, password_hash, ativo, criado_em, atualizado_em)
-      VALUES (?, ?, ?, ?, 1, ?, ?)
-    `).run(
-      equipeId,
-      'Equipe Social de Apoio',
-      'equipe@novoamanhecer.org.br',
-      hashEquipe,
-      now,
-      now
-    );
-
-    db.prepare(`
-      INSERT OR REPLACE INTO user_roles (user_id, role_id, atribuido_em)
-      VALUES (?, ?, ?)
-    `).run(equipeId, 'equipe', now);
-  } else {
-    db.prepare(`
-      INSERT OR IGNORE INTO user_roles (user_id, role_id, atribuido_em)
-      VALUES (?, ?, ?)
-    `).run(equipeUser.id, 'equipe', now);
-  }
+  // Dados de demonstração (beneficiários, voluntários e doações fictícios) não devem
+  // aparecer em produção, para não misturar com cadastros reais nem inflar a transparência.
+  const seedDemoData = process.env.NODE_ENV !== 'production' || process.env.SEED_DEMO_DATA === 'true';
 
   // Popular Conteúdo do Site se vazio
   const countContent = db.prepare('SELECT COUNT(*) as count FROM site_content').get() as { count: number };
@@ -355,7 +315,7 @@ export function initDatabase() {
 
   // Popular Beneficiários se vazio
   const countBeneficiaries = db.prepare('SELECT COUNT(*) as count FROM beneficiaries').get() as { count: number };
-  if (countBeneficiaries.count === 0) {
+  if (seedDemoData && countBeneficiaries.count === 0)
     const stmt = db.prepare(`
       INSERT INTO beneficiaries (id, nome, cpf, nascimento, telefone, email, endereco, projeto, status, observacoes, consentimento_lgpd, criado_em, atualizado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
@@ -380,7 +340,7 @@ export function initDatabase() {
 
   // Popular Voluntários se vazio
   const countVolunteers = db.prepare('SELECT COUNT(*) as count FROM volunteers').get() as { count: number };
-  if (countVolunteers.count === 0) {
+  if (seedDemoData && countVolunteers.count === 0)
     const stmt = db.prepare(`
       INSERT INTO volunteers (id, nome, telefone, email, area, disponibilidade, ativo, data_inicio, habilidades, observacoes, consentimento_lgpd, criado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
@@ -404,7 +364,7 @@ export function initDatabase() {
 
   // Popular Doações Iniciais se vazio para alimentar os indicadores reais
   const countDonations = db.prepare('SELECT COUNT(*) as count FROM donations').get() as { count: number };
-  if (countDonations.count === 0) {
+  if (seedDemoData && countDonations.count === 0)
     const stmt = db.prepare(`
       INSERT INTO donations (id, nome, email, telefone, valor, mensagem, metodo, status, ip_origem, criado_em, atualizado_em)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
