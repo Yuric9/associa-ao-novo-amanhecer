@@ -1,9 +1,9 @@
-import { Router, Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import crypto from 'node:crypto';
-import { db, logAudit, getUserRoles, assignUserRole } from './db.js';
-import { authenticateToken, requireRole, requireAdmin, JWT_SECRET, AuthenticatedRequest, resolvePrimaryRole, getOptionalUser } from './auth.js';
+import { Router, defer } from './http';
+import type { Req as Request, Res as Response, AuthenticatedRequest } from './http';
+import { db, logAudit, getUserRoles, assignUserRole } from './db';
+import { authenticateToken, requireRole, requireAdmin, getJwtSecret, resolvePrimaryRole, getOptionalUser } from './auth';
+import { hashPassword, verifyPassword, randomToken, signJwt } from './crypto';
+import { cfg, isDevMode } from './env';
 import {
   validateCPF,
   validatePhone,
@@ -11,7 +11,7 @@ import {
   sanitizeString,
   checkHoneypot,
   checkRateLimit,
-} from './validation.js';
+} from './validation';
 import {
   notifyCoordinationNewBeneficiary,
   sendBeneficiaryConfirmation,
@@ -21,37 +21,37 @@ import {
   sendDonationConfirmation,
   getCoordinationEmail,
   sendSystemEmail,
-} from './email.js';
+} from './email';
 
-export const apiRouter = Router();
+export const apiRouter = new Router();
 
 // =========================================================================
 // 1. AUTENTICAÇÃO REAL E GESTÃO DE USUÁRIOS (RBAC COM TABELA SEPARADA)
 // =========================================================================
 
-// Login Real com Verificação de Senha Segura (bcrypt) e Papel em Tabela Separada
-apiRouter.post('/auth/login', (req: Request, res: Response) => {
+// Login Real com Verificação de Senha Segura (PBKDF2) e Papel em Tabela Separada
+apiRouter.post('/auth/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Por favor, informe e-mail e senha.' });
   }
 
-  const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
+  const clientIp = req.ip;
 
   // Proteção contra força bruta: máx 10 tentativas de login por IP a cada 15 minutos
-  if (!checkRateLimit(clientIp, 'auth_login', 10, 15)) {
+  if (!(await checkRateLimit(clientIp, 'auth_login', 10, 15))) {
     return res.status(429).json({
       error: 'Muitas tentativas de login incorretas. Por segurança, aguarde alguns minutos antes de tentar novamente.',
     });
   }
 
-  const user = db.prepare(`
+  const user = await db.prepare(`
     SELECT id, nome, email, password_hash, ativo FROM users WHERE LOWER(email) = LOWER(?)
   `).get(email.trim()) as { id: string; nome: string; email: string; password_hash: string; ativo: number } | undefined;
 
   if (!user || user.ativo !== 1) {
-    logAudit({
+    await logAudit({
       action: 'LOGIN_FAILED',
       entity: 'USER',
       details: `Tentativa de login falha para o e-mail: ${email}`,
@@ -60,9 +60,9 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
     return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
   }
 
-  const isPasswordValid = bcrypt.compareSync(password, user.password_hash);
+  const isPasswordValid = await verifyPassword(password, user.password_hash);
   if (!isPasswordValid) {
-    logAudit({
+    await logAudit({
       userId: user.id,
       userEmail: user.email,
       action: 'LOGIN_FAILED',
@@ -74,28 +74,28 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
   }
 
   // Obter papéis exclusivamente a partir da tabela separada user_roles
-  const roles = getUserRoles(user.id);
-  const primaryRole = resolvePrimaryRole(user.id, roles);
+  const roles = await getUserRoles(user.id);
+  const primaryRole = await resolvePrimaryRole(user.id, roles);
   if (!primaryRole) {
     return res.status(403).json({ error: 'Sua conta não possui nenhum perfil de acesso atribuído. Contate a coordenação.' });
   }
 
   // Gerar token JWT seguro com validade de 24 horas
-  const token = jwt.sign(
+  const token = await signJwt(
     { id: user.id, email: user.email, role: primaryRole, roles },
-    JWT_SECRET,
-    { expiresIn: '24h' }
+    getJwtSecret(),
+    24 * 60 * 60
   );
 
   // Definir cookie HTTP-Only para maior segurança
   res.cookie('ana_token', token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: req.secure,
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  logAudit({
+  await logAudit({
     userId: user.id,
     userEmail: user.email,
     userRole: primaryRole,
@@ -119,73 +119,73 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
 });
 
 // Perfil do Usuário Logado
-apiRouter.get('/auth/me', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.get('/auth/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   return res.json({
     user: req.user,
   });
 });
 
 // Logout Seguro (Invalida Cookie e Notifica Sessão)
-apiRouter.post('/auth/logout', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/auth/logout', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   res.clearCookie('ana_token');
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
     action: 'LOGOUT',
     entity: 'USER',
     details: 'Usuário encerrou a sessão no painel.',
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
   return res.json({ message: 'Sessão encerrada com sucesso.' });
 });
 
 // Solicitação de Recuperação de Senha Segura
-apiRouter.post('/auth/request-password-reset', (req: Request, res: Response) => {
+apiRouter.post('/auth/request-password-reset', async (req: Request, res: Response) => {
   const { email } = req.body;
   if (!email || !validateEmail(email)) {
     return res.status(400).json({ error: 'Por favor, informe um endereço de e-mail válido.' });
   }
 
-  const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
-  if (!checkRateLimit(clientIp, 'password_reset', 5, 15)) {
+  const clientIp = req.ip;
+  if (!(await checkRateLimit(clientIp, 'password_reset', 5, 15))) {
     return res.status(429).json({ error: 'Muitas solicitações. Aguarde alguns minutos e tente novamente.' });
   }
 
-  const user = db.prepare('SELECT id, nome, email FROM users WHERE LOWER(email) = LOWER(?)')
+  const user = await db.prepare('SELECT id, nome, email FROM users WHERE LOWER(email) = LOWER(?)')
     .get(email.trim()) as { id: string; nome: string; email: string } | undefined;
 
   if (user) {
     // Código imprevisível (antes usava Math.random, que é adivinhável)
-    const token = crypto.randomBytes(24).toString('base64url');
+    const token = randomToken(24);
     const expiresAt = Date.now() + 60 * 60 * 1000;
     const now = new Date().toISOString();
 
-    db.prepare(`
+    await db.prepare(`
       INSERT INTO password_resets (token, user_id, expires_at, usado, criado_em)
       VALUES (?, ?, ?, 0, ?)
     `).run(token, user.id, expiresAt, now);
 
-    logAudit({
+    await logAudit({
       userId: user.id,
       userEmail: user.email,
       action: 'PASSWORD_RESET_REQUESTED',
       entity: 'SECURITY',
       details: 'Token de recuperação de senha gerado.',
-      ipAddress: req.ip || '127.0.0.1',
+      ipAddress: req.ip,
     });
 
     // O código vai SOMENTE para o e-mail do usuário. Antes ele era devolvido na resposta,
     // o que permitia a qualquer pessoa trocar a senha de qualquer conta (inclusive do admin).
     // O corpo gravado no histórico não contém o código.
-    sendSystemEmail({
+    defer(req, sendSystemEmail({
       tipo: 'AVISO_SISTEMA',
       destinatario: user.email,
       assunto: 'Código para redefinir sua senha - Associação Novo Amanhecer',
       corpo: `Olá, ${user.nome}. Foi solicitada a redefinição da sua senha. Seu código de redefinição é: ${token}. Ele expira em 1 hora. Se você não pediu, ignore este e-mail.`,
       corpoLog: 'Código de redefinição enviado (oculto no histórico).',
-    }).catch(() => undefined);
-    if (process.env.NODE_ENV !== 'production') {
+    }), 'Erro ao enviar código de redefinição');
+    if (isDevMode()) {
       console.log(`[DEV] Código de redefinição para ${user.email}: ${token}`);
     }
   }
@@ -196,11 +196,11 @@ apiRouter.post('/auth/request-password-reset', (req: Request, res: Response) => 
 });
 
 // Redefinição de Senha
-apiRouter.post('/auth/reset-password', (req: Request, res: Response) => {
+apiRouter.post('/auth/reset-password', async (req: Request, res: Response) => {
   const { token, newPassword } = req.body;
 
-  const resetIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
-  if (!checkRateLimit(resetIp, 'password_reset_confirm', 10, 15)) {
+  const resetIp = req.ip;
+  if (!(await checkRateLimit(resetIp, 'password_reset_confirm', 10, 15))) {
     return res.status(429).json({ error: 'Muitas tentativas. Aguarde alguns minutos.' });
   }
 
@@ -210,7 +210,7 @@ apiRouter.post('/auth/reset-password', (req: Request, res: Response) => {
     });
   }
 
-  const resetRecord = db.prepare(`
+  const resetRecord = await db.prepare(`
     SELECT token, user_id, expires_at, usado FROM password_resets WHERE token = ?
   `).get(token) as { token: string; user_id: string; expires_at: number; usado: number } | undefined;
 
@@ -220,30 +220,30 @@ apiRouter.post('/auth/reset-password', (req: Request, res: Response) => {
     });
   }
 
-  const newHash = bcrypt.hashSync(newPassword, 10);
+  const newHash = await hashPassword(newPassword);
   const now = new Date().toISOString();
 
-  db.prepare('UPDATE users SET password_hash = ?, atualizado_em = ? WHERE id = ?')
+  await db.prepare('UPDATE users SET password_hash = ?, atualizado_em = ? WHERE id = ?')
     .run(newHash, now, resetRecord.user_id);
 
   // Invalida este e quaisquer outros códigos pendentes do mesmo usuário
-  db.prepare('UPDATE password_resets SET usado = 1 WHERE user_id = ?')
+  await db.prepare('UPDATE password_resets SET usado = 1 WHERE user_id = ?')
     .run(resetRecord.user_id);
 
-  logAudit({
+  await logAudit({
     userId: resetRecord.user_id,
     action: 'PASSWORD_RESET_COMPLETED',
     entity: 'SECURITY',
     details: 'Senha do usuário alterada com sucesso.',
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Senha redefinida com sucesso! Você já pode entrar com a nova senha.' });
 });
 
 // Listagem de Usuários e Níveis (Somente Administrador - consulta tabela separada user_roles)
-apiRouter.get('/auth/users', authenticateToken, requireAdmin, (_req: Request, res: Response) => {
-  const users = db.prepare(`
+apiRouter.get('/auth/users', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
+  const users = await db.prepare(`
     SELECT 
       u.id, 
       u.nome, 
@@ -262,7 +262,7 @@ apiRouter.get('/auth/users', authenticateToken, requireAdmin, (_req: Request, re
 });
 
 // Criação de Novo Usuário no Sistema (Somente Administrador - Papel salvo em tabela separada)
-apiRouter.post('/auth/users', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/auth/users', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { nome, email, password, role } = req.body;
 
   if (!nome || !email || !password || !role) {
@@ -282,25 +282,25 @@ apiRouter.post('/auth/users', authenticateToken, requireAdmin, (req: Authenticat
     return res.status(400).json({ error: 'Papel de acesso inválido. Escolha: admin, equipe, coordenador ou voluntario.' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email.trim());
+  const existing = await db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email.trim());
   if (existing) {
     return res.status(400).json({ error: 'Este e-mail já está cadastrado no sistema.' });
   }
 
   const id = `usr-${Date.now()}`;
   const now = new Date().toISOString();
-  const hash = bcrypt.hashSync(password, 10);
+  const hash = await hashPassword(password);
 
   // Inserir usuário na tabela users (sem coluna de papel)
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO users (id, nome, email, password_hash, ativo, criado_em, atualizado_em)
     VALUES (?, ?, ?, ?, 1, ?, ?)
   `).run(id, sanitizeString(nome, 100), email.trim().toLowerCase(), hash, now, now);
 
   // Inserir papel na tabela separada user_roles
-  assignUserRole(id, role);
+  await assignUserRole(id, role);
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
@@ -308,7 +308,7 @@ apiRouter.post('/auth/users', authenticateToken, requireAdmin, (req: Authenticat
     entity: 'USER',
     entityId: id,
     details: `Criado usuário ${email} com papel '${role}' na tabela separada user_roles`,
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.status(201).json({
@@ -318,23 +318,23 @@ apiRouter.post('/auth/users', authenticateToken, requireAdmin, (req: Authenticat
 });
 
 // Exclusão de Usuário (Somente Administrador)
-apiRouter.delete('/auth/users/:id', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.delete('/auth/users/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
   if (id === req.user?.id) {
     return res.status(400).json({ error: 'Você não pode excluir sua própria conta enquanto estiver logado.' });
   }
 
-  const target = db.prepare('SELECT email FROM users WHERE id = ?').get(id) as { email: string } | undefined;
+  const target = await db.prepare('SELECT email FROM users WHERE id = ?').get(id) as { email: string } | undefined;
   if (!target) {
     return res.status(404).json({ error: 'Usuário não encontrado.' });
   }
 
   // Deleta do users (as regras de CASCADE removem o user_roles automaticamente)
-  db.prepare('DELETE FROM user_roles WHERE user_id = ?').run(id);
-  db.prepare('DELETE FROM users WHERE id = ?').run(id);
+  await db.prepare('DELETE FROM user_roles WHERE user_id = ?').run(id);
+  await db.prepare('DELETE FROM users WHERE id = ?').run(id);
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
@@ -342,7 +342,7 @@ apiRouter.delete('/auth/users/:id', authenticateToken, requireAdmin, (req: Authe
     entity: 'USER',
     entityId: id,
     details: `Excluído usuário ${target.email}`,
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Usuário excluído com sucesso.' });
@@ -356,8 +356,8 @@ apiRouter.delete('/auth/users/:id', authenticateToken, requireAdmin, (req: Authe
  * Regra de Acesso RLS: Dados de beneficiários só visíveis para administradores/equipe logados.
  * Qualquer requisição anônima recebe 401 Unauthorized.
  */
-apiRouter.get('/beneficiaries', authenticateToken, (req: AuthenticatedRequest, res: Response) => {
-  const rows = db.prepare(`
+apiRouter.get('/beneficiaries', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const rows = await db.prepare(`
     SELECT id, nome, cpf, nascimento, telefone, email, endereco, projeto, status, observacoes, motivo_status, consentimento_lgpd, criado_em, atualizado_em
     FROM beneficiaries
     ORDER BY criado_em DESC
@@ -380,8 +380,8 @@ apiRouter.get('/beneficiaries', authenticateToken, (req: AuthenticatedRequest, r
 });
 
 // Cadastro de Beneficiário (Público ou pelo Painel - Gravando no Banco de Dados)
-apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
-  const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
+apiRouter.post('/beneficiaries', async (req: Request, res: Response) => {
+  const clientIp = req.ip;
 
   // 1. Proteção Anti-Spam: Honeypot (campo armadilha invisível)
   if (!checkHoneypot(req.body.hp_security_check)) {
@@ -389,7 +389,7 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
   }
 
   // 2. Proteção Anti-Spam: Limite de envios (Rate Limiting)
-  if (!checkRateLimit(clientIp, 'cadastro_beneficiario', 6, 10)) {
+  if (!(await checkRateLimit(clientIp, 'cadastro_beneficiario', 6, 10))) {
     return res.status(429).json({
       error: 'Limite de cadastros por conexão atingido. Por favor, aguarde alguns minutos antes de enviar novo formulário.',
     });
@@ -438,7 +438,7 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
 
   // 5. Verificar duplicidade de CPF no banco de dados
   const cleanCpf = cpf.replace(/\D/g, '');
-  const existingBen = db.prepare('SELECT id, nome FROM beneficiaries WHERE REPLACE(REPLACE(REPLACE(cpf, ".", ""), "-", ""), " ", "") = ?')
+  const existingBen = await db.prepare(`SELECT id, nome FROM beneficiaries WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?`)
     .get(cleanCpf) as { id: string; nome: string } | undefined;
 
   if (existingBen) {
@@ -449,14 +449,14 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
 
   // Formulário público sempre entra como 'Pendente'. Só a equipe logada pode definir outro status
   // (antes qualquer visitante podia se cadastrar já como 'Aprovado').
-  const staff = getOptionalUser(req);
+  const staff = await getOptionalUser(req);
   const canSetStatus = !!staff && ['admin', 'coordenador', 'equipe'].includes(staff.role);
   const finalStatus = canSetStatus && status ? status : 'Pendente';
 
   const id = `ben-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString().split('T')[0];
 
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO beneficiaries (
       id, nome, cpf, nascimento, telefone, email, endereco, projeto, status, observacoes, consentimento_lgpd, ip_origem, criado_em, atualizado_em
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
@@ -476,7 +476,7 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
     now
   );
 
-  logAudit({
+  await logAudit({
     action: 'BENEFICIARY_REGISTERED',
     entity: 'BENEFICIARY',
     entityId: id,
@@ -485,21 +485,21 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
   });
 
   // Notificação por E-mail automática para a coordenação e confirmação para o beneficiário
-  notifyCoordinationNewBeneficiary({
+  defer(req, notifyCoordinationNewBeneficiary({
     nome: sanitizeString(nome, 120),
     cpf: sanitizeString(cpf, 20),
     telefone: sanitizeString(telefone, 30),
     projeto: sanitizeString(projeto || 'Aulas de Ballet Solidário', 100),
     endereco: sanitizeString(endereco || 'Trindade - GO', 200),
     email: sanitizeString(email || '', 100),
-  }).catch((e) => console.error('Erro ao despachar e-mail para coordenacao:', e));
+  }), 'Erro ao despachar e-mail para coordenacao');
 
   if (email && email.trim()) {
-    sendBeneficiaryConfirmation({
+    defer(req, sendBeneficiaryConfirmation({
       nome: sanitizeString(nome, 120),
       email: sanitizeString(email, 100),
       projeto: sanitizeString(projeto || 'Aulas de Ballet Solidário', 100),
-    }).catch((e) => console.error('Erro ao despachar confirmacao ao beneficiario:', e));
+    }), 'Erro ao despachar confirmacao ao beneficiario');
   }
 
   return res.status(201).json({
@@ -509,11 +509,11 @@ apiRouter.post('/beneficiaries', (req: Request, res: Response) => {
 });
 
 // Atualização de Beneficiário (Equipe ou Admin)
-apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), (req: AuthenticatedRequest, res: Response) => {
+apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { nome, cpf, nascimento, telefone, email, endereco, projeto, status, observacoes, motivo_status } = req.body;
 
-  const current = db.prepare('SELECT id, nome, status FROM beneficiaries WHERE id = ?').get(id) as { id: string; nome: string; status: string } | undefined;
+  const current = await db.prepare('SELECT id, nome, status FROM beneficiaries WHERE id = ?').get(id) as { id: string; nome: string; status: string } | undefined;
   if (!current) {
     return res.status(404).json({ error: 'Beneficiário não encontrado no banco de dados.' });
   }
@@ -524,7 +524,7 @@ apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', '
 
   const now = new Date().toISOString().split('T')[0];
 
-  db.prepare(`
+  await db.prepare(`
     UPDATE beneficiaries SET
       nome = COALESCE(?, nome),
       cpf = COALESCE(?, cpf),
@@ -553,7 +553,7 @@ apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', '
     id
   );
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
@@ -563,24 +563,24 @@ apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', '
     details: status && status !== current.status
       ? `Status alterado de "${current.status}" para "${status}"`
       : `Cadastro de ${current.nome} atualizado.`,
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Dados do beneficiário atualizados no banco de dados.' });
 });
 
 // Exclusão de Beneficiário (Apenas Administrador)
-apiRouter.delete('/beneficiaries/:id', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.delete('/beneficiaries/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
-  const target = db.prepare('SELECT nome FROM beneficiaries WHERE id = ?').get(id) as { nome: string } | undefined;
+  const target = await db.prepare('SELECT nome FROM beneficiaries WHERE id = ?').get(id) as { nome: string } | undefined;
 
   if (!target) {
     return res.status(404).json({ error: 'Beneficiário não encontrado.' });
   }
 
-  db.prepare('DELETE FROM beneficiaries WHERE id = ?').run(id);
+  await db.prepare('DELETE FROM beneficiaries WHERE id = ?').run(id);
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
@@ -588,7 +588,7 @@ apiRouter.delete('/beneficiaries/:id', authenticateToken, requireAdmin, (req: Au
     entity: 'BENEFICIARY',
     entityId: id,
     details: `Beneficiário ${target.nome} excluído do banco.`,
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Beneficiário excluído com sucesso.' });
@@ -598,19 +598,19 @@ apiRouter.delete('/beneficiaries/:id', authenticateToken, requireAdmin, (req: Au
 // 3. VOLUNTÁRIOS (GRAVANDO NO BANCO, VALIDAÇÃO EM PORTUGUÊS)
 // =========================================================================
 
-apiRouter.get('/volunteers', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), (_req: Request, res: Response) => {
-  const list = db.prepare('SELECT * FROM volunteers ORDER BY criado_em DESC').all();
+apiRouter.get('/volunteers', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), async (_req: Request, res: Response) => {
+  const list = await db.prepare('SELECT * FROM volunteers ORDER BY criado_em DESC').all();
   return res.json(list);
 });
 
-apiRouter.post('/volunteers', (req: Request, res: Response) => {
-  const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
+apiRouter.post('/volunteers', async (req: Request, res: Response) => {
+  const clientIp = req.ip;
 
   if (!checkHoneypot(req.body.hp_security_check)) {
     return res.status(200).json({ message: 'Inscrição recebida com sucesso.' });
   }
 
-  if (!checkRateLimit(clientIp, 'inscricao_voluntario', 5, 10)) {
+  if (!(await checkRateLimit(clientIp, 'inscricao_voluntario', 5, 10))) {
     return res.status(429).json({ error: 'Muitas tentativas recentes. Aguarde alguns minutos.' });
   }
 
@@ -639,7 +639,7 @@ apiRouter.post('/volunteers', (req: Request, res: Response) => {
   const id = `vol-${Date.now()}`;
   const now = new Date().toISOString().split('T')[0];
 
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO volunteers (id, nome, telefone, email, area, disponibilidade, ativo, data_inicio, habilidades, observacoes, consentimento_lgpd, ip_origem, criado_em)
     VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, 1, ?, ?)
   `).run(
@@ -656,7 +656,7 @@ apiRouter.post('/volunteers', (req: Request, res: Response) => {
     now
   );
 
-  logAudit({
+  await logAudit({
     action: 'VOLUNTEER_REGISTERED',
     entity: 'VOLUNTEER',
     entityId: id,
@@ -665,19 +665,19 @@ apiRouter.post('/volunteers', (req: Request, res: Response) => {
   });
 
   // Notificação por E-mail automática para a coordenação e confirmação para o voluntário
-  notifyCoordinationNewVolunteer({
+  defer(req, notifyCoordinationNewVolunteer({
     nome: sanitizeString(nome, 100),
     telefone: sanitizeString(telefone, 30),
     email: sanitizeString(email, 100),
     area: sanitizeString(area, 60),
     disponibilidade: sanitizeString(disponibilidade || 'Finais de Semana', 60),
-  }).catch((e) => console.error('Erro ao despachar e-mail de voluntario para coordenacao:', e));
+  }), 'Erro ao despachar e-mail de voluntario para coordenacao');
 
-  sendVolunteerConfirmation({
+  defer(req, sendVolunteerConfirmation({
     nome: sanitizeString(nome, 100),
     email: sanitizeString(email, 100),
     area: sanitizeString(area, 60),
-  }).catch((e) => console.error('Erro ao despachar confirmacao ao voluntario:', e));
+  }), 'Erro ao despachar confirmacao ao voluntario');
 
   return res.status(201).json({ message: 'Inscrição de voluntário gravada no banco com sucesso! Entraremos em contato via WhatsApp.' });
 });
@@ -688,7 +688,7 @@ apiRouter.post('/volunteers', (req: Request, res: Response) => {
 
 // Restrito ao Administrador: antes era aberto a qualquer visitante, sem limite, permitindo
 // inserir cadastros em massa e 'ressuscitar' registros excluídos a partir do cache do navegador.
-apiRouter.post('/sync/migrate-from-local', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.post('/sync/migrate-from-local', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { beneficiaries, volunteers } = req.body;
   let migratedBeneficiaries = 0;
   let migratedVolunteers = 0;
@@ -705,11 +705,11 @@ apiRouter.post('/sync/migrate-from-local', authenticateToken, requireAdmin, (req
     for (const b of beneficiaries) {
       if (!b.cpf) continue;
       const cleanCpf = b.cpf.replace(/\D/g, '');
-      const existing = db.prepare('SELECT id FROM beneficiaries WHERE REPLACE(REPLACE(REPLACE(cpf, ".", ""), "-", ""), " ", "") = ?')
+      const existing = await db.prepare(`SELECT id FROM beneficiaries WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?`)
         .get(cleanCpf);
 
       if (!existing) {
-        insertBen.run(
+        await insertBen.run(
           b.id || `ben-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
           sanitizeString(b.nome, 120),
           sanitizeString(b.cpf, 20),
@@ -737,9 +737,9 @@ apiRouter.post('/sync/migrate-from-local', authenticateToken, requireAdmin, (req
 
     for (const v of volunteers) {
       if (!v.email) continue;
-      const existing = db.prepare('SELECT id FROM volunteers WHERE LOWER(email) = LOWER(?)').get(v.email);
+      const existing = await db.prepare('SELECT id FROM volunteers WHERE LOWER(email) = LOWER(?)').get(v.email);
       if (!existing) {
-        insertVol.run(
+        await insertVol.run(
           v.id || `vol-${Date.now()}`,
           sanitizeString(v.nome, 100),
           sanitizeString(v.telefone || '(62) 99999-0000', 30),
@@ -767,124 +767,115 @@ apiRouter.post('/sync/migrate-from-local', authenticateToken, requireAdmin, (req
 // 5. PROJETOS, GALERIA E CMS
 // =========================================================================
 
-apiRouter.get('/projects', (_req: Request, res: Response) => {
-  const projects = db.prepare('SELECT * FROM projects ORDER BY ordem ASC').all();
+apiRouter.get('/projects', async (_req: Request, res: Response) => {
+  const projects = await db.prepare('SELECT * FROM projects ORDER BY ordem ASC').all();
   return res.json(projects);
 });
 
-apiRouter.put('/projects', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), (req: AuthenticatedRequest, res: Response) => {
+apiRouter.put('/projects', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), async (req: AuthenticatedRequest, res: Response) => {
   const projects = req.body;
   if (!Array.isArray(projects)) {
     return res.status(400).json({ error: 'Formato inválido de projetos.' });
   }
 
-  db.exec('BEGIN');
+  // db.batch = transação: se qualquer comando falhar, nada é aplicado.
   try {
-  db.exec('DELETE FROM projects');
-  const stmt = db.prepare(`
-    INSERT INTO projects (id, titulo, descricao, foto_url, ativo, ordem, detalhes, idade_publico, horario, coordenador)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  for (const p of projects) {
-    stmt.run(
-      p.id,
-      p.titulo,
-      p.descricao,
-      p.foto_url,
-      p.ativo ? 1 : 0,
-      p.ordem || 1,
-      p.detalhes || '',
-      p.idade_publico || '',
-      p.horario || '',
-      p.coordenador || ''
-    );
-  }
-    db.exec('COMMIT');
+    const stmt = db.prepare(`
+      INSERT INTO projects (id, titulo, descricao, foto_url, ativo, ordem, detalhes, idade_publico, horario, coordenador)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    await db.batch([
+      db.prepare('DELETE FROM projects').bind(),
+      ...projects.map((p: any) => stmt.bind(
+        p.id,
+        p.titulo,
+        p.descricao,
+        p.foto_url,
+        p.ativo ? 1 : 0,
+        p.ordem || 1,
+        p.detalhes || '',
+        p.idade_publico || '',
+        p.horario || '',
+        p.coordenador || ''
+      )),
+    ]);
   } catch (err) {
-    db.exec('ROLLBACK');
     console.error('Erro ao salvar projetos:', err);
     return res.status(400).json({ error: 'Não foi possível salvar os projetos. Nenhuma alteração foi aplicada.' });
   }
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     action: 'PROJECTS_UPDATED',
     entity: 'PROJECTS',
     details: 'Lista de projetos sociais atualizada.',
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Projetos salvos com sucesso no banco de dados.' });
 });
 
-apiRouter.get('/gallery', (_req: Request, res: Response) => {
-  const items = db.prepare('SELECT * FROM gallery ORDER BY ordem ASC').all();
+apiRouter.get('/gallery', async (_req: Request, res: Response) => {
+  const items = await db.prepare('SELECT * FROM gallery ORDER BY ordem ASC').all();
   return res.json(items);
 });
 
-apiRouter.put('/gallery', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), (req: AuthenticatedRequest, res: Response) => {
+apiRouter.put('/gallery', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), async (req: AuthenticatedRequest, res: Response) => {
   const photos = req.body;
   if (!Array.isArray(photos)) {
     return res.status(400).json({ error: 'Formato inválido de fotos.' });
   }
 
-  db.exec('BEGIN');
+  // db.batch = transação: se qualquer comando falhar, nada é aplicado.
   try {
-  db.exec('DELETE FROM gallery');
-  const stmt = db.prepare(`
-    INSERT INTO gallery (id, foto_url, legenda, ordem, categoria, data)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
-
-  for (const g of photos) {
-    stmt.run(g.id, g.foto_url, g.legenda, g.ordem || 1, g.categoria || 'geral', g.data || '');
-  }
-    db.exec('COMMIT');
+    const stmt = db.prepare('INSERT INTO gallery (id, foto_url, legenda, ordem, categoria, data) VALUES (?, ?, ?, ?, ?, ?)');
+    await db.batch([
+      db.prepare('DELETE FROM gallery').bind(),
+      ...photos.map((g: any) => stmt.bind(g.id, g.foto_url, g.legenda, g.ordem || 1, g.categoria || 'geral', g.data || '')),
+    ]);
   } catch (err) {
-    db.exec('ROLLBACK');
     console.error('Erro ao salvar galeria:', err);
     return res.status(400).json({ error: 'Não foi possível salvar a galeria. Nenhuma alteração foi aplicada.' });
   }
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     action: 'GALLERY_UPDATED',
     entity: 'GALLERY',
     details: 'Galeria de fotos atualizada.',
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Galeria salva com sucesso no banco de dados.' });
 });
 
-apiRouter.get('/content', (_req: Request, res: Response) => {
-  const row = db.prepare('SELECT content_json FROM site_content WHERE id = ?').get('main') as { content_json: string } | undefined;
+apiRouter.get('/content', async (_req: Request, res: Response) => {
+  const row = await db.prepare('SELECT content_json FROM site_content WHERE id = ?').get('main') as { content_json: string } | undefined;
   if (!row) {
     return res.status(404).json({ error: 'Conteúdo não encontrado.' });
   }
   return res.json(JSON.parse(row.content_json));
 });
 
-apiRouter.put('/content', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.put('/content', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const content = req.body;
   const now = new Date().toISOString();
 
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO site_content (id, content_json, atualizado_em)
     VALUES ('main', ?, ?)
     ON CONFLICT(id) DO UPDATE SET content_json = excluded.content_json, atualizado_em = excluded.atualizado_em
   `).run(JSON.stringify(content), now);
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     action: 'CONTENT_UPDATED',
     entity: 'SITE_CONTENT',
     details: 'Textos institucionais e dados de contato do site alterados via CMS.',
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Conteúdo institucional atualizado com sucesso.' });
@@ -894,23 +885,23 @@ apiRouter.put('/content', authenticateToken, requireAdmin, (req: AuthenticatedRe
 // 6. AUDITORIA E MÉTRICAS REAIS
 // =========================================================================
 
-apiRouter.get('/audit-logs', authenticateToken, requireAdmin, (_req: Request, res: Response) => {
-  const logs = db.prepare('SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 100').all();
+apiRouter.get('/audit-logs', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
+  const logs = await db.prepare('SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 100').all();
   return res.json(logs);
 });
 
-apiRouter.get('/stats', authenticateToken, (_req: Request, res: Response) => {
-  const totalBeneficiarios = (db.prepare('SELECT COUNT(*) as count FROM beneficiaries').get() as { count: number }).count;
-  const totalVoluntarios = (db.prepare('SELECT COUNT(*) as count FROM volunteers').get() as { count: number }).count;
-  const totalProjetos = (db.prepare('SELECT COUNT(*) as count FROM projects WHERE ativo = 1').get() as { count: number }).count;
+apiRouter.get('/stats', authenticateToken, async (_req: Request, res: Response) => {
+  const totalBeneficiarios = (await db.prepare('SELECT COUNT(*) as count FROM beneficiaries').get() as { count: number }).count;
+  const totalVoluntarios = (await db.prepare('SELECT COUNT(*) as count FROM volunteers').get() as { count: number }).count;
+  const totalProjetos = (await db.prepare('SELECT COUNT(*) as count FROM projects WHERE ativo = 1').get() as { count: number }).count;
 
   // Famílias atendidas: beneficiários com status Atendido/Entregue ou Aprovado
-  const familiasAtendidas = (db.prepare(`
+  const familiasAtendidas = (await db.prepare(`
     SELECT COUNT(*) as count FROM beneficiaries WHERE status IN ('Atendido/Entregue', 'Aprovado')
   `).get() as { count: number }).count;
 
   // Doações do Mês (Soma e Contagem)
-  const donationStats = db.prepare(`
+  const donationStats = await db.prepare(`
     SELECT 
       COALESCE(SUM(valor), 0) as totalValor,
       COUNT(*) as count
@@ -918,7 +909,7 @@ apiRouter.get('/stats', authenticateToken, (_req: Request, res: Response) => {
     WHERE status = 'Confirmado'
   `).get() as { totalValor: number; count: number };
 
-  const statusRows = db.prepare(`
+  const statusRows = await db.prepare(`
     SELECT status, COUNT(*) as count FROM beneficiaries GROUP BY status
   `).all() as { status: string; count: number }[];
 
@@ -943,14 +934,14 @@ apiRouter.get('/stats', authenticateToken, (_req: Request, res: Response) => {
 // =========================================================================
 
 // Registrar intenção de doação / comprovante PIX (Público)
-apiRouter.post('/donations', (req: Request, res: Response) => {
-  const clientIp = req.ip || req.socket.remoteAddress || '127.0.0.1';
+apiRouter.post('/donations', async (req: Request, res: Response) => {
+  const clientIp = req.ip;
 
   if (!checkHoneypot(req.body.hp_security_check)) {
     return res.status(200).json({ message: 'Doação registrada com sucesso.' });
   }
 
-  if (!checkRateLimit(clientIp, 'public_donation', 10, 10)) {
+  if (!(await checkRateLimit(clientIp, 'public_donation', 10, 10))) {
     return res.status(429).json({ error: 'Muitas tentativas de doação recentes. Por favor, aguarde alguns minutos.' });
   }
 
@@ -972,7 +963,7 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
   const id = `don-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString();
 
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO donations (id, nome, email, telefone, valor, mensagem, metodo, status, ip_origem, criado_em, atualizado_em)
     VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendente', ?, ?, ?)
   `).run(
@@ -988,7 +979,7 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
     now
   );
 
-  logAudit({
+  await logAudit({
     action: 'DONATION_REGISTERED',
     entity: 'DONATION',
     entityId: id,
@@ -997,22 +988,22 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
   });
 
   // Notificação por E-mail para Coordenação e Doador
-  notifyCoordinationNewDonation({
+  defer(req, notifyCoordinationNewDonation({
     nome: sanitizeString(nome, 100),
     valor: numValor,
     metodo: sanitizeString(metodo || 'PIX', 30),
     mensagem: sanitizeString(mensagem || '', 500),
     email: sanitizeString(email || '', 100),
     telefone: sanitizeString(telefone || '', 30),
-  }).catch((e) => console.error('Erro ao notificar doação à coordenação:', e));
+  }), 'Erro ao notificar doação à coordenação');
 
   if (email && email.trim()) {
-    sendDonationConfirmation({
+    defer(req, sendDonationConfirmation({
       nome: sanitizeString(nome, 100),
       email: sanitizeString(email, 100),
       valor: numValor,
       metodo: sanitizeString(metodo || 'PIX', 30),
-    }).catch((e) => console.error('Erro ao enviar confirmação de doação ao doador:', e));
+    }), 'Erro ao enviar confirmação de doação ao doador');
   }
 
   return res.status(201).json({
@@ -1023,13 +1014,13 @@ apiRouter.post('/donations', (req: Request, res: Response) => {
 });
 
 // Listar doações (Protegido por Autenticação)
-apiRouter.get('/donations', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), (req: AuthenticatedRequest, res: Response) => {
-  const donations = db.prepare('SELECT * FROM donations ORDER BY criado_em DESC').all();
+apiRouter.get('/donations', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), async (req: AuthenticatedRequest, res: Response) => {
+  const donations = await db.prepare('SELECT * FROM donations ORDER BY criado_em DESC').all();
   return res.json(donations);
 });
 
 // Atualizar status da doação (Confirmado, Pendente, Cancelado)
-apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), (req: AuthenticatedRequest, res: Response) => {
+apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { status, mensagem } = req.body;
 
@@ -1038,13 +1029,13 @@ apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coor
     return res.status(400).json({ error: 'Status inválido. Use: Confirmado, Pendente ou Cancelado.' });
   }
 
-  const current = db.prepare('SELECT * FROM donations WHERE id = ?').get(id) as any;
+  const current = await db.prepare('SELECT * FROM donations WHERE id = ?').get(id) as any;
   if (!current) {
     return res.status(404).json({ error: 'Doação não encontrada.' });
   }
 
   const now = new Date().toISOString();
-  db.prepare(`
+  await db.prepare(`
     UPDATE donations 
     SET status = COALESCE(?, status), 
         mensagem = COALESCE(?, mensagem),
@@ -1052,7 +1043,7 @@ apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coor
     WHERE id = ?
   `).run(status ?? null, typeof mensagem === 'string' ? sanitizeString(mensagem, 500) : null, now, id);
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
@@ -1060,23 +1051,23 @@ apiRouter.patch('/donations/:id', authenticateToken, requireRole(['admin', 'coor
     entity: 'DONATION',
     entityId: id,
     details: `Status da doação de ${current.nome} alterado para "${status}"`,
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Doação atualizada com sucesso.' });
 });
 
 // Excluir doação (Exclusivo Administrador)
-apiRouter.delete('/donations/:id', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.delete('/donations/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
-  const current = db.prepare('SELECT * FROM donations WHERE id = ?').get(id) as any;
+  const current = await db.prepare('SELECT * FROM donations WHERE id = ?').get(id) as any;
   if (!current) {
     return res.status(404).json({ error: 'Doação não encontrada.' });
   }
 
-  db.prepare('DELETE FROM donations WHERE id = ?').run(id);
+  await db.prepare('DELETE FROM donations WHERE id = ?').run(id);
 
-  logAudit({
+  await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
     userRole: req.user?.role,
@@ -1084,7 +1075,7 @@ apiRouter.delete('/donations/:id', authenticateToken, requireAdmin, (req: Authen
     entity: 'DONATION',
     entityId: id,
     details: `Registro de doação de ${current.nome} (R$ ${current.valor}) excluído.`,
-    ipAddress: req.ip || '127.0.0.1',
+    ipAddress: req.ip,
   });
 
   return res.json({ message: 'Registro de doação excluído com sucesso.' });
@@ -1095,38 +1086,38 @@ apiRouter.delete('/donations/:id', authenticateToken, requireAdmin, (req: Authen
 // =========================================================================
 
 // Consultar e-mail configurado para a coordenação
-apiRouter.get('/coordination-email', authenticateToken, (_req: Request, res: Response) => {
-  const email = getCoordinationEmail();
+apiRouter.get('/coordination-email', authenticateToken, async (_req: Request, res: Response) => {
+  const email = await getCoordinationEmail();
   return res.json({
     email,
-    isCustomized: Boolean(process.env.COORDINATION_EMAIL) || email !== 'coordenacao@novoamanhecer.org.br',
+    isCustomized: Boolean(cfg('COORDINATION_EMAIL')) || email !== 'coordenacao@novoamanhecer.org.br',
   });
 });
 
 // Atualizar e-mail oficial da coordenação (Armazenado no CMS)
-apiRouter.put('/coordination-email', authenticateToken, requireAdmin, (req: AuthenticatedRequest, res: Response) => {
+apiRouter.put('/coordination-email', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { email } = req.body;
   if (!email || !validateEmail(email)) {
     return res.status(400).json({ error: 'Por favor, informe um endereço de e-mail válido para a coordenação.' });
   }
 
   try {
-    const row = db.prepare('SELECT content_json FROM site_content WHERE id = ?').get('main') as { content_json: string } | undefined;
+    const row = await db.prepare('SELECT content_json FROM site_content WHERE id = ?').get('main') as { content_json: string } | undefined;
     if (row && row.content_json) {
       const parsed = JSON.parse(row.content_json);
       parsed.contato_email = email.trim().toLowerCase();
       const now = new Date().toISOString();
-      db.prepare('UPDATE site_content SET content_json = ?, atualizado_em = ? WHERE id = ?')
+      await db.prepare('UPDATE site_content SET content_json = ?, atualizado_em = ? WHERE id = ?')
         .run(JSON.stringify(parsed), now, 'main');
     }
 
-    logAudit({
+    await logAudit({
       userId: req.user?.id,
       userEmail: req.user?.email,
       action: 'COORDINATION_EMAIL_UPDATED',
       entity: 'CONFIG',
       details: `E-mail de notificações da coordenação alterado para "${email}"`,
-      ipAddress: req.ip || '127.0.0.1',
+      ipAddress: req.ip,
     });
 
     return res.json({
@@ -1140,7 +1131,7 @@ apiRouter.put('/coordination-email', authenticateToken, requireAdmin, (req: Auth
 
 // Histórico de E-mails Enviados pelo Sistema
 // Os e-mails contêm CPF/telefone completos: voluntários não podem ler este histórico.
-apiRouter.get('/emails/logs', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), (_req: Request, res: Response) => {
-  const logs = db.prepare('SELECT * FROM email_logs ORDER BY enviado_em DESC LIMIT 100').all();
+apiRouter.get('/emails/logs', authenticateToken, requireRole(['admin', 'coordenador', 'equipe']), async (_req: Request, res: Response) => {
+  const logs = await db.prepare('SELECT * FROM email_logs ORDER BY enviado_em DESC LIMIT 100').all();
   return res.json(logs);
 });

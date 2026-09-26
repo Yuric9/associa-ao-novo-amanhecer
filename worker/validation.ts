@@ -1,4 +1,4 @@
-import { db } from './db.js';
+import { db } from './d1';
 
 // Validação de CPF Oficial Brasileiro (Dígitos verificadores módulo 11)
 export function validateCPF(cpfRaw: string): boolean {
@@ -59,32 +59,30 @@ export function checkHoneypot(honeypotField: unknown): boolean {
   return true; // Passou no teste de honeypot
 }
 
-// Rate Limiter por IP no Banco de Dados SQLite (Ex: máx 5 envios a cada 10 minutos)
-export function checkRateLimit(ip: string, endpoint: string, maxAttempts = 5, windowMinutes = 10): boolean {
+// Rate Limiter por IP no banco D1 (ex.: máx 5 envios a cada 10 minutos)
+export async function checkRateLimit(ip: string, endpoint: string, maxAttempts = 5, windowMinutes = 10): Promise<boolean> {
   try {
-    const windowMs = windowMinutes * 60 * 1000;
-    const cutoff = Date.now() - windowMs;
+    const cutoff = Date.now() - windowMinutes * 60 * 1000;
 
     // Limpar registros antigos para evitar inchaço
-    db.prepare('DELETE FROM rate_limits WHERE timestamp < ?').run(cutoff);
+    await db.prepare('DELETE FROM rate_limits WHERE timestamp < ?').run(cutoff);
 
     // Contar tentativas recentes do IP
-    const row = db.prepare(`
+    const row = await db.prepare(`
       SELECT COUNT(*) as count FROM rate_limits
       WHERE ip = ? AND endpoint = ? AND timestamp >= ?
-    `).get(ip, endpoint, cutoff) as { count: number };
+    `).get<{ count: number }>(ip, endpoint, cutoff);
 
-    if (row.count >= maxAttempts) {
+    if ((row?.count ?? 0) >= maxAttempts) {
       return false; // Bloqueado por excesso de requisições
     }
 
-    // Registrar tentativa
-    db.prepare('INSERT INTO rate_limits (ip, endpoint, timestamp) VALUES (?, ?, ?)')
+    await db.prepare('INSERT INTO rate_limits (ip, endpoint, timestamp) VALUES (?, ?, ?)')
       .run(ip, endpoint, Date.now());
 
     return true;
   } catch (err) {
     console.error('Erro no rate limiter:', err);
-    return true; // Em caso de falha de I/O, não travar o usuário
+    return true; // Em caso de falha no banco, não travar o usuário
   }
 }
