@@ -46,10 +46,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
     try {
       const res = await api.requestPasswordReset(resetEmail.trim());
       setResetMessage(res.message);
-      if (res.resetToken) {
-        setResetToken(res.resetToken);
-        setResetStep('confirm');
-      }
+      // O código chega por e-mail; o usuário cola no próximo passo.
+      setResetToken('');
+      setResetStep('confirm');
     } catch (err: any) {
       setError(err.message || 'Erro ao solicitar redefinição.');
     } finally {
