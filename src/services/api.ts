@@ -21,9 +21,13 @@ export function setStoredToken(token: string) {
   localStorage.setItem(TOKEN_STORAGE_KEY, token);
 }
 
+// Chaves antigas que guardavam dados pessoais (CPF, endereço, telefone) no navegador.
+export const LEGACY_PII_KEYS = ['ana_trindade_beneficiarios', 'ana_trindade_voluntarios', 'ana_trindade_admins'];
+
 export function clearStoredToken() {
   localStorage.removeItem(TOKEN_STORAGE_KEY);
   localStorage.removeItem(USER_STORAGE_KEY);
+  LEGACY_PII_KEYS.forEach((k) => localStorage.removeItem(k));
 }
 
 export function getStoredUser(): AuthUser | null {
@@ -106,7 +110,7 @@ export const api = {
     }
   },
 
-  async requestPasswordReset(email: string): Promise<{ message: string; resetToken?: string }> {
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
     return request('/auth/request-password-reset', {
       method: 'POST',
       body: JSON.stringify({ email }),
