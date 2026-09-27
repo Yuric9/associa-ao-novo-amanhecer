@@ -149,8 +149,8 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-xl w-full p-6 sm:p-8 border border-amber-200 relative my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 animate-in fade-in duration-200 overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-xl w-full p-6 sm:p-8 border border-line relative my-8">
         <button
           onClick={onClose}
           aria-label="Fechar"
@@ -164,23 +164,23 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
             <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h3 className="text-2xl font-extrabold text-slate-900">
+            <h3 className="text-2xl font-bold text-slate-900">
               Gratidão pelo seu Gesto de Amor!
             </h3>
             <p className="text-sm text-slate-600 max-w-md mx-auto">
               Sua intenção de doação no valor de{' '}
-              <strong className="text-amber-800 font-bold">
+              <strong className="text-brand font-bold">
                 {currentAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </strong>{' '}
               foi gravada no sistema oficial da Associação Novo Amanhecer.
             </p>
 
-            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-left text-xs text-slate-700 space-y-2">
-              <div className="font-bold text-amber-900">Próximo Passo:</div>
+            <div className="p-4 bg-sand rounded-lg border border-line text-left text-xs text-slate-700 space-y-2">
+              <div className="font-bold text-brand">Próximo Passo:</div>
               <p>
                 1. Conclua a transferência no app do seu banco utilizando o QR Code ou a Chave PIX oficial:
               </p>
-              <div className="p-2 bg-white rounded-xl font-mono font-bold text-slate-900 text-center select-all border border-amber-100">
+              <div className="p-2 bg-white rounded-md font-mono font-bold text-slate-900 text-center select-all border border-line">
                 {content.contato_pix_chave}
               </div>
               <p>
@@ -195,7 +195,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                   setIsSuccess(false);
                   onClose();
                 }}
-                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer"
+                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-md cursor-pointer"
               >
                 Concluir e Fechar
               </button>
@@ -204,11 +204,11 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
         ) : (
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-                <Heart className="w-6 h-6 fill-amber-700 text-amber-700" />
+              <div className="w-12 h-12 rounded-lg bg-brand-soft text-brand flex items-center justify-center shrink-0">
+                <Heart className="w-6 h-6 fill-brand text-brand" />
               </div>
               <div>
-                <h3 className="text-xl font-extrabold text-slate-900">
+                <h3 className="text-xl font-bold text-slate-900">
                   Faça sua Doação Solidária
                 </h3>
                 <p className="text-xs text-slate-600">
@@ -218,27 +218,19 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
             </div>
 
             {/* Abas de Método: PIX Oficial ou Cartão de Crédito */}
-            <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl mb-6">
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-lg mb-6">
               <button
                 type="button"
                 onClick={() => setActiveTab('PIX')}
-                className={`flex-1 py-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  activeTab === 'PIX'
-                    ? 'bg-white text-amber-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`flex-1 py-2 text-xs font-bold rounded-md flex items-center justify-center gap-1.5 transition-all cursor-pointer ${ activeTab === 'PIX' ? 'bg-white text-brand shadow-xs' : 'text-slate-600 hover:text-slate-900' }`}
               >
-                <QrCode className="w-4 h-4 text-amber-700" />
+                <QrCode className="w-4 h-4 text-brand" />
                 <span>PIX Instantâneo</span>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('CARTAO')}
-                className={`flex-1 py-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                  activeTab === 'CARTAO'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`flex-1 py-2 text-xs font-bold rounded-md flex items-center justify-center gap-1.5 transition-all cursor-pointer ${ activeTab === 'CARTAO' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }`}
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Cartão de Crédito</span>
@@ -256,11 +248,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                     key={val}
                     type="button"
                     onClick={() => handleAmountSelect(val)}
-                    className={`py-2 px-3 rounded-xl font-extrabold text-xs transition-all cursor-pointer border ${
-                      selectedAmount === val && !customAmount
-                        ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                        : 'bg-amber-50/50 text-slate-700 border-amber-200 hover:bg-amber-100/60'
-                    }`}
+                    className={`py-2 px-3 rounded-md font-bold text-xs transition-all cursor-pointer border ${ selectedAmount === val && !customAmount ? 'bg-brand text-white border-brand shadow-xs' : 'bg-sand text-slate-700 border-line hover:bg-brand-soft' }`}
                   >
                     R$ {val}
                   </button>
@@ -277,17 +265,17 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                   placeholder="Outro valor livre (ex: 75,00)"
                   value={customAmount}
                   onChange={handleCustomChange}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-medium border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-medium border border-slate-200 rounded-md focus:ring-2 focus:ring-brand focus:outline-hidden"
                 />
               </div>
             </div>
 
             {/* Conteúdo PIX */}
             {activeTab === 'PIX' && (
-              <div className="p-4 bg-amber-50/60 border border-amber-200/80 rounded-2xl mb-5">
+              <div className="p-4 bg-sand border border-line rounded-lg mb-5">
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   {/* QR Code Dinâmico */}
-                  <div className="bg-white p-2.5 rounded-2xl border border-amber-200 shadow-xs shrink-0 text-center">
+                  <div className="bg-white p-2.5 rounded-lg border border-line shadow-xs shrink-0 text-center">
                     {qrCodeUrl ? (
                       <img
                         src={qrCodeUrl}
@@ -296,7 +284,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                       />
                     ) : (
                       <div className="w-32 h-32 flex items-center justify-center bg-slate-50">
-                        <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+                        <Loader2 className="w-6 h-6 animate-spin text-brand" />
                       </div>
                     )}
                     <span className="text-[10px] font-semibold text-slate-500 mt-1 block">
@@ -307,15 +295,15 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                   {/* Chave e Botões de Cópia */}
                   <div className="flex-1 space-y-2 text-left w-full">
                     <div>
-                      <span className="text-[10px] font-bold uppercase text-amber-900 block">
+                      <span className="text-[10px] font-bold text-brand block">
                         Chave PIX Oficial (CNPJ):
                       </span>
-                      <div className="font-mono text-xs font-extrabold text-slate-900 bg-white p-2 rounded-xl border border-amber-200 flex items-center justify-between mt-1">
+                      <div className="font-mono text-xs font-bold text-slate-900 bg-white p-2 rounded-md border border-line flex items-center justify-between mt-1">
                         <span className="truncate select-all mr-2">{content.contato_pix_chave}</span>
                         <button
                           type="button"
                           onClick={handleCopyKey}
-                          className="p-1 text-amber-700 hover:text-amber-900 cursor-pointer shrink-0"
+                          className="p-1 text-brand hover:text-brand cursor-pointer shrink-0"
                           title="Copiar Chave"
                         >
                           {copiedKey ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
@@ -327,7 +315,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                       <button
                         type="button"
                         onClick={handleCopyKey}
-                        className="flex-1 py-1.5 px-2 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer"
+                        className="flex-1 py-1.5 px-2 bg-brand hover:bg-brand-dark text-white text-[11px] font-bold rounded-md flex items-center justify-center gap-1 cursor-pointer"
                       >
                         {copiedKey ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                         <span>{copiedKey ? 'Chave Copiada!' : 'Copiar Chave'}</span>
@@ -335,7 +323,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                       <button
                         type="button"
                         onClick={handleCopyPayload}
-                        className="flex-1 py-1.5 px-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-[11px] font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer"
+                        className="flex-1 py-1.5 px-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-[11px] font-bold rounded-md flex items-center justify-center gap-1 cursor-pointer"
                       >
                         {copiedPayload ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <QrCode className="w-3.5 h-3.5" />}
                         <span>{copiedPayload ? 'Copia & Cola OK' : 'Pix Copia e Cola'}</span>
@@ -348,18 +336,18 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
 
             {/* Conteúdo Cartão de Crédito / Stripe */}
             {activeTab === 'CARTAO' && (
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl mb-5 text-left space-y-3">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-5 text-left space-y-3">
                 <div className="flex items-center gap-2 text-slate-900 font-bold text-xs">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   <span>Checkout Seguro com Cartão</span>
-                  <span className="ml-auto text-[10px] px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full font-bold">
+                  <span className="ml-auto text-[10px] px-2 py-0.5 bg-brand-soft text-brand rounded-full font-bold">
                     Preparado / Stripe
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Para doações recorrentes ou via cartão de crédito (Visa, Mastercard, Elo), o backend está 100% estruturado. Enquanto você registra sua intenção abaixo, o recebimento via PIX é instantâneo e livre de taxas de operadoras.
                 </p>
-                <div className="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xl text-[11px] text-amber-900">
+                <div className="p-2.5 bg-sand border border-line rounded-md text-[11px] text-brand">
                   💡 <strong>Dica da Associação:</strong> O PIX cai imediatamente na conta bancária da entidade sem retenção de tarifas, garantindo que 100% da sua doação vá para as crianças de Trindade/GO.
                 </div>
               </div>
@@ -368,7 +356,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
             {/* Formulário de Registro de Intenção de Doação */}
             <form onSubmit={handleSubmit} className="space-y-3 text-left">
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <Sparkles className="w-3.5 h-3.5 text-brand" />
                 <span>Registrar meu apoio (para recibo e transparência):</span>
               </div>
 
@@ -382,7 +370,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                   placeholder="Ex: Ana Maria da Silva"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-md focus:ring-2 focus:ring-brand focus:outline-hidden"
                 />
               </div>
 
@@ -396,7 +384,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                     placeholder="voce@exemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-md focus:ring-2 focus:ring-brand focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -408,7 +396,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                     placeholder="(62) 99999-0000"
                     value={telefone}
                     onChange={handleTelefoneChange}
-                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-md focus:ring-2 focus:ring-brand focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -422,7 +410,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                   placeholder="Ex: Para apoiar as sapatilhas do ballet infantil..."
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-hidden"
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-md focus:ring-2 focus:ring-brand focus:outline-hidden"
                 />
               </div>
 
@@ -438,7 +426,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
               </div>
 
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start gap-2">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-xs text-red-700 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -448,14 +436,14 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-md cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-5 py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 disabled:opacity-60 rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-brand disabled:opacity-60 rounded-md shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   {isLoading ? (
                     <>

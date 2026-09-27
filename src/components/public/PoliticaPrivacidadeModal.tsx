@@ -11,11 +11,11 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden">
+      <div className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-lg border border-slate-100 flex flex-col overflow-hidden">
         {/* Cabeçalho */}
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-orange-50/70 to-amber-50/70">
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-brand">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center shadow-md shadow-orange-500/20">
+            <div className="w-10 h-10 rounded-md bg-brand text-white flex items-center justify-center">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -29,7 +29,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Fechar modal"
           >
             <X className="w-5 h-5" />
@@ -38,8 +38,8 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
 
         {/* Conteúdo com rolagem */}
         <div className="p-6 overflow-y-auto space-y-5 text-sm text-slate-600 leading-relaxed">
-          <div className="p-4 bg-orange-50/60 border border-orange-200/80 rounded-2xl flex items-start gap-3 text-orange-950">
-            <Lock className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+          <div className="p-4 bg-sand border border-line rounded-lg flex items-start gap-3 text-brand">
+            <Lock className="w-5 h-5 text-brand shrink-0 mt-0.5" />
             <div className="text-xs leading-relaxed">
               <strong>Compromisso de Sigilo e Segurança:</strong> A Associação Novo Amanhecer (CNPJ: 35.157.094/0001-91) trata os dados cadastrais de famílias, crianças e voluntários com respeito absoluto, confidencialidade e segurança, nunca comercializando ou compartilhando dados com terceiros não autorizados.
             </div>
@@ -47,7 +47,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
 
           <section className="space-y-2">
             <h4 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-              <FileText className="w-4 h-4 text-orange-600" />
+              <FileText className="w-4 h-4 text-brand" />
               1. Quais dados coletamos e por quê?
             </h4>
             <p className="text-xs">
@@ -63,7 +63,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
 
           <section className="space-y-2">
             <h4 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-              <ShieldCheck className="w-4 h-4 text-orange-600" />
+              <ShieldCheck className="w-4 h-4 text-brand" />
               2. Proteção e Níveis de Acesso (RBAC)
             </h4>
             <p className="text-xs">
@@ -73,7 +73,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
 
           <section className="space-y-2">
             <h4 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-              <UserCheck className="w-4 h-4 text-orange-600" />
+              <UserCheck className="w-4 h-4 text-brand" />
               3. Seus Direitos como Titular (Art. 18 da LGPD)
             </h4>
             <p className="text-xs">
@@ -89,7 +89,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
 
           <section className="space-y-2">
             <h4 className="font-bold text-slate-900 flex items-center gap-2 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-orange-600" />
+              <CheckCircle2 className="w-4 h-4 text-brand" />
               4. Contato com a Coordenação de Privacidade
             </h4>
             <p className="text-xs">
@@ -102,7 +102,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
         <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+            className="px-5 py-2.5 bg-brand hover:bg-brand-dark text-white text-xs font-bold rounded-md transition-all cursor-pointer"
           >
             Entendido e Ciente
           </button>

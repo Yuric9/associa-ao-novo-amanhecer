@@ -52,8 +52,8 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+      <div className="relative w-full max-w-lg bg-white rounded-lg border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
@@ -63,8 +63,8 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-800 flex items-center justify-center">
-            <HandHeart className="w-5 h-5 text-orange-700" />
+          <div className="w-10 h-10 rounded-lg bg-brand-soft text-brand flex items-center justify-center">
+            <HandHeart className="w-5 h-5 text-brand" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-900">Seja Voluntário(a)</h3>
@@ -86,7 +86,7 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
                 setSubmitted(false);
                 onClose();
               }}
-              className="px-6 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-xl"
+              className="px-6 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-md"
             >
               Fechar
             </button>
@@ -94,7 +94,7 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Seu Nome Completo
               </label>
               <input
@@ -103,12 +103,12 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
                 placeholder="Ex: Maria das Graças"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Telefone / WhatsApp *
               </label>
               <input
@@ -117,12 +117,12 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
                 placeholder="(62) 99999-9999"
                 value={telefone}
                 onChange={(e) => setTelefone(formatPhone(e.target.value))}
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Seu E-mail (Opcional)
               </label>
               <input
@@ -130,19 +130,19 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
                 placeholder="seu.email@exemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Área de Interesse
                 </label>
                 <select
                   value={area}
                   onChange={(e) => setArea(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none"
                 >
                   <option value="Oficina de Ballet">Oficina de Ballet</option>
                   <option value="Treinos de Futebol">Treinos de Futebol</option>
@@ -155,13 +155,13 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Disponibilidade
                 </label>
                 <select
                   value={disponibilidade}
                   onChange={(e) => setDisponibilidade(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none"
                 >
                   <option value="Sábados (Manhã)">Sábados (Manhã)</option>
                   <option value="Finais de Semana (Geral)">Finais de Semana (Geral)</option>
@@ -185,14 +185,14 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
             </div>
 
             {/* Checkbox de consentimento LGPD */}
-            <div className="p-3 bg-orange-50/70 border border-orange-200/80 rounded-xl">
+            <div className="p-3 bg-sand border border-line rounded-md">
               <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700 select-none">
                 <input
                   type="checkbox"
                   required
                   checked={consentimentoLgpd}
                   onChange={(e) => setConsentimentoLgpd(e.target.checked)}
-                  className="mt-0.5 w-3.5 h-3.5 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer"
+                  className="mt-0.5 w-3.5 h-3.5 rounded text-brand focus:ring-brand border-slate-300 cursor-pointer"
                 />
                 <span className="leading-snug">
                   Autorizo o contato da Associação para atividades de voluntariado, em conformidade com a <strong>LGPD (Lei 13.709/18)</strong>.
@@ -200,7 +200,7 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
                     <button
                       type="button"
                       onClick={onOpenPrivacidade}
-                      className="text-orange-700 underline font-bold ml-1 hover:text-orange-900 cursor-pointer"
+                      className="text-brand underline font-bold ml-1 hover:text-brand cursor-pointer"
                     >
                       Ler Política
                     </button>
@@ -210,7 +210,7 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start gap-2">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md text-xs text-red-700 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
@@ -220,14 +220,14 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+                className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-md cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 disabled:opacity-60 rounded-xl shadow-xs cursor-pointer flex items-center gap-1.5"
+                className="px-5 py-2 text-xs font-bold text-white bg-brand disabled:opacity-60 rounded-md shadow-xs cursor-pointer flex items-center gap-1.5"
               >
                 {isLoading ? (
                   <>
@@ -266,8 +266,8 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+      <div className="relative w-full max-w-lg bg-white rounded-lg border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
@@ -277,8 +277,8 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center">
-            <Briefcase className="w-5 h-5 text-amber-800" />
+          <div className="w-10 h-10 rounded-lg bg-brand-soft text-brand flex items-center justify-center">
+            <Briefcase className="w-5 h-5 text-brand" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-900">Seja um Parceiro Comunitário</h3>
@@ -300,7 +300,7 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
                 setSubmitted(false);
                 onClose();
               }}
-              className="px-6 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-xl"
+              className="px-6 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-md"
             >
               Fechar
             </button>
@@ -308,7 +308,7 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Nome da Empresa ou Apoiador
               </label>
               <input
@@ -317,13 +317,13 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
                 placeholder="Ex: Comercial Goiás / Farmácia do Bairro"
                 value={empresa}
                 onChange={(e) => setEmpresa(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Pessoa de Contato
                 </label>
                 <input
@@ -332,12 +332,12 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
                   placeholder="Seu nome"
                   value={contato}
                   onChange={(e) => setContato(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Telefone / WhatsApp
                 </label>
                 <input
@@ -346,13 +346,13 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
                   placeholder="(62) 99999-9999"
                   value={telefone}
                   onChange={(e) => setTelefone(formatPhone(e.target.value))}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Como Gostaria de Contribuir?
               </label>
               <textarea
@@ -360,7 +360,7 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
                 placeholder="Ex: Doação de kits de fraldas para o Book de Gestantes, lanches para os treinos de futebol, patrocínio de figurino de ballet ou brinquedos para o Dia das Crianças."
                 value={proposta}
                 onChange={(e) => setProposta(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand"
               />
             </div>
 
@@ -368,13 +368,13 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl"
+                className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-md"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-xl shadow-xs"
+                className="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-md shadow-xs"
               >
                 Enviar Proposta de Parceria
               </button>
