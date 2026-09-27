@@ -121,8 +121,8 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
       label: 'Todos os Projetos',
       shortLabel: 'Todos',
       icon: Layers,
-      activeBtnClass: 'bg-slate-900 text-white border-slate-900 shadow-xs ring-2 ring-slate-400/30',
-      inactiveBtnClass: 'bg-white text-slate-700 hover:bg-slate-100 border-slate-200',
+      activeBtnClass: 'bg-brand-dark text-white border-slate-900 shadow-xs ring-2 ring-slate-400/30',
+      inactiveBtnClass: 'bg-white text-body hover:bg-sand border-line',
       count: projectCounts.todos,
     },
     {
@@ -374,14 +374,14 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
   return (
     <div className="space-y-6">
       {/* CARD DE RESUMO NO PAINEL ADMINISTRATIVO COM CONTADOR EM TEMPO REAL */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7 relative overflow-hidden transition-all duration-300">
+      <div className="bg-white rounded-[14px] border border-line/90 shadow-sm p-6 sm:p-7 relative overflow-hidden transition-all duration-300">
         {/* Glows sutis decorativos de fundo */}
         <div className="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 space-y-6">
           {/* Cabeçalho do Card */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-line">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-amber-100/90 text-amber-900 border border-amber-300/80">
@@ -389,7 +389,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   Contador em Tempo Real
                 </span>
                 {hasActiveFilters ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-900 text-white shadow-2xs">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-brand-dark text-white shadow-2xs">
                     <Filter className="w-3 h-3 text-amber-400" />
                     Filtros da Tabela Ativos
                   </span>
@@ -400,10 +400,10 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   </span>
                 )}
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-ink tracking-tight">
                 Resumo Geral de Beneficiários
               </h3>
-              <p className="text-xs sm:text-sm text-slate-500">
+              <p className="text-xs sm:text-sm text-muted">
                 Monitoramento instantâneo do cadastro institucional com atualização dinâmica a cada filtro aplicado.
               </p>
             </div>
@@ -422,7 +422,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   });
                   setShowAddModal(true);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-2xl shadow-xs transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-dark hover:bg-brand-dark text-white text-xs font-bold rounded-[14px] shadow-xs transition-all cursor-pointer"
               >
                 <UserPlus className="w-4 h-4 text-amber-400" />
                 <span>Novo Beneficiário</span>
@@ -431,7 +431,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-2xl border border-slate-200 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-sand hover:bg-slate-200 text-ink text-xs font-bold rounded-[14px] border border-line transition-all cursor-pointer"
                 title="Exportar registros filtrados em tempo real"
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
@@ -443,7 +443,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
           {/* Destaque Principal: Contador Gigante e Submétricas em Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
             {/* Bloco 1: Contador Principal em Tempo Real (5 cols) */}
-            <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white rounded-3xl p-6 sm:p-7 shadow-md flex flex-col justify-between relative overflow-hidden">
+            <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white rounded-[14px] p-6 sm:p-7 shadow-md flex flex-col justify-between relative overflow-hidden">
               <div className="absolute -right-6 -bottom-6 w-36 h-36 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
 
               <div>
@@ -462,11 +462,11 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   <span className="text-4xl sm:text-5xl font-black tracking-tight text-white font-mono">
                     {totalFiltrado}
                   </span>
-                  <div className="text-xs sm:text-sm font-medium text-slate-400">
+                  <div className="text-xs sm:text-sm font-medium text-muted">
                     <div>
                       de <strong className="text-amber-300 font-bold">{totalGeral}</strong> no total
                     </div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="text-[11px] text-muted">
                       {hasActiveFilters ? 'filtrados na tabela' : 'cadastros ativos'}
                     </div>
                   </div>
@@ -491,7 +491,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
               {/* Status do Filtro / Botão de Reset Rápido */}
               <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-muted">
                   {hasActiveFilters ? 'Exibindo subconjunto dinâmico' : 'Mostrando 100% dos cadastros'}
                 </span>
                 {hasActiveFilters && (
@@ -518,10 +518,10 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedStatus(selectedStatus === 'Aprovado' ? 'todos' : 'Aprovado')}
-                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-4 rounded-[14px] border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   selectedStatus === 'Aprovado'
                     ? 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-300 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200/80 hover:bg-emerald-50/50 hover:border-emerald-200'
+                    : 'bg-paper/70 border-line/80 hover:bg-emerald-50/50 hover:border-emerald-200'
                 }`}
                 title="Clique para filtrar apenas Aprovados"
               >
@@ -547,10 +547,10 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedStatus(selectedStatus === 'Pendente' ? 'todos' : 'Pendente')}
-                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-4 rounded-[14px] border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   selectedStatus === 'Pendente'
                     ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-300 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200/80 hover:bg-amber-50/50 hover:border-amber-200'
+                    : 'bg-paper/70 border-line/80 hover:bg-amber-50/50 hover:border-amber-200'
                 }`}
                 title="Clique para filtrar apenas Pendentes"
               >
@@ -576,10 +576,10 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedStatus(selectedStatus === 'Em análise' ? 'todos' : 'Em análise')}
-                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-4 rounded-[14px] border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   selectedStatus === 'Em análise'
                     ? 'bg-orange-50 border-orange-400 ring-2 ring-orange-300 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200/80 hover:bg-orange-50/50 hover:border-orange-200'
+                    : 'bg-paper/70 border-line/80 hover:bg-orange-50/50 hover:border-orange-200'
                 }`}
                 title="Clique para filtrar apenas Em análise"
               >
@@ -609,10 +609,10 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     selectedStatus === 'Atendido/Entregue' ? 'todos' : 'Atendido/Entregue'
                   )
                 }
-                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-4 rounded-[14px] border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   selectedStatus === 'Atendido/Entregue'
                     ? 'bg-blue-50 border-blue-400 ring-2 ring-blue-300 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200/80 hover:bg-blue-50/50 hover:border-blue-200'
+                    : 'bg-paper/70 border-line/80 hover:bg-blue-50/50 hover:border-blue-200'
                 }`}
                 title="Clique para filtrar apenas Atendidos / Entregues"
               >
@@ -638,8 +638,8 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
           {/* Chips Indicadores dos Filtros Ativos no Momento */}
           {hasActiveFilters && (
-            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-slate-400 font-semibold text-[11px]">
+            <div className="pt-3 border-t border-line flex flex-wrap items-center gap-2 text-xs">
+              <span className="text-muted font-semibold text-[11px]">
                 Filtros ativos recalculando o contador:
               </span>
 
@@ -659,7 +659,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               )}
 
               {selectedStatus !== 'todos' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-bold">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-sand text-ink border border-line font-bold">
                   <span>Status: {selectedStatus}</span>
                   <button
                     type="button"
@@ -673,8 +673,8 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               )}
 
               {searchTerm.trim() && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-bold">
-                  <Search className="w-3 h-3 text-slate-500" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-sand text-ink border border-line font-bold">
+                  <Search className="w-3 h-3 text-muted" />
                   <span>
                     Busca: "{searchTerm}" (
                     {searchFilterType === 'nome'
@@ -713,15 +713,15 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
       </div>
 
       {/* Barra de Filtros e Busca */}
-      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs space-y-4">
+      <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-4">
         {/* FILTROS RÁPIDOS AVANÇADOS POR PROJETO SOCIAL */}
-        <div className="space-y-2.5 pb-3 border-b border-slate-100">
+        <div className="space-y-2.5 pb-3 border-b border-line">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-ink flex items-center gap-1.5">
               <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
               <span>Filtro Rápido por Projeto Social:</span>
             </span>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-muted">
               Selecione para isolar especificamente os alunos de uma turma ou oficina
             </span>
           </div>
@@ -756,7 +756,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors ${
                       isSelected
                         ? 'bg-white/20 text-white'
-                        : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                        : 'bg-sand text-body group-hover:bg-slate-200'
                     }`}
                   >
                     {preset.count}
@@ -783,13 +783,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white shadow-2xs transition-all"
+                className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white shadow-2xs transition-all"
               />
               {searchTerm && (
                 <button
                   type="button"
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body p-1 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
                   title="Limpar busca"
                   aria-label="Limpar busca"
                 >
@@ -800,14 +800,14 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
             {/* Chips de Seleção de Tipo de Busca (Nome / CPF / Ambos) */}
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
-              <span className="text-[11px] text-slate-400 font-medium mr-1">Filtrar por:</span>
+              <span className="text-[11px] text-muted font-medium mr-1">Filtrar por:</span>
               <button
                 type="button"
                 onClick={() => setSearchFilterType('todos')}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   searchFilterType === 'todos'
                     ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'bg-sand text-body hover:bg-slate-200'
                 }`}
               >
                 Nome ou CPF
@@ -818,7 +818,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   searchFilterType === 'nome'
                     ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'bg-sand text-body hover:bg-slate-200'
                 }`}
               >
                 <User className="w-3 h-3" />
@@ -830,7 +830,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   searchFilterType === 'cpf'
                     ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'bg-sand text-body hover:bg-slate-200'
                 }`}
               >
                 <CreditCard className="w-3 h-3" />
@@ -843,7 +843,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
           <div className="flex items-center gap-2 self-end lg:self-center">
             <button
               onClick={handleExportCSV}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer border border-slate-200"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-ink bg-sand hover:bg-slate-200 rounded-xl transition-colors cursor-pointer border border-line"
               title="Baixar lista filtrada em arquivo CSV / Excel"
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
@@ -856,15 +856,15 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
         </div>
 
         {/* Filtros por Status e Projeto */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line text-xs">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
-              <Filter className="w-3.5 h-3.5 text-slate-400" />
-              <span className="font-semibold text-slate-600">Status:</span>
+              <Filter className="w-3.5 h-3.5 text-muted" />
+              <span className="font-semibold text-body">Status:</span>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none"
+                className="px-2.5 py-1.5 bg-paper border border-line rounded-lg text-ink focus:outline-none"
               >
                 <option value="todos">Todos os Status ({beneficiaries.length})</option>
                 <option value="Pendente">Pendente</option>
@@ -876,11 +876,11 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-slate-600">Projeto:</span>
+              <span className="font-semibold text-body">Projeto:</span>
               <select
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
-                className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none"
+                className="px-2.5 py-1.5 bg-paper border border-line rounded-lg text-ink focus:outline-none"
               >
                 <option value="todos">Todos os Projetos ({beneficiaries.length})</option>
                 <option value="futebol">Apenas Futebol ({projectCounts.futebol})</option>
@@ -907,7 +907,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
           {/* Feedback de Busca Ativa */}
           {(searchTerm || selectedStatus !== 'todos' || selectedProject !== 'todos') && (
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-slate-500 font-medium">
+              <span className="text-[11px] text-muted font-medium">
                 {filteredBeneficiaries.length} de {beneficiaries.length} encontrados
               </span>
               <button
@@ -930,11 +930,11 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
       {/* BANNER INFORMATIVO DO PROJETO SELECIONADO */}
       {selectedProject !== 'todos' && activePreset && (
-        <div className="bg-gradient-to-r from-amber-500/10 via-rose-500/5 to-purple-500/10 p-5 rounded-3xl border border-amber-200 shadow-2xs space-y-3">
+        <div className="bg-gradient-to-r from-amber-500/10 via-rose-500/5 to-purple-500/10 p-5 rounded-[14px] border border-amber-200 shadow-2xs space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div
-                className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-2xs ${
+                className={`w-11 h-11 rounded-[14px] flex items-center justify-center text-white shadow-2xs ${
                   activePreset.id === 'futebol'
                     ? 'bg-emerald-600'
                     : activePreset.id === 'ballet'
@@ -951,13 +951,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md">
                     Visualização Específica Ativa
                   </span>
-                  <span className="text-xs text-slate-400">·</span>
-                  <span className="text-xs text-slate-600 font-medium">
+                  <span className="text-xs text-muted">·</span>
+                  <span className="text-xs text-body font-medium">
                     {filteredBeneficiaries.length}{' '}
                     {filteredBeneficiaries.length === 1 ? 'inscrito encontrado' : 'inscritos encontrados'}
                   </span>
                 </div>
-                <h4 className="text-base font-black text-slate-900 mt-0.5">
+                <h4 className="text-base font-black text-ink mt-0.5">
                   {activePreset.projectName || activePreset.label}
                 </h4>
               </div>
@@ -967,7 +967,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-ink bg-white hover:bg-paper border border-line rounded-xl transition-colors cursor-pointer shadow-2xs"
                 title="Exportar apenas os alunos desta turma em planilha CSV"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
@@ -976,7 +976,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedProject('todos')}
-                className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-body hover:text-ink bg-white hover:bg-sand border border-line rounded-xl transition-colors cursor-pointer shadow-2xs"
                 title="Remover filtro e voltar a ver todos os projetos"
               >
                 <X className="w-3.5 h-3.5" />
@@ -987,20 +987,20 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
           {/* Dados Adicionais da Turma: Horário, Coordenador, Faixa Etária */}
           {activeProjectCard && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-600 pt-2 border-t border-amber-200/60">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-body pt-2 border-t border-amber-200/60">
               {activeProjectCard.coordenador && (
                 <div>
-                  <strong className="text-slate-800">Coordenação:</strong> {activeProjectCard.coordenador}
+                  <strong className="text-ink">Coordenação:</strong> {activeProjectCard.coordenador}
                 </div>
               )}
               {activeProjectCard.horario && (
                 <div>
-                  <strong className="text-slate-800">Horários:</strong> {activeProjectCard.horario}
+                  <strong className="text-ink">Horários:</strong> {activeProjectCard.horario}
                 </div>
               )}
               {activeProjectCard.idade_publico && (
                 <div>
-                  <strong className="text-slate-800">Público-alvo:</strong> {activeProjectCard.idade_publico}
+                  <strong className="text-ink">Público-alvo:</strong> {activeProjectCard.idade_publico}
                 </div>
               )}
             </div>
@@ -1008,7 +1008,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
           {/* Sub-chips de Status Rápidos dentro deste projeto */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
-            <span className="text-[11px] text-slate-500 font-semibold mr-1">Filtrar status nesta turma:</span>
+            <span className="text-[11px] text-muted font-semibold mr-1">Filtrar status nesta turma:</span>
             {(['todos', 'Aprovado', 'Em análise', 'Pendente', 'Atendido/Entregue', 'Recusado'] as (BeneficiaryStatus | 'todos')[]).map((st) => {
               const countInProject = beneficiaries.filter(
                 (b) => isProjectMatch(b.projeto, selectedProject) && (st === 'todos' || b.status === st)
@@ -1021,8 +1021,8 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   onClick={() => setSelectedStatus(st)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     selectedStatus === st
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-white/80 text-slate-700 hover:bg-white border border-slate-200'
+                      ? 'bg-brand-dark text-white shadow-xs'
+                      : 'bg-white/80 text-body hover:bg-white border border-line'
                   }`}
                 >
                   {st === 'todos' ? 'Todos os Status' : st} ({countInProject})
@@ -1034,15 +1034,15 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
       )}
 
       {/* Lista / Tabela de Beneficiários */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-line shadow-2xs overflow-hidden">
         {filteredBeneficiaries.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 space-y-3">
-            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+          <div className="p-12 text-center text-muted space-y-3">
+            <div className="w-12 h-12 rounded-full bg-sand flex items-center justify-center mx-auto text-muted">
               <Search className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-800">Nenhum beneficiário encontrado</p>
-              <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+              <p className="text-sm font-bold text-ink">Nenhum beneficiário encontrado</p>
+              <p className="text-xs text-muted mt-1 max-w-md mx-auto">
                 {searchTerm
                   ? `Não encontramos nenhum resultado para "${searchTerm}" no filtro de ${
                       searchFilterType === 'nome'
@@ -1075,12 +1075,12 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
             {filteredBeneficiaries.map((b) => (
               <div
                 key={b.id}
-                className="p-5 hover:bg-slate-50/80 transition-colors flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
+                className="p-5 hover:bg-paper/80 transition-colors flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
               >
                 {/* Dados Principais do Beneficiário */}
                 <div className="space-y-1.5 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-base font-bold text-slate-900">{b.nome}</span>
+                    <span className="text-base font-bold text-ink">{b.nome}</span>
                     <span
                       className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
                         b.status === 'Aprovado'
@@ -1091,7 +1091,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                           ? 'bg-blue-100 text-blue-900'
                           : b.status === 'Recusado'
                           ? 'bg-red-100 text-red-900'
-                          : 'bg-slate-100 text-slate-700'
+                          : 'bg-sand text-body'
                       }`}
                     >
                       {b.status}
@@ -1123,41 +1123,41 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     </button>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
                     <span
                       className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md transition-colors ${
                         searchTerm &&
                         (cleanDigits(b.cpf).includes(cleanDigits(searchTerm)) ||
                           b.cpf.includes(searchTerm.trim()))
                           ? 'bg-amber-100 text-amber-950 font-bold border border-amber-300 shadow-2xs'
-                          : 'text-slate-600'
+                          : 'text-body'
                       }`}
                     >
-                      <strong className="text-slate-700">CPF:</strong> {b.cpf}
+                      <strong className="text-body">CPF:</strong> {b.cpf}
                     </span>
                     <span>·</span>
                     <span>
-                      <strong className="text-slate-700">Nasc:</strong> {b.nascimento}
+                      <strong className="text-body">Nasc:</strong> {b.nascimento}
                     </span>
                     <span>·</span>
                     <span className="flex items-center gap-1">
-                      <Phone className="w-3 h-3 text-slate-400" />
+                      <Phone className="w-3 h-3 text-muted" />
                       {b.telefone}
                     </span>
                     <span>·</span>
                     <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-slate-400" />
+                      <MapPin className="w-3 h-3 text-muted" />
                       {b.endereco}
                     </span>
                   </div>
 
                   {b.observacoes && (
-                    <div className="text-xs text-slate-600 bg-amber-50/60 p-2 rounded-xl border border-amber-100/60 mt-1">
+                    <div className="text-xs text-body bg-amber-50/60 p-2 rounded-xl border border-amber-100/60 mt-1">
                       <strong>Obs:</strong> {b.observacoes}
                     </div>
                   )}
 
-                  <div className="text-[10px] text-slate-400 pt-0.5">
+                  <div className="text-[10px] text-muted pt-0.5">
                     Cadastrado em: {b.criado_em} {b.atualizado_em && `· Atualizado em: ${b.atualizado_em}`}
                   </div>
                 </div>
@@ -1208,13 +1208,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   </div>
 
                   {/* Editar e Excluir */}
-                  <div className="flex items-center gap-1 pl-2 border-l border-slate-200">
+                  <div className="flex items-center gap-1 pl-2 border-l border-line">
                     <button
                       onClick={() => {
                         setEditingBeneficiary(b);
                         setFormData(b);
                       }}
-                      className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg"
+                      className="p-1.5 text-muted hover:text-ink hover:bg-sand rounded-lg"
                       title="Editar cadastro"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -1222,7 +1222,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
                     <button
                       onClick={() => handleDelete(b.id, b.nome)}
-                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                      className="p-1.5 text-muted hover:text-red-600 hover:bg-red-50 rounded-lg"
                       title="Excluir cadastro"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1237,22 +1237,22 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
       {/* Modal de Edição */}
       {editingBeneficiary && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setEditingBeneficiary(null)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
+              className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-bold text-slate-900 mb-4">
+            <h3 className="text-lg font-bold text-ink mb-4">
               Editar Cadastro do Beneficiário
             </h3>
 
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Nome Completo
                 </label>
                 <input
@@ -1260,13 +1260,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   required
                   value={formData.nome || ''}
                   onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     CPF
                   </label>
                   <input
@@ -1274,12 +1274,12 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     required
                     value={formData.cpf || ''}
                     onChange={(e) => setFormData({ ...formData, cpf: formatCPF(e.target.value) })}
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Telefone
                   </label>
                   <input
@@ -1287,20 +1287,20 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     required
                     value={formData.telefone || ''}
                     onChange={(e) => setFormData({ ...formData, telefone: formatPhone(e.target.value) })}
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Projeto
                   </label>
                   <select
                     value={formData.projeto || ''}
                     onChange={(e) => setFormData({ ...formData, projeto: e.target.value })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                   >
                     <option value="Aulas de Ballet Solidário">Aulas de Ballet Solidário</option>
                     <option value="Escolinha de Futebol Comunitário">Escolinha de Futebol Comunitário</option>
@@ -1310,13 +1310,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Status
                   </label>
                   <select
                     value={formData.status || 'Pendente'}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as BeneficiaryStatus })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                   >
                     <option value="Pendente">Pendente</option>
                     <option value="Em análise">Em análise</option>
@@ -1328,26 +1328,26 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Endereço
                 </label>
                 <input
                   type="text"
                   value={formData.endereco || ''}
                   onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Observações da Equipe
                 </label>
                 <textarea
                   rows={3}
                   value={formData.observacoes || ''}
                   onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                 />
               </div>
 
@@ -1355,13 +1355,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                 <button
                   type="button"
                   onClick={() => setEditingBeneficiary(null)}
-                  className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 text-xs text-body hover:bg-sand rounded-xl"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-xl cursor-pointer"
+                  className="px-5 py-2 text-xs font-bold text-white bg-brand-dark rounded-xl cursor-pointer"
                 >
                   Salvar Alterações
                 </button>
@@ -1373,27 +1373,27 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
       {/* Modal de Cadastro Manual de Novo Beneficiário */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => {
                 setShowAddModal(false);
                 setFormData({});
               }}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer"
+              className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-[14px] bg-amber-100 text-amber-900 flex items-center justify-center">
                 <UserPlus className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-ink">
                   Cadastrar Novo Beneficiário
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   Adicione um participante manualmente à base de dados da associação.
                 </p>
               </div>
@@ -1401,7 +1401,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
 
             <form onSubmit={handleSaveAdd} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Nome Completo *
                 </label>
                 <input
@@ -1410,13 +1410,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   placeholder="Nome do aluno ou assistido"
                   value={formData.nome || ''}
                   onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     CPF *
                   </label>
                   <input
@@ -1425,26 +1425,26 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     placeholder="000.000.000-00"
                     value={formData.cpf || ''}
                     onChange={(e) => setFormData({ ...formData, cpf: formatCPF(e.target.value) })}
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Data de Nascimento
                   </label>
                   <input
                     type="date"
                     value={formData.nascimento || ''}
                     onChange={(e) => setFormData({ ...formData, nascimento: e.target.value })}
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Telefone / WhatsApp
                   </label>
                   <input
@@ -1452,12 +1452,12 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     placeholder="(62) 99999-0000"
                     value={formData.telefone || ''}
                     onChange={(e) => setFormData({ ...formData, telefone: formatPhone(e.target.value) })}
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     E-mail (opcional)
                   </label>
                   <input
@@ -1465,20 +1465,20 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     placeholder="email@exemplo.com"
                     value={formData.email || ''}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Projeto Social
                   </label>
                   <select
                     value={formData.projeto || 'Escolinha de Futebol Comunitário'}
                     onChange={(e) => setFormData({ ...formData, projeto: e.target.value })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     <option value="Escolinha de Futebol Comunitário">Escolinha de Futebol Comunitário</option>
                     <option value="Aulas de Ballet Solidário">Aulas de Ballet Solidário</option>
@@ -1501,13 +1501,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Status Inicial
                   </label>
                   <select
                     value={formData.status || 'Pendente'}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as BeneficiaryStatus })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                   >
                     <option value="Pendente">Pendente</option>
                     <option value="Em análise">Em análise</option>
@@ -1518,7 +1518,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Endereço / Bairro (Trindade - GO)
                 </label>
                 <input
@@ -1526,12 +1526,12 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   placeholder="Rua, número, setor"
                   value={formData.endereco || ''}
                   onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Observações
                 </label>
                 <textarea
@@ -1539,7 +1539,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                   placeholder="Informações adicionais, tamanho do uniforme, responsável legal..."
                   value={formData.observacoes || ''}
                   onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
@@ -1550,13 +1550,13 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
                     setShowAddModal(false);
                     setFormData({});
                   }}
-                  className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs text-body hover:bg-sand rounded-xl cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl cursor-pointer transition-colors shadow-xs"
+                  className="px-5 py-2 text-xs font-bold text-white bg-brand-dark hover:bg-brand-dark rounded-xl cursor-pointer transition-colors shadow-xs"
                 >
                   Cadastrar Beneficiário
                 </button>
