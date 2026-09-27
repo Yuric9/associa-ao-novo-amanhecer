@@ -12,6 +12,7 @@ import { Hero } from './components/public/Hero';
 import { Sobre } from './components/public/Sobre';
 import { ImpactoNumeros } from './components/public/ImpactoNumeros';
 import { ProjetosSection } from './components/public/ProjetosSection';
+import { Destaques } from './components/public/Destaques';
 import { GaleriaLightbox } from './components/public/GaleriaLightbox';
 import { ComoAjudar } from './components/public/ComoAjudar';
 import { TransparenciaSection } from './components/public/TransparenciaSection';
@@ -431,6 +432,7 @@ export default function App() {
         <Hero content={content} onOpenCadastro={() => handleOpenCadastro()} />
         <ImpactoNumeros content={content} />
         <ProjetosSection projects={projects} onOpenCadastro={handleOpenCadastro} />
+        <Destaques instagramUrl={content.instagram_url} />
         <GaleriaLightbox photos={gallery} instagramUrl={content.instagram_url} />
         <Sobre content={content} />
         <ComoAjudar
@@ -438,7 +440,7 @@ export default function App() {
           onOpenVoluntarioModal={() => setIsVoluntarioModalOpen(true)}
           onOpenParceiroModal={() => setIsParceiroModalOpen(true)}
         />
-        <TransparenciaSection content={content} />
+        <TransparenciaSection content={content} onOpenParceiroModal={() => setIsParceiroModalOpen(true)} />
         <CadastroBeneficiario
           projects={projects}
           beneficiaries={beneficiaries}
