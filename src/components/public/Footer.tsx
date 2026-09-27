@@ -26,63 +26,73 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCada
   const wa = onlyDigits(content.contato_whatsapp);
   const mesmoNumero = tel && tel === wa;
 
+  const linkCls = 'text-left text-brand-light hover:text-white';
+
   return (
-    <footer id="contato" className="border-t border-line bg-white">
-      <div className="container-site grid grid-cols-1 gap-10 py-14 sm:py-16 lg:grid-cols-12 lg:gap-8">
-        <div className="flex flex-col gap-4 lg:col-span-4">
-          <NovoAmanhecerLogo size="md" />
-          <p className="max-w-sm text-[15px] leading-relaxed text-muted">{content.contato_endereco}</p>
+    <footer id="contato" className="bg-footer text-[15px] text-brand-light">
+      <div className="container-site grid grid-cols-1 gap-10 py-10 sm:grid-cols-2 sm:py-16 lg:grid-cols-12 lg:gap-8">
+        <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-4">
+          <NovoAmanhecerLogo size="md" inverted />
+          <p className="max-w-sm leading-relaxed">{content.contato_endereco}</p>
         </div>
 
-        <div className="flex flex-col gap-3 text-[15px] lg:col-span-4 lg:col-start-6">
-          <span className="text-[13px] font-semibold text-muted">Contato</span>
+        <div className="hidden flex-col gap-2.5 lg:col-span-2 lg:col-start-6 lg:flex">
+          <span className="text-[13px] font-extrabold uppercase text-sun">Projetos</span>
+          <a href="#projetos" className={linkCls}>Ballet</a>
+          <a href="#projetos" className={linkCls}>Escolinha River</a>
+          <a href="#projetos" className={linkCls}>Book Solidário</a>
+          <a href="#projetos" className={linkCls}>Ações sociais</a>
+        </div>
+
+        <div className="flex flex-col gap-2.5 lg:col-span-2 lg:col-start-8">
+          <span className="text-[13px] font-extrabold uppercase text-sun">Institucional</span>
+          <a href="#sobre" className={linkCls}>Quem somos</a>
+          <a href="#transparencia" className={linkCls}>Transparência</a>
+          <a href="#como-ajudar" className={linkCls}>Como ajudar</a>
+          <button onClick={onOpenCadastro} className={linkCls}>
+            Inscrever uma criança
+          </button>
+          {onOpenPrivacidade && (
+            <button onClick={onOpenPrivacidade} className={linkCls}>
+              Política de privacidade
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2.5 lg:col-span-3 lg:col-start-10">
+          <span className="text-[13px] font-extrabold uppercase text-sun">Contato</span>
           {wa && (
-            <a href={`https://wa.me/55${wa}`} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 hover:text-brand">
+            <a href={`https://wa.me/55${wa}`} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 font-bold text-white hover:opacity-80">
               <Icon d={CHAT} />
               {mesmoNumero ? 'Telefone e WhatsApp' : 'WhatsApp'} {content.contato_whatsapp}
             </a>
           )}
           {tel && !mesmoNumero && (
-            <a href={`tel:+55${tel}`} className="flex items-center gap-2.5 hover:text-brand">
+            <a href={`tel:+55${tel}`} className={`flex items-center gap-2.5 ${linkCls}`}>
               <Icon d={PHONE} />
               {content.contato_telefone}
             </a>
           )}
           {content.contato_email && (
-            <a href={`mailto:${content.contato_email}`} className="flex items-center gap-2.5 break-all hover:text-brand">
+            <a href={`mailto:${content.contato_email}`} className={`flex items-center gap-2.5 break-all ${linkCls}`}>
               <Icon d={MAIL} />
               {content.contato_email}
             </a>
           )}
-        </div>
-
-        <div className="flex flex-col gap-3 text-[15px] lg:col-span-3 lg:col-start-10">
-          <span className="text-[13px] font-semibold text-muted">Acompanhe</span>
-          <a href={content.instagram_url} target="_blank" rel="noreferrer" className="hover:text-brand">
+          <a href={content.instagram_url} target="_blank" rel="noreferrer" className={linkCls}>
             Instagram @anovoamanhecer
           </a>
-          <button onClick={onOpenCadastro} className="text-left hover:text-brand">
-            Inscrever uma criança
-          </button>
-          <a href="#transparencia" className="hover:text-brand">
-            Transparência
-          </a>
-          {onOpenPrivacidade && (
-            <button onClick={onOpenPrivacidade} className="text-left hover:text-brand">
-              Política de privacidade
-            </button>
-          )}
         </div>
       </div>
 
-      <div className="border-t border-line">
-        <div className="container-site flex flex-col gap-3 py-6 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
+      <div className="container-site">
+        <div className="flex flex-col gap-3 border-t border-brand-line py-6 text-[13px] text-brand-muted sm:flex-row sm:items-center sm:justify-between">
           <span>
             © {new Date().getFullYear()} Associação Novo Amanhecer · CNPJ {content.contato_cnpj}
           </span>
           <div className="flex items-center gap-5">
             <span>Desenvolvido por YC Soluções e Tecnologias</span>
-            <button onClick={onOpenAdmin} className="hover:text-ink">
+            <button onClick={onOpenAdmin} className="min-h-11 hover:text-white">
               Área da equipe
             </button>
           </div>
