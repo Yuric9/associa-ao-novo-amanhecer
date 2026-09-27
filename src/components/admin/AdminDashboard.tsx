@@ -114,315 +114,123 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const triggerExportNotification = (msg: string) => {
-    setExportNotification(msg);
-    setIsExportDropdownOpen(false);
-    setTimeout(() => setExportNotification(null), 4500);
-  };
-
-  const handleExportBeneficiarios = () => {
-    exportBeneficiariesToCsv(beneficiaries);
-    triggerExportNotification(
-      `Lista de Beneficiários (${beneficiaries.length} registros) exportada em CSV com sucesso!`
-    );
-  };
-
-  const handleExportProjetos = () => {
-    exportProjectsReportToCsv(projects, beneficiaries);
-    triggerExportNotification(
-      `Relatório de Projetos Sociais (${projects.length} modalidades) exportado em CSV com sucesso!`
-    );
-  };
-
-  const handleExportExecutivo = () => {
-    exportExecutiveSummaryToCsv(projects, beneficiaries, content);
-    triggerExportNotification('Resumo Executivo Institucional exportado em CSV com sucesso!');
-  };
-
-  // Cálculos de Totais por Status
-  const countPendentes = beneficiaries.filter((b) => b.status === 'Pendente').length;
-  const countEmAnalise = beneficiaries.filter((b) => b.status === 'Em análise').length;
-  const countAprovados = beneficiaries.filter((b) => b.status === 'Aprovado').length;
-  const countAtendidos = beneficiaries.filter((b) => b.status === 'Atendido/Entregue').length;
-  const countRecusados = beneficiaries.filter((b) => b.status === 'Recusado').length;
-  const totalBeneficiarios = beneficiaries.length;
-
-  // Totais por Projeto
-  const projectStats = projects.map((p) => ({
-    title: p.titulo,
-    count: beneficiaries.filter((b) => b.projeto === p.titulo).length,
-  }));
+    type TabId = typeof activeTab;
+  const tabs: { id: TabId; label: string; icon: React.ElementType; show: boolean; badge?: number }[] = [
+    { id: 'visao-geral', label: 'Visão geral', icon: TrendingUp, show: true },
+    { id: 'graficos', label: 'Gráficos e análises', icon: BarChart3, show: true },
+    { id: 'beneficiarios', label: `Beneficiários (${beneficiaries.length})`, icon: Users, show: true, badge: countPendentes },
+    { id: 'projetos', label: `Projetos (${projects.length})`, icon: Layers, show: true },
+    { id: 'voluntarios', label: `Voluntários (${volunteers.length})`, icon: HandHeart, show: !isVolunteer },
+    { id: 'conteudo', label: 'Textos do site', icon: FileText, show: !isVolunteer },
+    { id: 'galeria', label: `Galeria (${gallery.length})`, icon: ImageIcon, show: !isVolunteer },
+    { id: 'usuarios', label: 'Usuários e papéis', icon: Shield, show: isAdmin },
+    { id: 'backup', label: 'Backup e dados', icon: Download, show: isAdmin },
+  ];
+  const visibleTabs = tabs.filter((t) => t.show);
+  const activeLabel = tabs.find((t) => t.id === activeTab)?.label ?? '';
+  const roleLabel = isAdmin ? 'Admin geral' : isCoordinator ? 'Coordenação' : 'Voluntário';
+  const roleTitle = isAdmin ? 'Acesso total de administrador' : isCoordinator ? 'Acesso de coordenação' : 'Acesso de voluntário (dados pessoais restritos pela LGPD)';
+  const roleChip = isAdmin ? 'bg-sun text-ink' : isCoordinator ? 'bg-brand-soft text-brand-ink' : 'bg-white/15 text-white';
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
-      {/* Top Header do Painel */}
-      <header className="bg-slate-900 text-white sticky top-0 z-30 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo & Associação */}
-            <div className="flex items-center gap-3">
-              <div className="shrink-0">
-                <NovoAmanhecerLogo size="sm" showText={false} />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm tracking-tight text-white">
-                    Associação Novo Amanhecer
+    <div className="min-h-screen bg-paper font-sans lg:flex">
+      <aside className="bg-footer sticky top-0 hidden h-screen w-64 shrink-0 flex-col text-brand-light lg:flex">
+        <div className="border-b border-brand-line px-5 py-5">
+          <NovoAmanhecerLogo size="sm" inverted />
+        </div>
+        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4" aria-label="Seções do painel">
+          {visibleTabs.map((t) => {
+            const Icon = t.icon;
+            const active = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                aria-current={active ? 'page' : undefined}
+                className={`flex min-h-11 items-center gap-3 rounded-md px-3 text-left text-sm font-semibold transition-colors ${active ? 'bg-white/12 text-white shadow-[inset_3px_0_0_var(--color-sun)]' : 'text-brand-light hover:bg-white/8 hover:text-white'}`}
+              >
+                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-sun' : ''}`} />
+                <span className="flex-1 truncate">{t.label}</span>
+                {!!t.badge && t.badge > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sun px-1.5 text-[11px] font-extrabold text-ink">
+                    {t.badge}
                   </span>
-                  <span className="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30">
-                    Setor Ponta Kayana · Trindade/GO
-                  </span>
-                </div>
-                <div className="text-[11px] text-slate-400">
-                  Painel de Gestão e Administração Comunitária
-                </div>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="flex flex-col gap-3 border-t border-brand-line px-5 py-5">
+          <div className="flex flex-col gap-1.5">
+            <span className="truncate text-sm font-bold text-white">{currentUser?.nome || currentEmail}</span>
+            <span className={`chip self-start text-xs font-bold ${roleChip}`} title={roleTitle}>{roleLabel}</span>
+          </div>
+          <button onClick={onBackToSite} className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-brand-light hover:text-white">
+            <ExternalLink className="h-4 w-4" /> Ver o site
+          </button>
+          <button onClick={onLogout} className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-brand-light hover:text-white">
+            <LogOut className="h-4 w-4" /> Sair
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+          <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="lg:hidden"><NovoAmanhecerLogo size="sm" showText={false} /></span>
+              <div className="min-w-0">
+                <span className="block text-[11px] font-extrabold uppercase tracking-[0.04em] text-brand lg:text-xs">Painel de gestão</span>
+                <h1 className="truncate text-base font-extrabold text-brand-dark lg:text-lg">{activeLabel}</h1>
               </div>
             </div>
-
-            {/* Ações do Topo */}
-            <div className="flex items-center gap-3">
-              {/* Menu Rápido de Exportação CSV */}
+            <div className="flex items-center gap-2">
               <div className="relative" ref={exportDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:text-white bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-800/80 rounded-xl transition-colors cursor-pointer shadow-xs"
-                  title="Exportar dados para planilha CSV (Excel)"
-                >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Exportar CSV</span>
-                  <ChevronDown className="w-3 h-3 text-emerald-400" />
+                <button type="button" onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)} aria-expanded={isExportDropdownOpen} className="inline-flex min-h-10 items-center gap-1.5 rounded-md border border-line-strong bg-white px-3 text-sm font-bold text-brand-dark hover:border-brand" title="Exportar dados para planilha (Excel)">
+                  <FileSpreadsheet className="h-4 w-4 text-brand" />
+                  <span className="hidden sm:inline">Exportar CSV</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted" />
                 </button>
-
                 {isExportDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-2 z-50 text-xs animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
-                      Relatórios para Registro Offline
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleExportBeneficiarios}
-                      className="w-full text-left px-3 py-2 text-slate-200 hover:text-white hover:bg-slate-800/90 flex items-center gap-2.5 transition-colors cursor-pointer"
-                    >
-                      <FileSpreadsheet className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <div>
-                        <div className="font-bold">Lista de Beneficiários</div>
-                        <div className="text-[10px] text-slate-400">
-                          {beneficiaries.length} cadastrados (todos os dados)
-                        </div>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleExportProjetos}
-                      className="w-full text-left px-3 py-2 text-slate-200 hover:text-white hover:bg-slate-800/90 flex items-center gap-2.5 transition-colors cursor-pointer"
-                    >
-                      <Layers className="w-4 h-4 text-amber-400 shrink-0" />
-                      <div>
-                        <div className="font-bold">Relatório de Projetos</div>
-                        <div className="text-[10px] text-slate-400">
-                          {projects.length} modalidades e taxas de vaga
-                        </div>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleExportExecutivo}
-                      className="w-full text-left px-3 py-2 text-slate-200 hover:text-white hover:bg-slate-800/90 flex items-center gap-2.5 transition-colors cursor-pointer"
-                    >
-                      <FileText className="w-4 h-4 text-blue-400 shrink-0" />
-                      <div>
-                        <div className="font-bold">Resumo Executivo Geral</div>
-                        <div className="text-[10px] text-slate-400">
-                          Métricas para prestação de contas
-                        </div>
-                      </div>
-                    </button>
+                  <div className="card absolute right-0 z-50 mt-2 w-72 py-2 text-sm">
+                    <div className="border-b border-line px-4 pb-2 pt-1 text-[11px] font-extrabold uppercase tracking-wider text-muted">Relatórios em planilha</div>
+                    {[
+                      { onClick: handleExportBeneficiarios, icon: FileSpreadsheet, title: 'Lista de beneficiários', sub: `${beneficiaries.length} cadastrados (todos os dados)` },
+                      { onClick: handleExportProjetos, icon: Layers, title: 'Relatório de projetos', sub: `${projects.length} projetos e vagas` },
+                      { onClick: handleExportExecutivo, icon: FileText, title: 'Resumo executivo', sub: 'Números para prestação de contas' },
+                    ].map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <button key={item.title} type="button" onClick={item.onClick} className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-paper">
+                          <Icon className="h-4 w-4 shrink-0 text-brand" />
+                          <div><div className="font-bold text-ink">{item.title}</div><div className="text-xs text-muted">{item.sub}</div></div>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
-
-              <button
-                onClick={onBackToSite}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors cursor-pointer"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-                <span>Ver Site Público</span>
+              <button onClick={onBackToSite} className="hidden min-h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-brand hover:bg-brand-soft sm:inline-flex lg:hidden">
+                <ExternalLink className="h-4 w-4" /> Ver o site
               </button>
-
-              <div className="h-6 w-px bg-slate-800 hidden sm:block" />
-
-              <div className="flex items-center gap-2">
-                <span className="hidden md:inline text-xs text-slate-400">
-                  <strong className="text-white">{currentUser?.nome || currentEmail}</strong>
-                </span>
-
-                <span
-                  className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                    isAdmin
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                      : isCoordinator
-                      ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                      : 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                  }`}
-                  title={
-                    isAdmin
-                      ? 'Acesso total de Administrador'
-                      : isCoordinator
-                      ? 'Acesso de Coordenação'
-                      : 'Acesso de Voluntário Operacional (Dados restritos por LGPD)'
-                  }
-                >
-                  {isAdmin ? 'Admin Geral' : isCoordinator ? 'Coordenação' : 'Voluntário (LGPD Ativo)'}
-                </span>
-
-                <button
-                  onClick={onLogout}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-300 hover:text-white bg-red-950/50 hover:bg-red-900 border border-red-800/80 rounded-xl transition-colors cursor-pointer"
-                  title="Sair do painel"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Sair</span>
-                </button>
-              </div>
+              <button onClick={onLogout} aria-label="Sair do painel" className="inline-flex min-h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-body hover:bg-sand lg:hidden">
+                <LogOut className="h-4 w-4" /><span className="hidden sm:inline">Sair</span>
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Abas de Navegação do Painel */}
-        <div className="bg-slate-950/80 border-t border-slate-800/80 overflow-x-auto no-scrollbar">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-2 py-2">
-            <button
-              onClick={() => setActiveTab('visao-geral')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'visao-geral'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>Visão Geral</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('graficos')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'graficos'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>Gráficos & Análises</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('beneficiarios')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'beneficiarios'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Beneficiários ({beneficiaries.length})</span>
-              {countPendentes > 0 && (
-                <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">
-                  {countPendentes}
-                </span>
-              )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('projetos')}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                activeTab === 'projetos'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Cards de Projetos ({projects.length})</span>
-            </button>
-
-            {(!isVolunteer) && (
-              <button
-                onClick={() => setActiveTab('voluntarios')}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'voluntarios'
-                    ? 'bg-rose-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <HandHeart className="w-3.5 h-3.5" />
-                <span>Voluntários ({volunteers.length})</span>
-              </button>
-            )}
-
-            {(!isVolunteer) && (
-              <button
-                onClick={() => setActiveTab('conteudo')}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'conteudo'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Textos do Site (CMS)</span>
-              </button>
-            )}
-
-            {(!isVolunteer) && (
-              <button
-                onClick={() => setActiveTab('galeria')}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'galeria'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <ImageIcon className="w-3.5 h-3.5" />
-                <span>Galeria ({gallery.length})</span>
-              </button>
-            )}
-
-            {isAdmin && (
-              <button
-                onClick={() => setActiveTab('usuarios')}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'usuarios'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admins & Papéis</span>
-              </button>
-            )}
-
-            {isAdmin && (
-              <button
-                onClick={() => setActiveTab('backup')}
-                className={`flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'backup'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                }`}
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Backup & Dados</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
+          <nav className="no-scrollbar flex gap-1.5 overflow-x-auto border-t border-line px-4 py-2 sm:px-6 lg:hidden" aria-label="Seções do painel">
+            {visibleTabs.map((t) => {
+              const Icon = t.icon;
+              const active = activeTab === t.id;
+              return (
+                <button key={t.id} onClick={() => setActiveTab(t.id)} aria-current={active ? 'page' : undefined} className={`inline-flex min-h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-3 text-[13px] font-bold transition-colors ${active ? 'bg-brand text-white' : 'bg-sand text-body hover:bg-line'}`}>
+                  <Icon className="h-4 w-4" />{t.label}
+                  {!!t.badge && t.badge > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sun px-1.5 text-[11px] font-extrabold text-ink">{t.badge}</span>}
+                </button>
+              );
+            })}
+          </nav>
+        </header>
 
       {/* Conteúdo Principal */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
