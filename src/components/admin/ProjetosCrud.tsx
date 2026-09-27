@@ -76,8 +76,8 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-900">Cards de Projetos Sociais</h3>
-          <p className="text-xs text-slate-500">
+          <h3 className="text-lg font-bold text-ink">Cards de Projetos Sociais</h3>
+          <p className="text-xs text-muted">
             Gerencie os projetos exibidos no site público (Ballet, Futebol, Book Solidário, Festas).
           </p>
         </div>
@@ -86,7 +86,7 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
           <button
             type="button"
             onClick={() => exportProjectsReportToCsv(projects, beneficiaries)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-ink bg-sand hover:bg-slate-200 border border-line rounded-xl transition-colors cursor-pointer"
             title="Exportar dados consolidados dos projetos em planilha CSV"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
@@ -107,10 +107,10 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
         {projects.map((project) => (
           <div
             key={project.id}
-            className="bg-white rounded-3xl border border-slate-200 p-5 shadow-2xs flex flex-col justify-between"
+            className="bg-white rounded-[14px] border border-line p-5 shadow-2xs flex flex-col justify-between"
           >
             <div className="flex gap-4">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 shrink-0">
+              <div className="w-24 h-24 rounded-[14px] overflow-hidden bg-sand shrink-0">
                 <img
                   src={project.foto_url}
                   alt={project.titulo}
@@ -120,32 +120,32 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-slate-900 text-sm truncate">{project.titulo}</h4>
+                  <h4 className="font-bold text-ink text-sm truncate">{project.titulo}</h4>
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                       project.ativo
                         ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-slate-100 text-slate-500'
+                        : 'bg-sand text-muted'
                     }`}
                   >
                     {project.ativo ? 'Ativo no Site' : 'Oculto'}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 line-clamp-2 mt-1">
+                <p className="text-xs text-body line-clamp-2 mt-1">
                   {project.descricao}
                 </p>
 
-                <div className="text-[11px] text-slate-400 mt-2">
+                <div className="text-[11px] text-muted mt-2">
                   Público: {project.idade_publico || 'Livre'} · Ordem: #{project.ordem}
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between">
+            <div className="pt-4 border-t border-line mt-4 flex items-center justify-between">
               <button
                 onClick={() => handleToggleAtivo(project.id)}
-                className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900"
+                className="inline-flex items-center gap-1 text-xs text-body hover:text-ink"
               >
                 {project.ativo ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 <span>{project.ativo ? 'Ocultar do Site' : 'Tornar Visível'}</span>
@@ -154,7 +154,7 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleOpenEdit(project)}
-                  className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg text-xs font-semibold flex items-center gap-1"
+                  className="p-1.5 text-body hover:bg-sand rounded-lg text-xs font-semibold flex items-center gap-1"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   <span>Editar</span>
@@ -173,22 +173,22 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
 
       {/* Modal de Criação / Edição */}
       {editingProject && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setEditingProject(null)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
+              className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-bold text-slate-900 mb-4">
+            <h3 className="text-lg font-bold text-ink mb-4">
               {isNew ? 'Criar Novo Projeto Social' : 'Editar Projeto Social'}
             </h3>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Título do Projeto
                 </label>
                 <input
@@ -196,13 +196,13 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                   required
                   value={formData.titulo || ''}
                   onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
                   placeholder="Ex: Aulas de Ballet Solidário"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Descrição Curta (para o card)
                 </label>
                 <textarea
@@ -210,12 +210,12 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                   required
                   value={formData.descricao || ''}
                   onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   URL da Imagem / Foto
                 </label>
                 <input
@@ -223,48 +223,48 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                   required
                   value={formData.foto_url || ''}
                   onChange={(e) => setFormData({ ...formData, foto_url: e.target.value })}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
                   placeholder="https://..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Público-Alvo / Idade
                   </label>
                   <input
                     type="text"
                     value={formData.idade_publico || ''}
                     onChange={(e) => setFormData({ ...formData, idade_publico: e.target.value })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                     placeholder="Ex: 4 a 14 anos"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Horários
                   </label>
                   <input
                     type="text"
                     value={formData.horario || ''}
                     onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                     placeholder="Ex: Sábados 08h30 às 10h30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Detalhes Operacionais (exibido no modal "Saiba Mais")
                 </label>
                 <textarea
                   rows={2}
                   value={formData.detalhes || ''}
                   onChange={(e) => setFormData({ ...formData, detalhes: e.target.value })}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                 />
               </div>
 
@@ -272,13 +272,13 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                 <button
                   type="button"
                   onClick={() => setEditingProject(null)}
-                  className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 text-xs text-body hover:bg-sand rounded-xl"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold text-white bg-slate-900 rounded-xl"
+                  className="px-5 py-2 text-xs font-bold text-white bg-brand-dark rounded-xl"
                 >
                   Salvar Projeto
                 </button>
