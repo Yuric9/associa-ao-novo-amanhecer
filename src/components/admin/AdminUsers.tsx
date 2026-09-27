@@ -131,13 +131,13 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
         );
       case 'voluntario':
         return (
-          <span className="px-2.5 py-1 text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200 rounded-lg">
+          <span className="px-2.5 py-1 text-[11px] font-bold bg-sand text-body border border-line rounded-lg">
             Voluntário (Sigilo LGPD)
           </span>
         );
       default:
         return (
-          <span className="px-2.5 py-1 text-[11px] font-bold bg-slate-100 text-slate-700 rounded-lg">
+          <span className="px-2.5 py-1 text-[11px] font-bold bg-sand text-body rounded-lg">
             {role}
           </span>
         );
@@ -149,8 +149,8 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold text-slate-900">Perfis de Acesso & Usuários Administrativos</h3>
-          <p className="text-xs text-slate-500 max-w-2xl mt-0.5">
+          <h3 className="text-lg font-bold text-ink">Perfis de Acesso & Usuários Administrativos</h3>
+          <p className="text-xs text-muted max-w-2xl mt-0.5">
             Gerenciamento de contas com autenticação real por hash bcrypt. Os papéis (RBAC) são armazenados em tabela separada e verificados exclusivamente no servidor a cada requisição.
           </p>
         </div>
@@ -162,7 +162,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
               setError('');
               setSuccess('');
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors cursor-pointer self-start sm:self-auto shrink-0 shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-brand hover:bg-brand-dark rounded-xl transition-colors cursor-pointer self-start sm:self-auto shrink-0 shadow-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Usuário / Admin</span>
@@ -172,43 +172,43 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
 
       {/* Alertas */}
       {error && (
-        <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-800 flex items-center gap-2">
+        <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 flex items-center gap-2">
+        <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{success}</span>
         </div>
       )}
 
       {/* Lista de Usuários */}
-      <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-2xs divide-y divide-slate-100">
+      <div className="bg-white rounded-[14px] border border-line overflow-hidden shadow-2xs divide-y divide-line">
         {loading ? (
-          <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
+          <div className="p-12 text-center text-muted flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
             <span className="text-xs">Consultando contas e permissões no banco de dados...</span>
           </div>
         ) : users.length === 0 ? (
-          <div className="p-8 text-center text-slate-400 text-xs">
+          <div className="p-8 text-center text-muted text-xs">
             Nenhum usuário cadastrado no sistema.
           </div>
         ) : (
           users.map((u) => (
             <div
               key={u.id}
-              className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors"
+              className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-paper/70 transition-colors"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold shrink-0">
                   <Shield className="w-5 h-5 text-amber-700" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-slate-900 text-sm">{u.nome}</span>
+                    <span className="font-bold text-ink text-sm">{u.nome}</span>
                     {getRoleBadge(u.role)}
                     {u.email === currentEmail && (
                       <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
@@ -216,8 +216,8 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-500 font-mono mt-0.5">{u.email}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
+                  <div className="text-xs text-muted font-mono mt-0.5">{u.email}</div>
+                  <div className="text-[11px] text-muted mt-0.5">
                     Cadastrado em: {new Date(u.criado_em).toLocaleDateString('pt-BR')}
                   </div>
                 </div>
@@ -243,28 +243,28 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
 
       {/* Modal Adicionar Novo Usuário */}
       {showAdd && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-md bg-white rounded-[14px] shadow-2xl border border-line p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setShowAdd(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
+              className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
                 <Shield className="w-5 h-5 text-amber-700" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900">Cadastrar Novo Usuário</h3>
-                <span className="text-xs text-slate-500">Atribuição de papel seguro (RBAC)</span>
+                <h3 className="text-lg font-bold text-ink">Cadastrar Novo Usuário</h3>
+                <span className="text-xs text-muted">Atribuição de papel seguro (RBAC)</span>
               </div>
             </div>
 
             <form onSubmit={handleAddUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Nome Completo
                 </label>
                 <input
@@ -273,12 +273,12 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
                   placeholder="Ex: Maria Coordenação Social"
                   value={newNome}
                   onChange={(e) => setNewNome(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   E-mail de Login
                 </label>
                 <input
@@ -287,12 +287,12 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
                   placeholder="maria@novoamanhecer.org.br"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Senha Provisória (Mínimo 8 caracteres)
                 </label>
                 <input
@@ -302,25 +302,25 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
                   placeholder="••••••••••••"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Nível de Acesso (Papel RBAC)
                 </label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as UserRole)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium text-slate-800"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30 font-medium text-slate-800"
                 >
                   <option value="admin">Administrador Geral (Acesso Total + Gestão de Usuários)</option>
                   <option value="coordenador">Coordenador de Projetos (Beneficiários, Galeria, CMS)</option>
                   <option value="equipe">Equipe Social / Apoio (Gestão de Cadastros e Turmas)</option>
                   <option value="voluntario">Voluntário Operacional (Acesso com Sigilo LGPD)</option>
                 </select>
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[11px] text-muted mt-1">
                   O papel é gravado na tabela separada <code className="text-amber-700">user_roles</code> e verificado pelo servidor.
                 </p>
               </div>
@@ -329,14 +329,14 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
                 <button
                   type="button"
                   onClick={() => setShowAdd(false)}
-                  className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2.5 text-xs font-semibold text-body hover:bg-sand rounded-xl"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-60 rounded-xl cursor-pointer flex items-center gap-2 shadow-sm"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-brand hover:bg-brand-dark disabled:opacity-60 rounded-xl cursor-pointer flex items-center gap-2 shadow-sm"
                 >
                   {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
                   <span>Salvar Usuário</span>
