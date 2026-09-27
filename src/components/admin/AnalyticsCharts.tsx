@@ -216,7 +216,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-slate-900 text-white p-3 rounded-2xl shadow-xl border border-slate-700 text-xs space-y-1.5 min-w-[150px]">
+        <div className="bg-brand-dark text-white p-3 rounded-2xl shadow-xl border border-slate-700 text-xs space-y-1.5 min-w-[150px]">
           <p className="font-black text-amber-300 border-b border-slate-800 pb-1">
             {label || payload[0]?.name}
           </p>
@@ -243,33 +243,33 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
   return (
     <div className="space-y-6">
       {/* Cabeçalho da Seção de Gráficos */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-[14px] border border-line shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md">
               Métricas & Análises Recharts
             </span>
-            <span className="text-xs text-slate-400">·</span>
-            <span className="text-xs text-slate-500">Dados em Tempo Real</span>
+            <span className="text-xs text-muted">·</span>
+            <span className="text-xs text-muted">Dados em Tempo Real</span>
           </div>
-          <h3 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+          <h3 className="text-lg font-black text-ink mt-1 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-amber-600" />
             <span>Indicadores de Impacto e Crescimento</span>
           </h3>
-          <p className="text-xs text-slate-600 mt-0.5">
+          <p className="text-xs text-body mt-0.5">
             Visualize o fluxo de novos acolhidos e a representatividade de cada oficina comunitária em Trindade.
           </p>
         </div>
 
         {/* Alternador de Período do Gráfico de Crescimento */}
-        <div className="inline-flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+        <div className="inline-flex items-center p-1 bg-sand rounded-xl border border-line text-xs">
           <button
             type="button"
             onClick={() => setChartTimeRange('6m')}
             className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
               chartTimeRange === '6m'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-ink shadow-xs'
+                : 'text-body hover:text-ink'
             }`}
           >
             Últimos 6 Meses
@@ -279,8 +279,8 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
             onClick={() => setChartTimeRange('ano')}
             className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
               chartTimeRange === 'ano'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-ink shadow-xs'
+                : 'text-body hover:text-ink'
             }`}
           >
             Ano 2026
@@ -290,35 +290,35 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
 
       {/* Mini Cards de KPIs Rápidos */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
+        <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-muted text-xs font-bold uppercase">
             <span>Total Acolhido</span>
             <Users className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{totalBeneficiarios}</div>
+          <div className="text-2xl font-black text-ink">{totalBeneficiarios}</div>
           <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
             <TrendingUp className="w-3 h-3" />
             <span>Base ativa comunitária</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
+        <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-muted text-xs font-bold uppercase">
             <span>Taxa de Vagas / Efetivação</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-2xl font-black text-emerald-600">{taxaAprovacao}%</div>
-          <div className="text-[11px] text-slate-500">
+          <div className="text-[11px] text-muted">
             {totalAprovados} de {totalBeneficiarios} confirmados
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
+        <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-muted text-xs font-bold uppercase">
             <span>Projeto Destaque</span>
             <Award className="w-4 h-4 text-purple-600" />
           </div>
-          <div className="text-sm font-black text-slate-900 truncate">
+          <div className="text-sm font-black text-ink truncate">
             {topProject?.name || 'Carregando...'}
           </div>
           <div className="text-[11px] text-purple-700 font-semibold">
@@ -326,33 +326,33 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-bold uppercase">
+        <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-muted text-xs font-bold uppercase">
             <span>Oficinas Ativas</span>
             <Sparkles className="w-4 h-4 text-amber-500" />
           </div>
           <div className="text-2xl font-black text-amber-700">
             {projects.filter((p) => p.ativo).length}
           </div>
-          <div className="text-[11px] text-slate-500">Ballet, Futebol, Gestante, Festas</div>
+          <div className="text-[11px] text-muted">Ballet, Futebol, Gestante, Festas</div>
         </div>
       </div>
 
       {/* Grid Principal de Gráficos Recharts */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* GRÁFICO 1: CRESCIMENTO MENSAL DE BENEFICIÁRIOS (7 Colunas no Desktop) */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4 flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-amber-600" />
                 <span>Crescimento Mensal de Beneficiários</span>
               </h4>
-              <span className="text-[11px] font-semibold text-slate-500">
+              <span className="text-[11px] font-semibold text-muted">
                 Novos Cadastros x Acumulado
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted">
               Evolução mensal do acolhimento comunitário por período de inscrição.
             </p>
           </div>
@@ -403,17 +403,17 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
             </ResponsiveContainer>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-500">
+          <div className="pt-3 border-t border-line flex flex-wrap items-center justify-between text-[11px] text-muted">
             <span>Pico recente em Agosto/Setembro com início das turmas de primavera.</span>
-            <span className="font-bold text-slate-700">Atualizado automaticamente</span>
+            <span className="font-bold text-body">Atualizado automaticamente</span>
           </div>
         </div>
 
         {/* GRÁFICO 2: DISTRIBUIÇÃO POR PROJETO SOCIAL (PIE / DONUT CHART - 5 Colunas) */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4 flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <h4 className="text-sm font-bold text-ink flex items-center gap-2">
                 <PieChartIcon className="w-4 h-4 text-purple-600" />
                 <span>Distribuição por Projeto Social</span>
               </h4>
@@ -421,7 +421,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
                 {totalBeneficiarios} inscritos
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted">
               Proporção de vagas por modalidade esportiva, artística e de acolhimento.
             </p>
           </div>
@@ -455,7 +455,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-slate-900 text-white p-2.5 rounded-xl text-xs shadow-xl border border-slate-700">
+                        <div className="bg-brand-dark text-white p-2.5 rounded-xl text-xs shadow-xl border border-slate-700">
                           <p className="font-bold text-slate-200">{data.name}</p>
                           <p className="text-amber-300 font-black">
                             {data.value} cadastros ({data.percentage}%)
@@ -471,22 +471,22 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
 
             {/* Texto Central do Donut Chart */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-black text-slate-900">
+              <span className="text-2xl font-black text-ink">
                 {totalBeneficiarios}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
                 Inscritos
               </span>
             </div>
           </div>
 
           {/* Legenda Customizada com Tags Visuais e Percentuais */}
-          <div className="space-y-2 pt-2 border-t border-slate-100">
+          <div className="space-y-2 pt-2 border-t border-line">
             {projectDistributionData.map((proj, idx) => (
               <div
                 key={idx}
                 className={`flex items-center justify-between p-1.5 rounded-xl transition-colors text-xs ${
-                  activeProjectIndex === idx ? 'bg-slate-100 font-bold' : ''
+                  activeProjectIndex === idx ? 'bg-sand font-bold' : ''
                 }`}
                 onMouseEnter={() => setActiveProjectIndex(idx)}
                 onMouseLeave={() => setActiveProjectIndex(null)}
@@ -496,11 +496,11 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
                     className="w-3 h-3 rounded-full shrink-0"
                     style={{ backgroundColor: proj.color }}
                   />
-                  <span className="text-slate-700 truncate font-medium">
+                  <span className="text-body truncate font-medium">
                     {proj.name}
                   </span>
                 </div>
-                <span className="font-bold text-slate-900 shrink-0">
+                <span className="font-bold text-ink shrink-0">
                   {proj.value} ({proj.percentage}%)
                 </span>
               </div>
@@ -510,18 +510,18 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
       </div>
 
       {/* GRÁFICO 3: DISTRIBUIÇÃO DETALHADA POR STATUS DE CADASTRO (Bar Chart Horizontal / Vertical) */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+      <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
           <div>
-            <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <h4 className="text-sm font-bold text-ink flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-600" />
               <span>Funil de Atendimento & Status das Inscrições</span>
             </h4>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted">
               Acompanhamento de filas de espera, verificação de documentos e entregas de fardamentos/kits.
             </p>
           </div>
-          <span className="text-xs text-slate-500 font-semibold self-start sm:self-center">
+          <span className="text-xs text-muted font-semibold self-start sm:self-center">
             Meta de análise: 48h
           </span>
         </div>
@@ -550,7 +550,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="bg-slate-900 text-white p-2.5 rounded-xl text-xs shadow-xl border border-slate-700">
+                      <div className="bg-brand-dark text-white p-2.5 rounded-xl text-xs shadow-xl border border-slate-700">
                         <p className="font-bold text-slate-200">{data.status}</p>
                         <p className="text-emerald-400 font-black">
                           {data.quantidade} inscrições ({data.percentual}%)
