@@ -154,28 +154,28 @@ export const BackupModal: React.FC<BackupModalProps> = ({
               Planilhas Offline
             </span>
           </div>
-          <h3 className="text-lg font-black text-slate-900 mt-1">
+          <h3 className="text-lg font-black text-ink mt-1">
             Exportação de Relatórios Oficiais em CSV / Excel
           </h3>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-body">
             Baixe planilhas compatíveis com Microsoft Excel e Google Sheets com dados completos para impressões, listas de presença, auditorias e reuniões de coordenação.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card CSV: Beneficiários */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs flex flex-col justify-between hover:border-emerald-300 transition-colors">
+          <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between hover:border-emerald-300 transition-colors">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-900 flex items-center justify-center mb-4">
                 <FileSpreadsheet className="w-6 h-6 text-emerald-700" />
               </div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h4 className="font-bold text-slate-900 text-base">Lista de Beneficiários</h4>
+                <h4 className="font-bold text-ink text-base">Lista de Beneficiários</h4>
                 <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   {beneficiaries.length} cadastros
                 </span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              <p className="text-xs text-body leading-relaxed mb-4">
                 Exporta todos os inscritos com Nome, CPF, Telefone, Endereço, Projeto de Interesse, Status e data de cadastro.
               </p>
             </div>
@@ -190,18 +190,18 @@ export const BackupModal: React.FC<BackupModalProps> = ({
           </div>
 
           {/* Card CSV: Relatório de Projetos */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs flex flex-col justify-between hover:border-amber-300 transition-colors">
+          <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between hover:border-amber-300 transition-colors">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center mb-4">
                 <Layers className="w-6 h-6 text-amber-700" />
               </div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h4 className="font-bold text-slate-900 text-base">Relatório de Projetos</h4>
+                <h4 className="font-bold text-ink text-base">Relatório de Projetos</h4>
                 <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                   {projects.length} projetos
                 </span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              <p className="text-xs text-body leading-relaxed mb-4">
                 Consolidado por modalidade (Ballet, Futebol, Book Gestante, Festas) com total de inscritos, vagas confirmadas, fila de espera e coordenador.
               </p>
             </div>
@@ -216,18 +216,18 @@ export const BackupModal: React.FC<BackupModalProps> = ({
           </div>
 
           {/* Card CSV: Resumo Executivo / Prestação de Contas */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs flex flex-col justify-between hover:border-blue-300 transition-colors">
+          <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between hover:border-blue-300 transition-colors">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-900 flex items-center justify-center mb-4">
                 <FileText className="w-6 h-6 text-blue-700" />
               </div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h4 className="font-bold text-slate-900 text-base">Resumo de Impacto</h4>
+                <h4 className="font-bold text-ink text-base">Resumo de Impacto</h4>
                 <span className="text-[11px] font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
                   Oficial
                 </span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              <p className="text-xs text-body leading-relaxed mb-4">
                 Planilha com métricas institucionais, CNPJ, dados de sede e números de impacto comunitário para editais e prestação de contas.
               </p>
             </div>
@@ -243,32 +243,32 @@ export const BackupModal: React.FC<BackupModalProps> = ({
         </div>
       </div>
 
-      <hr className="border-slate-200" />
+      <hr className="border-line" />
 
       {/* SEÇÃO 2: BACKUP COMPLETO JSON */}
       <div>
-        <h3 className="text-lg font-bold text-slate-900">Backup Completo do Sistema (JSON)</h3>
-        <p className="text-xs text-slate-500">
+        <h3 className="text-lg font-bold text-ink">Backup Completo do Sistema (JSON)</h3>
+        <p className="text-xs text-muted">
           Gere cópias de segurança integrais em formato JSON, importe backups anteriores ou restaure a base de dados inicial de Trindade.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Opção 1: Exportar Backup JSON */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between">
           <div>
             <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center mb-4">
               <Download className="w-6 h-6 text-amber-700" />
             </div>
-            <h4 className="font-bold text-slate-900 text-base mb-1">Exportar Backup Completo</h4>
-            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+            <h4 className="font-bold text-ink text-base mb-1">Exportar Backup Completo</h4>
+            <p className="text-xs text-body leading-relaxed mb-4">
               Baixe um arquivo JSON com todas as tabelas: lista de beneficiários, cards dos projetos, fotos da galeria e textos do site.
             </p>
           </div>
 
           <button
             onClick={handleExportJson}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold text-white bg-brand-dark hover:bg-brand-dark rounded-xl transition-colors cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Baixar Arquivo JSON</span>
@@ -276,13 +276,13 @@ export const BackupModal: React.FC<BackupModalProps> = ({
         </div>
 
         {/* Opção 2: Restaurar Backup JSON */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between">
           <div>
             <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-900 flex items-center justify-center mb-4">
               <Upload className="w-6 h-6 text-blue-700" />
             </div>
-            <h4 className="font-bold text-slate-900 text-base mb-1">Restaurar de Arquivo</h4>
-            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+            <h4 className="font-bold text-ink text-base mb-1">Restaurar de Arquivo</h4>
+            <p className="text-xs text-body leading-relaxed mb-4">
               Carregue um arquivo JSON de backup gerado anteriormente para restaurar os dados no sistema.
             </p>
           </div>
@@ -298,22 +298,22 @@ export const BackupModal: React.FC<BackupModalProps> = ({
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold text-ink bg-sand hover:bg-slate-200 border border-line rounded-xl transition-colors cursor-pointer"
             >
-              <Upload className="w-4 h-4 text-slate-600" />
+              <Upload className="w-4 h-4 text-body" />
               <span>Selecionar Arquivo JSON</span>
             </button>
           </div>
         </div>
 
         {/* Opção 3: Restaurar Dados Padrão de Trindade */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between">
           <div>
             <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-900 flex items-center justify-center mb-4">
               <RotateCcw className="w-6 h-6 text-orange-700" />
             </div>
-            <h4 className="font-bold text-slate-900 text-base mb-1">Base Padrão de Trindade</h4>
-            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+            <h4 className="font-bold text-ink text-base mb-1">Base Padrão de Trindade</h4>
+            <p className="text-xs text-body leading-relaxed mb-4">
               Restaura os dados originais da Associação Novo Amanhecer (Ballet, Futebol, Book Solidário de Gestantes e Festas).
             </p>
           </div>
