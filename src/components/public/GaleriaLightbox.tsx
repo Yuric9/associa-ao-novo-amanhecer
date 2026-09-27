@@ -67,7 +67,7 @@ export const GaleriaLightbox: React.FC<GaleriaLightboxProps> = ({ photos, instag
                   setSelectedIndex(null);
                 }}
                 className={`min-h-11 shrink-0 rounded-md border px-4 text-sm font-semibold transition-colors ${
-                  active ? 'border-ink bg-ink text-white' : 'border-line-strong bg-white text-ink hover:border-ink'
+                  active ? 'border-brand-dark bg-brand-dark text-white' : 'border-line-strong bg-white text-ink hover:border-brand'
                 }`}
               >
                 {cat.label}
