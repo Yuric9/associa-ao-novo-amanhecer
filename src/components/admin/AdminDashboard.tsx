@@ -633,6 +633,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         </footer>
       </main>
+      </div>
     </div>
   );
 };
