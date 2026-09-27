@@ -114,7 +114,49 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    type TabId = typeof activeTab;
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const triggerExportNotification = (msg: string) => {
+    setExportNotification(msg);
+    setIsExportDropdownOpen(false);
+    setTimeout(() => setExportNotification(null), 4500);
+  };
+
+  const handleExportBeneficiarios = () => {
+    exportBeneficiariesToCsv(beneficiaries);
+    triggerExportNotification(
+      `Lista de Beneficiários (${beneficiaries.length} registros) exportada em CSV com sucesso!`
+    );
+  };
+
+  const handleExportProjetos = () => {
+    exportProjectsReportToCsv(projects, beneficiaries);
+    triggerExportNotification(
+      `Relatório de Projetos Sociais (${projects.length} modalidades) exportado em CSV com sucesso!`
+    );
+  };
+
+  const handleExportExecutivo = () => {
+    exportExecutiveSummaryToCsv(projects, beneficiaries, content);
+    triggerExportNotification('Resumo Executivo Institucional exportado em CSV com sucesso!');
+  };
+
+  // Cálculos de Totais por Status
+  const countPendentes = beneficiaries.filter((b) => b.status === 'Pendente').length;
+  const countEmAnalise = beneficiaries.filter((b) => b.status === 'Em análise').length;
+  const countAprovados = beneficiaries.filter((b) => b.status === 'Aprovado').length;
+  const countAtendidos = beneficiaries.filter((b) => b.status === 'Atendido/Entregue').length;
+  const countRecusados = beneficiaries.filter((b) => b.status === 'Recusado').length;
+  const totalBeneficiarios = beneficiaries.length;
+
+  // Totais por Projeto
+  const projectStats = projects.map((p) => ({
+    title: p.titulo,
+    count: beneficiaries.filter((b) => b.projeto === p.titulo).length,
+  }));
+
+  type TabId = typeof activeTab;
   const tabs: { id: TabId; label: string; icon: React.ElementType; show: boolean; badge?: number }[] = [
     { id: 'visao-geral', label: 'Visão geral', icon: TrendingUp, show: true },
     { id: 'graficos', label: 'Gráficos e análises', icon: BarChart3, show: true },
