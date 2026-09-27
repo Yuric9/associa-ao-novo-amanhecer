@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { ProjectCard } from '../../types';
 
+interface ProjetosSectionProps {
+  projects: ProjectCard[];
+  onOpenCadastro: (projectName: string) => void;
+}
+
 /** Ícone de cada projeto, escolhido pelo nome (traço fino, mesmo estilo da v2). */
 const ICONES: { chave: RegExp; d: string }[] = [
   { chave: /ballet|dan[çc]a/i, d: 'M9 18V5l11-2v13M9 18a3 3 0 1 1-3-3 3 3 0 0 1 3 3zM20 16a3 3 0 1 1-3-3 3 3 0 0 1 3 3z' },
@@ -13,6 +18,24 @@ const CORACAO = 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7
 
 const ProjetoIcone: React.FC<{ titulo: string }> = ({ titulo }) => {
   const d = ICONES.find((i) => i.chave.test(titulo))?.d ?? CORACAO;
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={d} />
+    </svg>
+  );
+};
+
+export const ProjetosSection: React.FC<ProjetosSectionProps> = ({ projects, onOpenCadastro }) => {
+  const [selectedProject, setSelectedProject] = useState<ProjectCard | null>(null);
+  const activeProjects = projects.filter((p) => p.ativo).sort((a, b) => a.ordem - b.ordem);
+
+  useEffect(() => {
+    if (!selectedProject) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setSelectedProject(null);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedProject]);
+
   return (
     <section id="projetos" className="bg-white">
       <div className="container-site flex flex-col gap-6 py-12 sm:gap-11 sm:py-24">
@@ -51,10 +74,7 @@ const ProjetoIcone: React.FC<{ titulo: string }> = ({ titulo }) => {
                   <button onClick={() => onOpenCadastro(project.titulo)} className="link-arrow">
                     Inscrever-se →
                   </button>
-                  <button
-                    onClick={() => setSelectedProject(project)}
-                    className="text-[15px] font-semibold text-muted hover:text-ink"
-                  >
+                  <button onClick={() => setSelectedProject(project)} className="text-[15px] font-semibold text-muted hover:text-ink">
                     Saiba mais
                   </button>
                 </div>
@@ -78,54 +98,22 @@ const ProjetoIcone: React.FC<{ titulo: string }> = ({ titulo }) => {
           >
             <div className="relative">
               <img src={selectedProject.foto_url} alt="" className="aspect-[16/9] w-full object-cover" />
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-md bg-white text-ink"
-                aria-label="Fechar"
-              >
+              <button onClick={() => setSelectedProject(null)} className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-md bg-white text-ink" aria-label="Fechar">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="flex flex-col gap-5 p-6 sm:p-8">
-              <h3 id="projeto-titulo" className="text-2xl font-bold text-ink">
-                {selectedProject.titulo}
-              </h3>
+              <h3 id="projeto-titulo" className="text-2xl font-bold text-ink">{selectedProject.titulo}</h3>
               <p className="text-[15px] leading-relaxed text-body">{selectedProject.descricao}</p>
-              {selectedProject.detalhes && (
-                <p className="rounded-md bg-sand p-4 text-[15px] leading-relaxed text-body">{selectedProject.detalhes}</p>
-              )}
+              {selectedProject.detalhes && <p className="rounded-md bg-sand p-4 text-[15px] leading-relaxed text-body">{selectedProject.detalhes}</p>}
               <dl className="grid grid-cols-[110px_1fr] gap-y-2 border-t border-line pt-5 text-sm">
-                {selectedProject.idade_publico && (
-                  <>
-                    <dt className="text-muted">Público</dt>
-                    <dd className="text-ink">{selectedProject.idade_publico}</dd>
-                  </>
-                )}
-                {selectedProject.horario && (
-                  <>
-                    <dt className="text-muted">Horário</dt>
-                    <dd className="text-ink">{selectedProject.horario}</dd>
-                  </>
-                )}
-                {selectedProject.coordenador && (
-                  <>
-                    <dt className="text-muted">Coordenação</dt>
-                    <dd className="text-ink">{selectedProject.coordenador}</dd>
-                  </>
-                )}
+                {selectedProject.idade_publico && <><dt className="text-muted">Público</dt><dd className="text-ink">{selectedProject.idade_publico}</dd></>}
+                {selectedProject.horario && <><dt className="text-muted">Horário</dt><dd className="text-ink">{selectedProject.horario}</dd></>}
+                {selectedProject.coordenador && <><dt className="text-muted">Coordenação</dt><dd className="text-ink">{selectedProject.coordenador}</dd></>}
               </dl>
               <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
-                <button onClick={() => setSelectedProject(null)} className="btn-secondary">
-                  Voltar
-                </button>
-                <button
-                  onClick={() => {
-                    const title = selectedProject.titulo;
-                    setSelectedProject(null);
-                    onOpenCadastro(title);
-                  }}
-                  className="btn-primary"
-                >
+                <button onClick={() => setSelectedProject(null)} className="btn-secondary">Voltar</button>
+                <button onClick={() => { const title = selectedProject.titulo; setSelectedProject(null); onOpenCadastro(title); }} className="btn-primary">
                   Inscrever-se neste projeto
                 </button>
               </div>
