@@ -251,29 +251,29 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
   return (
     <div className="space-y-6">
       {/* CARD PRINCIPAL DO GRÁFICO DE ROSCA */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xs space-y-6">
+      <div className="bg-white p-6 sm:p-8 rounded-[14px] border border-line shadow-2xs space-y-6">
         {/* Cabeçalho do Gráfico com Alternador de Visão */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-line pb-5">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-wider text-rose-800 bg-rose-100 px-2.5 py-0.5 rounded-md">
                 Gestão da Equipe Voluntária
               </span>
-              <span className="text-xs text-slate-400">·</span>
-              <span className="text-xs text-slate-500">Gráfico de Rosca Interativo</span>
+              <span className="text-xs text-muted">·</span>
+              <span className="text-xs text-muted">Gráfico de Rosca Interativo</span>
             </div>
-            <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-black text-ink mt-1 flex items-center gap-2">
               <HandHeart className="w-5 h-5 text-rose-600" />
               <span>Distribuição de Voluntários</span>
             </h3>
-            <p className="text-xs text-slate-600 mt-0.5">
+            <p className="text-xs text-body mt-0.5">
               Alterne entre áreas de atuação e disponibilidade para planejar escalas de oficinas, ensaios e cozinha.
             </p>
           </div>
 
           {/* Switch de Modo: Por Área vs Por Disponibilidade */}
           <div className="flex items-center gap-2 self-start md:self-center">
-            <div className="inline-flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+            <div className="inline-flex items-center p-1 bg-sand rounded-xl border border-line text-xs">
               <button
                 type="button"
                 onClick={() => {
@@ -282,8 +282,8 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                 }}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                   viewMode === 'area'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-ink shadow-xs'
+                    : 'text-body hover:text-ink'
                 }`}
               >
                 <Briefcase className="w-3.5 h-3.5 text-amber-600" />
@@ -298,8 +298,8 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                 }}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                   viewMode === 'disponibilidade'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-ink shadow-xs'
+                    : 'text-body hover:text-ink'
                 }`}
               >
                 <Clock className="w-3.5 h-3.5 text-indigo-600" />
@@ -371,7 +371,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-slate-900 text-white p-3 rounded-2xl text-xs shadow-2xl border border-slate-700 min-w-[170px] space-y-1">
+                          <div className="bg-brand-dark text-white p-3 rounded-[14px] text-xs shadow-2xl border border-slate-700 min-w-[170px] space-y-1">
                             <div className="flex items-center gap-1.5 text-slate-300 font-bold border-b border-slate-800 pb-1">
                               <span
                                 className="w-2.5 h-2.5 rounded-full"
@@ -380,13 +380,13 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                               <span className="truncate">{data.name}</span>
                             </div>
                             <div className="flex justify-between items-center pt-1 text-[11px]">
-                              <span className="text-slate-400">Total de voluntários:</span>
+                              <span className="text-muted">Total de voluntários:</span>
                               <span className="font-black text-rose-300 text-sm">
                                 {data.value}
                               </span>
                             </div>
                             <div className="flex justify-between items-center text-[11px]">
-                              <span className="text-slate-400">Proporção da equipe:</span>
+                              <span className="text-muted">Proporção da equipe:</span>
                               <span className="font-bold text-white">{data.percentage}%</span>
                             </div>
                             <div className="text-[10px] text-amber-400 pt-1 text-center">
@@ -403,13 +403,13 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
 
               {/* Rótulo Central no Miolo da Rosca */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-3xl font-black text-slate-900 tracking-tight">
+                <span className="text-3xl font-black text-ink tracking-tight">
                   {totalVoluntarios}
                 </span>
                 <span className="text-[10px] font-black uppercase tracking-wider text-rose-700 mt-0.5">
                   Voluntários
                 </span>
-                <span className="text-[9px] text-slate-400 font-medium">
+                <span className="text-[9px] text-muted font-medium">
                   {viewMode === 'area' ? 'em 7 áreas' : 'escalonados'}
                 </span>
               </div>
@@ -432,7 +432,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
 
           {/* LADO DIREITO: LEGENDA INTERATIVA COM BARRAS DE PROPORÇÃO (7 Colunas) */}
           <div className="lg:col-span-7 space-y-2.5">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
+            <div className="flex items-center justify-between text-xs text-muted font-bold px-1">
               <span>{viewMode === 'area' ? 'Área de Atuação' : 'Disponibilidade'}</span>
               <span>Voluntários (%)</span>
             </div>
@@ -450,12 +450,12 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                     }}
                     onMouseEnter={() => setActiveIndex(idx)}
                     onMouseLeave={() => setActiveIndex(null)}
-                    className={`p-3 rounded-2xl border transition-all cursor-pointer text-xs space-y-1.5 ${
+                    className={`p-3 rounded-[14px] border transition-all cursor-pointer text-xs space-y-1.5 ${
                       isSelected
                         ? 'bg-rose-50/80 border-rose-400 shadow-xs ring-2 ring-rose-200'
                         : isHovered
-                        ? 'bg-slate-50 border-slate-300 shadow-2xs'
-                        : 'bg-white border-slate-200 hover:border-slate-300'
+                        ? 'bg-paper border-slate-300 shadow-2xs'
+                        : 'bg-white border-line hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -464,16 +464,16 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                           className="w-3 h-3 rounded-full shrink-0 shadow-2xs"
                           style={{ backgroundColor: item.color }}
                         />
-                        <span className="font-bold text-slate-800 truncate" title={item.name}>
+                        <span className="font-bold text-ink truncate" title={item.name}>
                           {item.name}
                         </span>
                       </div>
-                      <span className="font-black text-slate-900 shrink-0">
-                        {item.value} <span className="text-[10px] text-slate-500 font-normal">({item.percentage}%)</span>
+                      <span className="font-black text-ink shrink-0">
+                        {item.value} <span className="text-[10px] text-muted font-normal">({item.percentage}%)</span>
                       </span>
                     </div>
 
-                    <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-sand rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
@@ -487,8 +487,8 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
               })}
             </div>
 
-            <div className="pt-2 text-[11px] text-slate-500 flex items-center justify-between px-1">
-              <span className="flex items-center gap-1 text-slate-600">
+            <div className="pt-2 text-[11px] text-muted flex items-center justify-between px-1">
+              <span className="flex items-center gap-1 text-body">
                 <Sparkles className="w-3 h-3 text-amber-500" />
                 <span>Dica: Clique em qualquer setor ou card para filtrar a escala da equipe abaixo.</span>
               </span>
@@ -508,14 +508,14 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
 
       {/* SEÇÃO 2: GERENCIAMENTO DA EQUIPE DE VOLUNTÁRIOS */}
       {!compactMode && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div className="bg-white p-6 sm:p-8 rounded-[14px] border border-line shadow-2xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
             <div>
-              <h3 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-base sm:text-lg font-black text-ink flex items-center gap-2">
                 <Users className="w-5 h-5 text-amber-600" />
                 <span>Escala e Contato com a Equipe ({filteredVolunteers.length})</span>
               </h3>
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-xs text-body mt-0.5">
                 Acione voluntários via WhatsApp para plantões, aulas de dança, treinos de futebol ou preparo de lanches.
               </p>
             </div>
@@ -524,7 +524,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-ink bg-sand hover:bg-slate-200 border border-line rounded-xl transition-colors cursor-pointer"
                 title="Exportar escala completa em planilha CSV"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-700" />
@@ -546,19 +546,19 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
 
           {/* Barra de Busca de Voluntários */}
           <div className="relative max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Buscar por nome, habilidade, área ou horário..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-full cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body p-1 rounded-full cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -568,10 +568,10 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
           {/* Lista de Cards dos Voluntários */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredVolunteers.length === 0 ? (
-              <div className="col-span-full p-12 text-center text-slate-500 space-y-2">
+              <div className="col-span-full p-12 text-center text-muted space-y-2">
                 <Users className="w-10 h-10 mx-auto text-slate-300" />
-                <p className="text-sm font-bold text-slate-800">Nenhum voluntário encontrado</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm font-bold text-ink">Nenhum voluntário encontrado</p>
+                <p className="text-xs text-muted">
                   Tente alterar os termos de busca ou remover o filtro selecionado.
                 </p>
                 {(searchTerm || selectedFilter) && (
@@ -598,12 +598,12 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                 return (
                   <div
                     key={vol.id}
-                    className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between space-y-4"
+                    className="p-5 rounded-[14px] bg-white border border-line hover:border-slate-300 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between space-y-4"
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h4 className="font-bold text-slate-900 text-sm leading-snug">
+                          <h4 className="font-bold text-ink text-sm leading-snug">
                             {vol.nome}
                           </h4>
                           <span
@@ -625,26 +625,26 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                             vol.ativo
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                              : 'bg-slate-100 text-slate-500'
+                              : 'bg-sand text-muted'
                           }`}
                         >
                           {vol.ativo ? 'Ativo' : 'Pausado'}
                         </span>
                       </div>
 
-                      <div className="space-y-1.5 text-xs text-slate-600">
+                      <div className="space-y-1.5 text-xs text-body">
                         <div className="flex items-center gap-2">
-                          <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="font-medium text-slate-700">{vol.disponibilidade}</span>
+                          <Clock className="w-3.5 h-3.5 text-muted shrink-0" />
+                          <span className="font-medium text-body">{vol.disponibilidade}</span>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <Phone className="w-3.5 h-3.5 text-muted shrink-0" />
                           <span>{vol.telefone}</span>
                         </div>
 
                         {vol.habilidades && (
-                          <p className="text-[11px] text-slate-500 pt-1 line-clamp-2">
+                          <p className="text-[11px] text-muted pt-1 line-clamp-2">
                             <strong>Habilidades:</strong> {vol.habilidades}
                           </p>
                         )}
@@ -652,7 +652,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                     </div>
 
                     {/* Botões de Ação Rápida */}
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div className="pt-3 border-t border-line flex items-center justify-between gap-2">
                       <a
                         href={whatsappUrl}
                         target="_blank"
@@ -669,7 +669,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(vol)}
-                            className="p-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-xs font-medium text-body hover:text-ink hover:bg-sand rounded-lg transition-colors cursor-pointer"
                             title="Editar voluntário"
                           >
                             Editar
@@ -677,7 +677,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                           <button
                             type="button"
                             onClick={() => handleToggleActive(vol.id)}
-                            className="p-1.5 text-xs font-medium text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 text-xs font-medium text-muted hover:text-body hover:bg-sand rounded-lg transition-colors cursor-pointer"
                             title={vol.ativo ? 'Pausar participação' : 'Reativar voluntário'}
                           >
                             {vol.ativo ? 'Pausar' : 'Ativar'}
@@ -695,24 +695,24 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
 
       {/* MODAL DE CADASTRO / EDIÇÃO DE VOLUNTÁRIO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-lg bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer"
+              className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-[14px] bg-rose-100 text-rose-800 flex items-center justify-center">
                 <HandHeart className="w-5 h-5 text-rose-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-ink">
                   {editingVolunteer ? 'Editar Voluntário' : 'Novo Voluntário da Equipe'}
                 </h3>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-muted">
                   Associação Novo Amanhecer · Trindade - GO
                 </span>
               </div>
@@ -720,7 +720,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
 
             <form onSubmit={handleSaveVolunteer} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Nome Completo
                 </label>
                 <input
@@ -729,13 +729,13 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                   placeholder="Ex: Vanessa Cristina Mendonça"
                   value={formNome}
                   onChange={(e) => setFormNome(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Telefone / WhatsApp
                   </label>
                   <input
@@ -744,12 +744,12 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                     placeholder="(62) 99999-9999"
                     value={formTelefone}
                     onChange={(e) => setFormTelefone(e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    className="w-full px-3.5 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     E-mail
                   </label>
                   <input
@@ -757,20 +757,20 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                     placeholder="voluntario@gmail.com"
                     value={formEmail}
                     onChange={(e) => setFormEmail(e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    className="w-full px-3.5 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Área de Atuação
                   </label>
                   <select
                     value={formArea}
                     onChange={(e) => setFormArea(e.target.value as VolunteerArea)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="Oficina de Ballet">Oficina de Ballet</option>
                     <option value="Treinos de Futebol">Treinos de Futebol</option>
@@ -783,13 +783,13 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                  <label className="block text-xs font-bold text-body uppercase mb-1">
                     Disponibilidade
                   </label>
                   <select
                     value={formDisponibilidade}
                     onChange={(e) => setFormDisponibilidade(e.target.value as VolunteerAvailability)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                   >
                     <option value="Sábados (Manhã)">Sábados (Manhã)</option>
                     <option value="Finais de Semana (Geral)">Finais de Semana (Geral)</option>
@@ -802,7 +802,7 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Habilidades & Especialidades
                 </label>
                 <input
@@ -810,12 +810,12 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                   placeholder="Ex: Dança clássica, arbitragem, culinária, contação de histórias..."
                   value={formHabilidades}
                   onChange={(e) => setFormHabilidades(e.target.value)}
-                  className="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                <label className="block text-xs font-bold text-body uppercase mb-1">
                   Observações Internas da Coordenação
                 </label>
                 <textarea
@@ -823,15 +823,15 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
                   placeholder="Anotações sobre disponibilidade, turmas acompanhadas, etc."
                   value={formObservacoes}
                   onChange={(e) => setFormObservacoes(e.target.value)}
-                  className="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
 
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
+              <div className="pt-3 flex justify-end gap-2 border-t border-line">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-body hover:bg-sand rounded-xl cursor-pointer"
                 >
                   Cancelar
                 </button>
