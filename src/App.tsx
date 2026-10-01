@@ -6,7 +6,7 @@
  * Portal Institucional & Painel Administrativo Completo
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Navbar } from './components/public/Navbar';
 import { Hero } from './components/public/Hero';
 import { Sobre } from './components/public/Sobre';
@@ -23,10 +23,25 @@ import { PoliticaPrivacidadeModal } from './components/public/PoliticaPrivacidad
 import { PwaInstallBanner } from './components/pwa/PwaInstallBanner';
 import { FloatingWhatsAppButton } from './components/public/FloatingWhatsAppButton';
 
-// Área Administrativa
-import { AdminLogin } from './components/admin/AdminLogin';
-import { AdminDashboard } from './components/admin/AdminDashboard';
-import { EmailNotificationModal } from './components/admin/EmailNotificationModal';
+// Área Administrativa: carregada sob demanda (lazy), para que quem visita só o
+// site público não baixe o código do painel, dos gráficos e da exportação.
+const AdminLogin = lazy(() =>
+  import('./components/admin/AdminLogin').then((m) => ({ default: m.AdminLogin }))
+);
+const AdminDashboard = lazy(() =>
+  import('./components/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
+);
+const EmailNotificationModal = lazy(() =>
+  import('./components/admin/EmailNotificationModal').then((m) => ({ default: m.EmailNotificationModal }))
+);
+
+function AdminLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-paper text-sm text-ink">
+      Carregando painel...
+    </div>
+  );
+}
 
 import {
   INITIAL_SITE_CONTENT,
@@ -350,10 +365,12 @@ export default function App() {
   if (currentView === 'login' || !authUser) {
     if (currentView === 'admin' || currentView === 'login') {
       return (
-        <AdminLogin
-          onLoginSuccess={handleLoginSuccess}
-          onBackToSite={() => navigateTo('/')}
-        />
+        <Suspense fallback={<AdminLoading />}>
+          <AdminLogin
+            onLoginSuccess={handleLoginSuccess}
+            onBackToSite={() => navigateTo('/')}
+          />
+        </Suspense>
       );
     }
   }
@@ -363,7 +380,7 @@ export default function App() {
 
     // Painel Administrativo Autenticado com RBAC e Dados da Nuvem
     return (
-      <>
+      <Suspense fallback={<AdminLoading />}>
         {toastMessage && (
           <div className="fixed top-5 right-5 z-50 bg-brand-dark text-white px-4 py-3 rounded-md shadow-2xl border border-brand-line flex items-center gap-2 text-xs animate-in slide-in-from-top duration-300">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -400,7 +417,7 @@ export default function App() {
             showToast('Notificação por e-mail disparada ao beneficiário!');
           }}
         />
-      </>
+      </Suspense>
     );
   }
 
