@@ -36,5 +36,24 @@
     "COORDINATION_EMAIL": "",
     "SEED_DEMO_DATA": "false",
     "DEV_MODE": "false"
+  },
+
+  // Prévias (sites de teste criados para cada branch/PR com "wrangler preview").
+  // Usam um banco D1 SEPARADO, com dados fictícios: nunca encostam nos dados reais.
+  // EMAIL_FROM vazio = prévias não enviam e-mails de verdade.
+  "previews": {
+    "vars": {
+      "ADMIN_EMAIL": "coordenacao@novoamanhecer.org.br",
+      "EMAIL_FROM": "",
+      "COORDINATION_EMAIL": "",
+      "SEED_DEMO_DATA": "true",
+      "DEV_MODE": "false"
+    },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_id": "c10e78ab-eedf-4b78-a51b-4fbcc9b777bb"
+      }
+    ]
   }
 }
