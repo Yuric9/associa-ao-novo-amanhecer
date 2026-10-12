@@ -45,6 +45,7 @@ worker/
   auth.ts, crypto.ts   login, JWT e senhas (PBKDF2)
   db.ts, d1.ts         acesso ao banco D1
 migrations/            estrutura do banco
+test/                  testes automáticos (npm test)
 public/                imagens, ícones e manifesto PWA
 ```
 
@@ -68,9 +69,24 @@ Login do painel: `ADMIN_EMAIL` (em `wrangler.jsonc`) + `ADMIN_INITIAL_PASSWORD` 
 | `npm run dev` | Compila o site e roda Worker + banco localmente |
 | `npm run dev:front` | Só o frontend com recarga automática (sem API) |
 | `npm run build` | Gera o site em `dist/` |
-| `npm run lint` | Checagem de tipos do frontend e do Worker |
+| `npm run lint` | Checagem de tipos do frontend, do Worker e dos testes |
+| `npm test` | Roda todos os testes automáticos |
+| `npm run test:watch` | Roda os testes de novo a cada arquivo salvo |
 | `npm run deploy` | Compila e publica na Cloudflare |
 | `npm run db:migrate` | Aplica as migrações no banco D1 remoto |
+
+## Testes
+
+```bash
+npm test
+```
+
+Os testes ficam em `test/` e rodam sem internet e sem tocar em nenhum banco real:
+
+- `test/worker/` — a API roda dentro do mesmo ambiente da Cloudflare (workerd), com um banco D1
+  temporário. Cobre login, sessões (logout e troca de senha derrubam o token), limite de
+  tentativas, formulário público (CPF, LGPD, anti-spam) e o que cada perfil pode ver.
+- `test/unit/` — funções do site: validação e máscaras de CPF/telefone e o código PIX copia e cola.
 
 ## Publicação
 
