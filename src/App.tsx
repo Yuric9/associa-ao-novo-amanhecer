@@ -286,9 +286,14 @@ export default function App() {
     if (typeof userOrEmail === 'object' && userOrEmail?.email) {
       setAuthUser(userOrEmail);
       showToast(`Bem-vindo(a), ${userOrEmail.nome || userOrEmail.email}! Nível: ${userOrEmail.role}`);
-    } else {
-      showToast(`Bem-vindo ao painel administrativo!`);
+      // Não usar navigateTo aqui: ele ainda enxerga o authUser antigo (null) desta
+      // renderização e mandaria de volta para /login.
+      window.history.pushState({}, '', '/admin');
+      setCurrentView('admin');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
+    showToast(`Bem-vindo ao painel administrativo!`);
     navigateTo('/admin');
   };
 
@@ -301,7 +306,9 @@ export default function App() {
     setAuthUser(null);
     setBeneficiaries([]);
     setVolunteers([]);
-    navigateTo('/login');
+    // Mesmo motivo do login: navigateTo ainda veria o usuário antigo e iria para /admin.
+    window.history.pushState({}, '', '/login');
+    setCurrentView('login');
     showToast('Sessão administrativa encerrada com segurança.');
   };
 

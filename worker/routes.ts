@@ -1,7 +1,16 @@
 import { Router, defer } from './http';
 import type { Req as Request, Res as Response, AuthenticatedRequest } from './http';
 import { db, logAudit, getUserRoles, assignUserRole } from './db';
-import { authenticateToken, requireRole, requireAdmin, getJwtSecret, resolvePrimaryRole, getOptionalUser } from './auth';
+import {
+  authenticateToken,
+  requireRole,
+  requireAdmin,
+  getJwtSecret,
+  resolvePrimaryRole,
+  getOptionalUser,
+  SESSION_COOKIE,
+  SESSION_TTL_SECONDS,
+} from './auth';
 import { hashPassword, verifyPassword, randomToken, signJwt } from './crypto';
 import { cfg, isDevMode } from './env';
 import {
@@ -80,19 +89,29 @@ apiRouter.post('/auth/login', async (req: Request, res: Response) => {
     return res.status(403).json({ error: 'Sua conta não possui nenhum perfil de acesso atribuído. Contate a coordenação.' });
   }
 
-  // Gerar token JWT seguro com validade de 24 horas
+  // Registrar a sessão no banco (o token só vale enquanto ela existir) e limpar as expiradas
+  const sessionId = randomToken(24);
+  const nowMs = Date.now();
+  await db.batch([
+    db.prepare('DELETE FROM sessions WHERE expires_at < ?').bind(nowMs),
+    db.prepare('INSERT INTO sessions (id, user_id, expires_at, ip_origem, criado_em) VALUES (?, ?, ?, ?, ?)')
+      .bind(sessionId, user.id, nowMs + SESSION_TTL_SECONDS * 1000, clientIp, new Date(nowMs).toISOString()),
+  ]);
+
+  // Gerar token JWT seguro com validade de 24 horas, ligado à sessão (sid)
   const token = await signJwt(
-    { id: user.id, email: user.email, role: primaryRole, roles },
+    { id: user.id, sid: sessionId, email: user.email, role: primaryRole, roles },
     getJwtSecret(),
-    24 * 60 * 60
+    SESSION_TTL_SECONDS
   );
 
-  // Definir cookie HTTP-Only para maior segurança
-  res.cookie('ana_token', token, {
+  // O token vai SOMENTE no cookie HttpOnly (não aparece no corpo da resposta,
+  // então nenhum script da página consegue lê-lo ou guardá-lo).
+  res.cookie(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: req.secure,
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: SESSION_TTL_SECONDS * 1000,
   });
 
   await logAudit({
@@ -107,7 +126,6 @@ apiRouter.post('/auth/login', async (req: Request, res: Response) => {
 
   return res.json({
     message: 'Login realizado com sucesso.',
-    token,
     user: {
       id: user.id,
       nome: user.nome,
@@ -127,7 +145,9 @@ apiRouter.get('/auth/me', authenticateToken, async (req: AuthenticatedRequest, r
 
 // Logout Seguro (Invalida Cookie e Notifica Sessão)
 apiRouter.post('/auth/logout', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  res.clearCookie('ana_token');
+  // Apagar a sessão invalida o token na hora, mesmo que alguém tenha copiado o cookie
+  await db.prepare('DELETE FROM sessions WHERE id = ?').run(req.sessionId);
+  res.clearCookie(SESSION_COOKIE);
   await logAudit({
     userId: req.user?.id,
     userEmail: req.user?.email,
@@ -230,6 +250,9 @@ apiRouter.post('/auth/reset-password', async (req: Request, res: Response) => {
   await db.prepare('UPDATE password_resets SET usado = 1 WHERE user_id = ?')
     .run(resetRecord.user_id);
 
+  // Encerra todas as sessões abertas: quem tinha a senha antiga é desconectado
+  await db.prepare('DELETE FROM sessions WHERE user_id = ?').run(resetRecord.user_id);
+
   await logAudit({
     userId: resetRecord.user_id,
     action: 'PASSWORD_RESET_COMPLETED',
@@ -331,6 +354,7 @@ apiRouter.delete('/auth/users/:id', authenticateToken, requireAdmin, async (req:
   }
 
   // Deleta do users (as regras de CASCADE removem o user_roles automaticamente)
+  await db.prepare('DELETE FROM sessions WHERE user_id = ?').run(id);
   await db.prepare('DELETE FROM user_roles WHERE user_id = ?').run(id);
   await db.prepare('DELETE FROM users WHERE id = ?').run(id);
 
