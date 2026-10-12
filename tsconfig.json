@@ -30,6 +30,8 @@
     "worker",
     "dist",
     "node_modules",
-    ".wrangler"
+    ".wrangler",
+    "test",
+    "vitest.config.ts"
   ]
 }
