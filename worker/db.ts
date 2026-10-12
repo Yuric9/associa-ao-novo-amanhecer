@@ -1,7 +1,8 @@
 import { db } from './d1';
 import { cfg } from './env';
 import { hashPassword } from './crypto';
-import schemaSql from '../migrations/0001_init.sql';
+import initSql from '../migrations/0001_init.sql';
+import sessionsSql from '../migrations/0002_sessions.sql';
 import {
   INITIAL_SITE_CONTENT,
   INITIAL_PROJECTS,
@@ -34,8 +35,8 @@ async function count(sql: string): Promise<number> {
 }
 
 async function initDatabase() {
-  // 1. Estrutura (migrations/0001_init.sql)
-  const statements = schemaSql
+  // 1. Estrutura (arquivos da pasta migrations/, em ordem)
+  const statements = [initSql, sessionsSql].join('\n')
     .split('\n')
     .filter((line) => !line.trim().startsWith('--'))
     .join('\n')

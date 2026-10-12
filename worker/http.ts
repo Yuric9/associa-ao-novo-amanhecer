@@ -20,6 +20,8 @@ export interface Req {
   secure: boolean;
   ctx: ExecutionContext;
   user?: AuthRequestUser;
+  /** Sessão do usuário logado (tabela sessions), preenchida por authenticateToken. */
+  sessionId?: string;
 }
 
 export type AuthenticatedRequest = Req;

@@ -10,22 +10,21 @@ import {
   SystemStats,
 } from '../types';
 
-const TOKEN_STORAGE_KEY = 'ana_jwt_token';
+// A sessão fica num cookie HttpOnly definido pelo servidor: o JavaScript da página
+// não lê nem guarda o token. No navegador fica só o perfil (nome, e-mail, papel),
+// usado para desenhar a tela enquanto o servidor confirma a sessão em /auth/me.
 const USER_STORAGE_KEY = 'ana_auth_user';
 
-export function getStoredToken(): string | null {
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
-}
-
-export function setStoredToken(token: string) {
-  localStorage.setItem(TOKEN_STORAGE_KEY, token);
-}
+// Chave antiga onde o token ficava salvo (versões anteriores). Removida ao carregar.
+const LEGACY_TOKEN_KEY = 'ana_jwt_token';
 
 // Chaves antigas que guardavam dados pessoais (CPF, endereço, telefone) no navegador.
 export const LEGACY_PII_KEYS = ['ana_trindade_beneficiarios', 'ana_trindade_voluntarios', 'ana_trindade_admins'];
 
-export function clearStoredToken() {
-  localStorage.removeItem(TOKEN_STORAGE_KEY);
+localStorage.removeItem(LEGACY_TOKEN_KEY);
+
+export function clearStoredSession() {
+  localStorage.removeItem(LEGACY_TOKEN_KEY);
   localStorage.removeItem(USER_STORAGE_KEY);
   LEGACY_PII_KEYS.forEach((k) => localStorage.removeItem(k));
 }
@@ -44,22 +43,18 @@ export function setStoredUser(user: AuthUser) {
   localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
 }
 
-// Fetch com headers e injeção automática de token JWT
+// Fetch para a API. O cookie de sessão vai junto automaticamente (mesmo domínio).
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = getStoredToken();
   const headers = new Headers(options.headers || {});
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
-
   const response = await fetch(`/api${endpoint}`, {
     ...options,
     headers,
+    credentials: 'same-origin',
   });
 
   const data = await response.json().catch(() => ({}));
@@ -68,7 +63,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     if (response.status === 401 || response.status === 403) {
       // Se a sessão expirou, podemos limpar credenciais locais
       if (endpoint === '/auth/me') {
-        clearStoredToken();
+        clearStoredSession();
       }
     }
     throw new Error(data.error || 'Ocorreu um erro ao processar a requisição no servidor.');
@@ -79,25 +74,25 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 export const api = {
   // === AUTENTICAÇÃO ===
-  async login(email: string, password: string): Promise<{ token: string; user: AuthUser }> {
-    const res = await request<{ token: string; user: AuthUser }>('/auth/login', {
+  async login(email: string, password: string): Promise<{ user: AuthUser }> {
+    const res = await request<{ user: AuthUser }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    setStoredToken(res.token);
     setStoredUser(res.user);
     return res;
   },
 
   async getMe(): Promise<AuthUser | null> {
-    const token = getStoredToken();
-    if (!token) return null;
+    // Sem perfil salvo, ninguém entrou neste navegador: evita uma chamada inútil
+    // a cada visita ao site público.
+    if (!getStoredUser()) return null;
     try {
       const res = await request<{ user: AuthUser }>('/auth/me');
       setStoredUser(res.user);
       return res.user;
     } catch {
-      clearStoredToken();
+      clearStoredSession();
       return null;
     }
   },
@@ -106,7 +101,7 @@ export const api = {
     try {
       await request('/auth/logout', { method: 'POST' });
     } finally {
-      clearStoredToken();
+      clearStoredSession();
     }
   },
 

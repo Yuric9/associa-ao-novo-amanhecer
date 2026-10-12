@@ -24,20 +24,36 @@ export async function resolvePrimaryRole(userId: string, roles: string[]): Promi
   return valid.find((r) => roles.includes(r)) ?? null;
 }
 
+/** Nome do cookie HttpOnly da sessão (o JavaScript do navegador não consegue lê-lo). */
+export const SESSION_COOKIE = 'ana_token';
+
+/** Duração da sessão: 24 horas. */
+export const SESSION_TTL_SECONDS = 24 * 60 * 60;
+
+// O token fica SOMENTE no cookie HttpOnly. Antes ele também ia para o localStorage,
+// onde qualquer script injetado na página conseguiria roubá-lo.
 function readToken(req: Req): string | undefined {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) return authHeader.slice(7);
-  return req.cookies.ana_token;
+  return req.cookies[SESSION_COOKIE];
 }
 
 type LoadResult =
-  | { ok: true; user: AuthRequestUser }
+  | { ok: true; user: AuthRequestUser; sessionId: string }
   | { ok: false; status: number; error: string };
 
+const SESSION_EXPIRED = 'Sua sessão expirou ou o token é inválido. Por favor, entre novamente.';
+
 async function loadUser(token: string): Promise<LoadResult> {
-  const decoded = await verifyJwt<{ id: string }>(token, getJwtSecret());
-  if (!decoded?.id) {
-    return { ok: false, status: 403, error: 'Sua sessão expirou ou o token é inválido. Por favor, entre novamente.' };
+  const decoded = await verifyJwt<{ id: string; sid: string }>(token, getJwtSecret());
+  if (!decoded?.id || !decoded.sid) {
+    return { ok: false, status: 401, error: SESSION_EXPIRED };
+  }
+
+  // A sessão precisa existir no banco: sair da conta ou trocar a senha a apaga,
+  // e o token deixa de valer na hora (mesmo que ainda não tenha expirado).
+  const session = await db.prepare('SELECT id FROM sessions WHERE id = ? AND user_id = ? AND expires_at > ?')
+    .get<{ id: string }>(decoded.sid, decoded.id, Date.now());
+  if (!session) {
+    return { ok: false, status: 401, error: SESSION_EXPIRED };
   }
 
   // Conferir no banco se o usuário ainda existe e está ativo (verificação 100% no servidor)
@@ -53,7 +69,7 @@ async function loadUser(token: string): Promise<LoadResult> {
     return { ok: false, status: 403, error: 'Sua conta não possui nenhum perfil de acesso atribuído. Contate a coordenação.' };
   }
 
-  return { ok: true, user: { id: user.id, nome: user.nome, email: user.email, role, roles } };
+  return { ok: true, user: { id: user.id, nome: user.nome, email: user.email, role, roles }, sessionId: session.id };
 }
 
 /** Lê o token (header Bearer ou cookie) sem exigir login. Retorna o usuário ativo ou null. */
@@ -79,6 +95,7 @@ export async function authenticateToken(req: Req, res: Res, next: Next) {
   }
 
   req.user = result.user;
+  req.sessionId = result.sessionId;
   await next();
 }
 
