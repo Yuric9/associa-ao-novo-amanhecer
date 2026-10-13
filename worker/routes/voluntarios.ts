@@ -1,8 +1,8 @@
-// Voluntários: inscrição pública e listagem.
+// Voluntários: inscrição pública, listagem e edição pela equipe.
 import { defer } from '../http';
-import type { Req as Request, Res as Response } from '../http';
+import type { Req as Request, Res as Response, AuthenticatedRequest } from '../http';
 import { db, logAudit } from '../db';
-import { authenticateToken, requireRole } from '../auth';
+import { authenticateToken, requireRole, getOptionalUser } from '../auth';
 import { validatePhone, validateEmail, sanitizeString, checkHoneypot, checkRateLimit } from '../validation';
 import { notifyCoordinationNewVolunteer, sendVolunteerConfirmation } from '../email';
 import { apiRouter } from './router';
@@ -23,7 +23,11 @@ apiRouter.post('/volunteers', async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'Inscrição recebida com sucesso.' });
   }
 
-  if (!(await checkRateLimit(clientIp, 'inscricao_voluntario', 5, 10))) {
+  // Cadastro feito pela equipe logada no painel: sem limite por IP e com e-mail opcional
+  const staff = await getOptionalUser(req);
+  const isStaff = !!staff && ['admin', 'coordenador', 'equipe'].includes(staff.role);
+
+  if (!isStaff && !(await checkRateLimit(clientIp, 'inscricao_voluntario', 5, 10))) {
     return res.status(429).json({ error: 'Muitas tentativas recentes. Aguarde alguns minutos.' });
   }
 
@@ -41,7 +45,7 @@ apiRouter.post('/volunteers', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Por favor, informe um telefone ou WhatsApp válido com DDD.' });
   }
 
-  if (!email || !validateEmail(email)) {
+  if (isStaff ? email && !validateEmail(email) : !email || !validateEmail(email)) {
     return res.status(400).json({ error: 'Por favor, informe um e-mail válido para contato.' });
   }
 
@@ -59,7 +63,7 @@ apiRouter.post('/volunteers', async (req: Request, res: Response) => {
     id,
     sanitizeString(nome, 100),
     sanitizeString(telefone, 30),
-    sanitizeString(email, 100),
+    sanitizeString(email || '', 100),
     sanitizeString(area, 60),
     sanitizeString(disponibilidade || 'Finais de Semana', 60),
     now,
@@ -81,16 +85,100 @@ apiRouter.post('/volunteers', async (req: Request, res: Response) => {
   defer(req, notifyCoordinationNewVolunteer({
     nome: sanitizeString(nome, 100),
     telefone: sanitizeString(telefone, 30),
-    email: sanitizeString(email, 100),
+    email: sanitizeString(email || '', 100),
     area: sanitizeString(area, 60),
     disponibilidade: sanitizeString(disponibilidade || 'Finais de Semana', 60),
   }), 'Erro ao despachar e-mail de voluntario para coordenacao');
 
-  defer(req, sendVolunteerConfirmation({
-    nome: sanitizeString(nome, 100),
-    email: sanitizeString(email, 100),
-    area: sanitizeString(area, 60),
-  }), 'Erro ao despachar confirmacao ao voluntario');
+  if (email) {
+    defer(req, sendVolunteerConfirmation({
+      nome: sanitizeString(nome, 100),
+      email: sanitizeString(email, 100),
+      area: sanitizeString(area, 60),
+    }), 'Erro ao despachar confirmacao ao voluntario');
+  }
 
-  return res.status(201).json({ message: 'Inscrição de voluntário gravada no banco com sucesso! Entraremos em contato via WhatsApp.' });
+  return res.status(201).json({ message: 'Inscrição de voluntário gravada no banco com sucesso! Entraremos em contato via WhatsApp.', id });
+});
+
+// Edição de voluntário pela equipe (dados, área, disponibilidade e ativo/pausado).
+// Campo ausente no pedido = mantém o valor atual; campo vazio = apaga (só nos opcionais).
+apiRouter.patch('/volunteers/:id', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const body = req.body ?? {};
+
+  const current = await db.prepare('SELECT id, nome, ativo FROM volunteers WHERE id = ?').get(id) as { id: string; nome: string; ativo: number } | undefined;
+  if (!current) {
+    return res.status(404).json({ error: 'Voluntário não encontrado no banco de dados.' });
+  }
+
+  const CAMPOS: Record<string, { max: number; obrigatorio: boolean }> = {
+    nome: { max: 100, obrigatorio: true },
+    telefone: { max: 30, obrigatorio: true },
+    area: { max: 60, obrigatorio: true },
+    disponibilidade: { max: 60, obrigatorio: true },
+    email: { max: 100, obrigatorio: false },
+    habilidades: { max: 255, obrigatorio: false },
+    observacoes: { max: 500, obrigatorio: false },
+  };
+
+  const valores: Record<string, string | null> = {};
+  for (const [campo, regra] of Object.entries(CAMPOS)) {
+    if (body[campo] === undefined || body[campo] === null) {
+      valores[campo] = null; // não enviado: COALESCE mantém o valor do banco
+      continue;
+    }
+    const valor = sanitizeString(body[campo], regra.max);
+    if (regra.obrigatorio && !valor) {
+      return res.status(400).json({ error: `O campo "${campo}" é obrigatório e não pode ficar em branco.` });
+    }
+    valores[campo] = valor;
+  }
+
+  if (valores.telefone && !validatePhone(valores.telefone)) {
+    return res.status(400).json({ error: 'Telefone inválido. Informe DDD e número.' });
+  }
+  if (valores.email && !validateEmail(valores.email)) {
+    return res.status(400).json({ error: 'O formato do e-mail informado é inválido.' });
+  }
+
+  const ativo = typeof body.ativo === 'boolean' ? (body.ativo ? 1 : 0) : null;
+
+  await db.prepare(`
+    UPDATE volunteers SET
+      nome = COALESCE(?, nome),
+      telefone = COALESCE(?, telefone),
+      email = COALESCE(?, email),
+      area = COALESCE(?, area),
+      disponibilidade = COALESCE(?, disponibilidade),
+      habilidades = COALESCE(?, habilidades),
+      observacoes = COALESCE(?, observacoes),
+      ativo = COALESCE(?, ativo)
+    WHERE id = ?
+  `).run(
+    valores.nome,
+    valores.telefone,
+    valores.email,
+    valores.area,
+    valores.disponibilidade,
+    valores.habilidades,
+    valores.observacoes,
+    ativo,
+    id
+  );
+
+  await logAudit({
+    userId: req.user?.id,
+    userEmail: req.user?.email,
+    userRole: req.user?.role,
+    action: 'VOLUNTEER_UPDATED',
+    entity: 'VOLUNTEER',
+    entityId: id,
+    details: ativo !== null && ativo !== current.ativo
+      ? `Voluntário ${current.nome} ${ativo ? 'reativado' : 'pausado'}.`
+      : `Cadastro do voluntário ${current.nome} atualizado.`,
+    ipAddress: req.ip,
+  });
+
+  return res.json({ message: 'Dados do voluntário atualizados no banco de dados.' });
 });

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import Papa from 'papaparse';
 import { Volunteer } from '../../types';
+import { api } from '../../services/api';
 import {
   FORM_VAZIO,
   agruparVoluntarios,
@@ -69,28 +70,51 @@ export const VoluntariosRoscaChart: React.FC<VoluntariosRoscaChartProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleSaveVolunteer = (e: React.FormEvent) => {
+  // Toda alteração é gravada no servidor ANTES de mudar a tela. Antes, cadastrar, editar e
+  // pausar só mudavam a tela: ao recarregar a página, tudo voltava como estava no banco.
+  const erroDoServidor = (err: unknown) =>
+    alert(err instanceof Error ? err.message : 'Não foi possível salvar no servidor. Tente novamente.');
+
+  const handleSaveVolunteer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.nome.trim() || !form.telefone.trim()) return;
+    const dados = formLimpo(form);
 
-    if (editingVolunteer) {
-      onUpdateVolunteers?.(
-        volunteers.map((v) => (v.id === editingVolunteer.id ? { ...v, ...formLimpo(form) } : v))
-      );
-    } else {
-      const newVol: Volunteer = {
-        id: `vol-${Date.now()}`,
-        ...formLimpo(form),
-        ativo: true,
-        data_inicio: new Date().toISOString().split('T')[0],
-      };
-      onUpdateVolunteers?.([newVol, ...volunteers]);
+    try {
+      if (editingVolunteer) {
+        // Envia só o que mudou
+        const original = formLimpo(formDoVoluntario(editingVolunteer));
+        const alterado = Object.fromEntries(
+          Object.entries(dados).filter(([campo, valor]) => original[campo as keyof typeof original] !== valor)
+        );
+        if (Object.keys(alterado).length > 0) await api.updateVolunteer(editingVolunteer.id, alterado);
+        onUpdateVolunteers?.(volunteers.map((v) => (v.id === editingVolunteer.id ? { ...v, ...dados } : v)));
+      } else {
+        // Cadastro feito pela equipe no painel: o consentimento LGPD é colhido pessoalmente.
+        const { id } = await api.createVolunteer({ ...dados, consentimento_lgpd: true });
+        const newVol: Volunteer = {
+          id,
+          ...dados,
+          ativo: true,
+          data_inicio: new Date().toISOString().split('T')[0],
+        };
+        onUpdateVolunteers?.([newVol, ...volunteers]);
+      }
+    } catch (err) {
+      return erroDoServidor(err);
     }
 
     setIsModalOpen(false);
   };
 
-  const handleToggleActive = (id: string) => {
+  const handleToggleActive = async (id: string) => {
+    const alvo = volunteers.find((v) => v.id === id);
+    if (!alvo) return;
+    try {
+      await api.updateVolunteer(id, { ativo: !alvo.ativo });
+    } catch (err) {
+      return erroDoServidor(err);
+    }
     onUpdateVolunteers?.(volunteers.map((v) => (v.id === id ? { ...v, ativo: !v.ativo } : v)));
   };
 
