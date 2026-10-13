@@ -47,8 +47,12 @@ apiRouter.post('/beneficiaries', async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'Inscrição registrada com sucesso.' });
   }
 
-  // 2. Proteção Anti-Spam: Limite de envios (Rate Limiting)
-  if (!(await checkRateLimit(clientIp, 'cadastro_beneficiario', 6, 10))) {
+  // Cadastro feito pela equipe logada no painel (pode definir status e não entra no limite por IP)
+  const staff = await getOptionalUser(req);
+  const isStaff = !!staff && ['admin', 'coordenador', 'equipe'].includes(staff.role);
+
+  // 2. Proteção Anti-Spam: Limite de envios (Rate Limiting), só para o formulário público
+  if (!isStaff && !(await checkRateLimit(clientIp, 'cadastro_beneficiario', 6, 10))) {
     return res.status(429).json({
       error: 'Limite de cadastros por conexão atingido. Por favor, aguarde alguns minutos antes de enviar novo formulário.',
     });
@@ -108,9 +112,7 @@ apiRouter.post('/beneficiaries', async (req: Request, res: Response) => {
 
   // Formulário público sempre entra como 'Pendente'. Só a equipe logada pode definir outro status
   // (antes qualquer visitante podia se cadastrar já como 'Aprovado').
-  const staff = await getOptionalUser(req);
-  const canSetStatus = !!staff && ['admin', 'coordenador', 'equipe'].includes(staff.role);
-  const finalStatus = canSetStatus && status ? status : 'Pendente';
+  const finalStatus = isStaff && status ? status : 'Pendente';
 
   const id = `ben-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString().split('T')[0];
@@ -170,18 +172,53 @@ apiRouter.post('/beneficiaries', async (req: Request, res: Response) => {
 // Atualização de Beneficiário (Equipe ou Admin)
 apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', 'equipe', 'coordenador']), async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
-  const { nome, cpf, nascimento, telefone, email, endereco, projeto, status, observacoes, motivo_status } = req.body;
+  const body = req.body ?? {};
 
   const current = await db.prepare('SELECT id, nome, status FROM beneficiaries WHERE id = ?').get(id) as { id: string; nome: string; status: string } | undefined;
   if (!current) {
     return res.status(404).json({ error: 'Beneficiário não encontrado no banco de dados.' });
   }
 
-  if (cpf && !validateCPF(cpf)) {
+  // Campo ausente no pedido = mantém o valor atual. Campo enviado vazio = apaga,
+  // mas só nos opcionais; os obrigatórios não podem ficar em branco.
+  const CAMPOS: Record<string, { max: number; obrigatorio: boolean }> = {
+    nome: { max: 120, obrigatorio: true },
+    cpf: { max: 20, obrigatorio: true },
+    nascimento: { max: 20, obrigatorio: true },
+    telefone: { max: 30, obrigatorio: true },
+    projeto: { max: 100, obrigatorio: true },
+    status: { max: 30, obrigatorio: true },
+    email: { max: 100, obrigatorio: false },
+    endereco: { max: 200, obrigatorio: false },
+    observacoes: { max: 500, obrigatorio: false },
+    motivo_status: { max: 300, obrigatorio: false },
+  };
+
+  const valores: Record<string, string | null> = {};
+  for (const [campo, regra] of Object.entries(CAMPOS)) {
+    if (body[campo] === undefined || body[campo] === null) {
+      valores[campo] = null; // não enviado: COALESCE mantém o valor do banco
+      continue;
+    }
+    const valor = sanitizeString(body[campo], regra.max);
+    if (regra.obrigatorio && !valor) {
+      return res.status(400).json({ error: `O campo "${campo}" é obrigatório e não pode ficar em branco.` });
+    }
+    valores[campo] = valor;
+  }
+
+  if (valores.cpf && !validateCPF(valores.cpf)) {
     return res.status(400).json({ error: 'CPF inválido.' });
+  }
+  if (valores.telefone && !validatePhone(valores.telefone)) {
+    return res.status(400).json({ error: 'Telefone inválido. Informe DDD e número.' });
+  }
+  if (valores.email && !validateEmail(valores.email)) {
+    return res.status(400).json({ error: 'O formato do e-mail informado é inválido.' });
   }
 
   const now = new Date().toISOString().split('T')[0];
+  const status = valores.status;
 
   await db.prepare(`
     UPDATE beneficiaries SET
@@ -198,16 +235,16 @@ apiRouter.patch('/beneficiaries/:id', authenticateToken, requireRole(['admin', '
       atualizado_em = ?
     WHERE id = ?
   `).run(
-    nome ? sanitizeString(nome, 120) : null,
-    cpf ? sanitizeString(cpf, 20) : null,
-    nascimento ? sanitizeString(nascimento, 20) : null,
-    telefone ? sanitizeString(telefone, 30) : null,
-    email ? sanitizeString(email, 100) : null,
-    endereco ? sanitizeString(endereco, 200) : null,
-    projeto ? sanitizeString(projeto, 100) : null,
-    status ? sanitizeString(status, 30) : null,
-    observacoes ? sanitizeString(observacoes, 500) : null,
-    motivo_status ? sanitizeString(motivo_status, 300) : null,
+    valores.nome,
+    valores.cpf,
+    valores.nascimento,
+    valores.telefone,
+    valores.email,
+    valores.endereco,
+    valores.projeto,
+    valores.status,
+    valores.observacoes,
+    valores.motivo_status,
     now,
     id
   );
