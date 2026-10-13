@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Beneficiary, BeneficiaryStatus, StatusEmailNotification, ProjectCard } from '../../types';
 import { validateCPF, cleanDigits } from '../../utils/validation';
 import { exportBeneficiariesToCsv } from '../../utils/exportCsv';
+import { api } from '../../services/api';
 import {
   FILTROS_VAZIOS,
   contarPorProjeto,
@@ -60,10 +61,21 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
   const hasActiveFilters = temFiltrosAtivos(filtros);
   const filterStats = contarPorStatus(filteredBeneficiaries, totalGeral);
 
+  // Toda alteração é gravada no servidor ANTES de mudar a tela. Antes, aprovar, editar, cadastrar
+  // e excluir só mudavam a tela: ao recarregar a página, tudo voltava como estava no banco.
+  const erroDoServidor = (err: unknown) =>
+    alert(err instanceof Error ? err.message : 'Não foi possível salvar no servidor. Tente novamente.');
+
   // Alteração de Status com Gatilho de E-mail
-  const handleStatusChange = (beneficiaryId: string, newStatus: BeneficiaryStatus) => {
+  const handleStatusChange = async (beneficiaryId: string, newStatus: BeneficiaryStatus) => {
     const target = beneficiaries.find((b) => b.id === beneficiaryId);
     if (!target) return;
+
+    try {
+      await api.updateBeneficiary(beneficiaryId, { status: newStatus });
+    } catch (err) {
+      return erroDoServidor(err);
+    }
 
     onUpdateBeneficiaries(
       beneficiaries.map((b) => (b.id === beneficiaryId ? { ...b, status: newStatus, atualizado_em: hoje() } : b))
@@ -80,15 +92,35 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
     });
   };
 
-  const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Tem certeza que deseja remover o cadastro de "${name}"?`)) {
-      onUpdateBeneficiaries(beneficiaries.filter((b) => b.id !== id));
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Tem certeza que deseja remover o cadastro de "${name}"?`)) return;
+    try {
+      await api.deleteBeneficiary(id);
+    } catch (err) {
+      return erroDoServidor(err);
     }
+    onUpdateBeneficiaries(beneficiaries.filter((b) => b.id !== id));
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBeneficiary) return;
+
+    // Envia só o que mudou: assim, editar o nome de alguém cadastrado com um CPF antigo fora do
+    // padrão não esbarra na validação de CPF do servidor.
+    const campos = ['nome', 'cpf', 'nascimento', 'telefone', 'email', 'endereco', 'projeto', 'status', 'observacoes'] as const;
+    const alterado: Partial<Beneficiary> = {};
+    for (const campo of campos) {
+      if (formData[campo] !== editingBeneficiary[campo]) Object.assign(alterado, { [campo]: formData[campo] });
+    }
+
+    if (Object.keys(alterado).length > 0) {
+      try {
+        await api.updateBeneficiary(editingBeneficiary.id, alterado);
+      } catch (err) {
+        return erroDoServidor(err);
+      }
+    }
 
     onUpdateBeneficiaries(
       beneficiaries.map((b) =>
@@ -98,7 +130,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
     setEditingBeneficiary(null);
   };
 
-  const handleSaveAdd = (e: React.FormEvent) => {
+  const handleSaveAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nome || !formData.cpf) {
       alert('Por favor, preencha pelo menos o Nome e o CPF do beneficiário.');
@@ -125,6 +157,14 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
       criado_em: hoje(),
       atualizado_em: hoje(),
     };
+
+    try {
+      // Cadastro feito pela equipe no painel: o consentimento LGPD é colhido pessoalmente.
+      const { id } = await api.createBeneficiary({ ...newBeneficiary, consentimento_lgpd: true });
+      newBeneficiary.id = id;
+    } catch (err) {
+      return erroDoServidor(err);
+    }
 
     onUpdateBeneficiaries([newBeneficiary, ...beneficiaries]);
     setShowAddModal(false);
