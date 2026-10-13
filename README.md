@@ -41,7 +41,8 @@ src/
   utils/               PIX, validações, exportação CSV
 worker/
   index.ts             ponto de entrada do Worker
-  routes.ts            rotas da API
+  routes/              rotas da API, um arquivo por assunto
+                       (auth, beneficiarios, voluntarios, doacoes, conteudo...)
   auth.ts, crypto.ts   login, JWT e senhas (PBKDF2)
   db.ts, d1.ts         acesso ao banco D1
 migrations/            estrutura do banco
