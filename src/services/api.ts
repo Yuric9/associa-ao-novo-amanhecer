@@ -167,9 +167,16 @@ export const api = {
     return request<Volunteer[]>('/volunteers');
   },
 
-  async createVolunteer(data: Partial<Volunteer> & { consentimento_lgpd: boolean; hp_security_check?: string }): Promise<{ message: string }> {
+  async createVolunteer(data: Partial<Volunteer> & { consentimento_lgpd: boolean; hp_security_check?: string }): Promise<{ message: string; id: string }> {
     return request('/volunteers', {
       method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateVolunteer(id: string, data: Partial<Volunteer>): Promise<{ message: string }> {
+    return request(`/volunteers/${id}`, {
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
   },
