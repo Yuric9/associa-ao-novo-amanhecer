@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   Download,
   Upload,
-  RotateCcw,
   ShieldAlert,
   CheckCircle2,
   FileSpreadsheet,
@@ -12,7 +11,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Beneficiary, ProjectCard, GalleryPhoto, SiteContent, AdminUser } from '../../types';
-import { INITIAL_BENEFICIARIES, INITIAL_PROJECTS, INITIAL_GALLERY, INITIAL_SITE_CONTENT } from '../../data/initialData';
 import {
   exportBeneficiariesToCsv,
   exportProjectsReportToCsv,
@@ -27,12 +25,6 @@ interface BackupModalProps {
   gallery: GalleryPhoto[];
   content: SiteContent;
   admins: AdminUser[];
-  onRestoreAll: (data: {
-    beneficiaries: Beneficiary[];
-    projects: ProjectCard[];
-    gallery: GalleryPhoto[];
-    content: SiteContent;
-  }) => void;
 }
 
 export const BackupModal: React.FC<BackupModalProps> = ({
@@ -41,7 +33,6 @@ export const BackupModal: React.FC<BackupModalProps> = ({
   gallery,
   content,
   admins,
-  onRestoreAll,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -128,23 +119,6 @@ export const BackupModal: React.FC<BackupModalProps> = ({
       window.location.reload(); // recarrega tudo do banco já restaurado
     } catch (err) {
       alert((err as Error).message);
-    }
-  };
-
-  // Resetar para os dados originais
-  const handleResetToTrindadeDefault = () => {
-    if (
-      window.confirm(
-        'Tem certeza que deseja restaurar os dados originais da Associação Novo Amanhecer (Trindade - GO)?'
-      )
-    ) {
-      onRestoreAll({
-        beneficiaries: INITIAL_BENEFICIARIES,
-        projects: INITIAL_PROJECTS,
-        gallery: INITIAL_GALLERY,
-        content: INITIAL_SITE_CONTENT,
-      });
-      alert('Dados restaurados com sucesso para os registros iniciais!');
     }
   };
 
@@ -263,11 +237,11 @@ export const BackupModal: React.FC<BackupModalProps> = ({
       <div>
         <h2 className="text-lg font-bold text-ink">Backup Completo do Sistema (JSON)</h2>
         <p className="text-xs text-muted">
-          Gere cópias de segurança integrais em formato JSON, importe backups anteriores ou restaure a base de dados inicial de Trindade.
+          Gere cópias de segurança integrais em formato JSON ou restaure um backup anterior.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Opção 1: Exportar Backup JSON */}
         <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between">
           <div>
@@ -318,27 +292,6 @@ export const BackupModal: React.FC<BackupModalProps> = ({
               <span>Selecionar Arquivo JSON</span>
             </button>
           </div>
-        </div>
-
-        {/* Opção 3: Restaurar Dados Padrão de Trindade */}
-        <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-900 flex items-center justify-center mb-4">
-              <RotateCcw className="w-6 h-6 text-orange-700" />
-            </div>
-            <h3 className="font-bold text-ink text-base mb-1">Base Padrão de Trindade</h3>
-            <p className="text-xs text-body leading-relaxed mb-4">
-              Restaura os dados originais da Associação Novo Amanhecer (Ballet, Futebol, Book Solidário de Gestantes e Festas).
-            </p>
-          </div>
-
-          <button
-            onClick={handleResetToTrindadeDefault}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold text-orange-900 bg-orange-100 hover:bg-orange-200 rounded-xl transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Restaurar Base Inicial</span>
-          </button>
         </div>
       </div>
     </div>
