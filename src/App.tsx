@@ -31,9 +31,6 @@ const AdminLogin = lazy(() =>
 const AdminDashboard = lazy(() =>
   import('./components/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
 );
-const EmailNotificationModal = lazy(() =>
-  import('./components/admin/EmailNotificationModal').then((m) => ({ default: m.EmailNotificationModal }))
-);
 
 function AdminLoading() {
   return (
@@ -55,7 +52,6 @@ import {
   GalleryPhoto,
   Beneficiary,
   AdminUser,
-  StatusEmailNotification,
   Volunteer,
   AuthUser,
 } from './types';
@@ -119,10 +115,6 @@ export default function App() {
   const [isParceiroModalOpen, setIsParceiroModalOpen] = useState(false);
   const [isPoliticaModalOpen, setIsPoliticaModalOpen] = useState(false);
   const [predefinedProject, setPredefinedProject] = useState<string | undefined>(undefined);
-
-  // Modal de Notificação por E-mail (Admin)
-  const [pendingEmailNotification, setPendingEmailNotification] =
-    useState<StatusEmailNotification | null>(null);
 
   // Toast de Notificação
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -399,16 +391,6 @@ export default function App() {
           onUpdateAdmins={setAdmins}
           volunteers={volunteers}
           onUpdateVolunteers={setVolunteers}
-          onRequestEmailNotification={(notif) => setPendingEmailNotification(notif)}
-        />
-
-        {/* Modal de Confirmação de E-mail */}
-        <EmailNotificationModal
-          notification={pendingEmailNotification}
-          onClose={() => setPendingEmailNotification(null)}
-          onSend={(msg) => {
-            showToast('Notificação por e-mail disparada ao beneficiário!');
-          }}
         />
       </Suspense>
     );

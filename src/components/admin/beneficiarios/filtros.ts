@@ -148,16 +148,5 @@ export function nomeArquivoCsv(projeto: string, data: string): string | undefine
   return undefined;
 }
 
-/** Mensagem do e-mail enviado ao beneficiário quando o status muda. */
-export function mensagemMudancaStatus(nome: string, projeto: string, novoStatus: BeneficiaryStatus): string {
-  let msg = `Olá, ${nome}! Informamos que a sua inscrição para o projeto "${projeto}" na Associação Novo Amanhecer (Trindade - GO) teve seu status atualizado para: ${novoStatus.toUpperCase()}.`;
-  if (novoStatus === 'Aprovado') {
-    msg += ` Parabéns! Por favor, entre em contato pelo nosso WhatsApp ou venha à nossa sede para confirmar sua participação e retirar os materiais/agendar o ensaio.`;
-  } else if (novoStatus === 'Atendido/Entregue') {
-    msg += ` Registramos com alegria o atendimento ou entrega concluída. Esperamos que faça bom proveito!`;
-  }
-  return msg;
-}
-
 /** Data de hoje no formato AAAA-MM-DD. */
 export const hoje = () => new Date().toISOString().split('T')[0];

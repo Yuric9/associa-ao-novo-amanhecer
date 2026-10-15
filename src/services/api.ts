@@ -126,6 +126,16 @@ export const api = {
   },
 
   // === USUÁRIOS ADMIN / COORDENAÇÃO (RBAC) ===
+  /** Troca a própria senha (pede a atual). As outras sessões são encerradas. */
+  async trocarMinhaSenha(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+    return request('/auth/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) });
+  },
+
+  /** Administrador define uma senha provisória para outra pessoa. */
+  async redefinirSenhaDeUsuario(id: string, newPassword: string): Promise<{ message: string }> {
+    return request(`/auth/users/${encodeURIComponent(id)}/password`, { method: 'PUT', body: JSON.stringify({ newPassword }) });
+  },
+
   async getUsers(): Promise<any[]> {
     return request('/auth/users');
   },
@@ -290,17 +300,6 @@ export const api = {
   },
 
   // === NOTIFICAÇÕES & E-MAIL DA COORDENAÇÃO ===
-  async getCoordinationEmail(): Promise<{ email: string; isCustomized: boolean }> {
-    return request('/coordination-email');
-  },
-
-  async updateCoordinationEmail(email: string): Promise<{ message: string; email: string }> {
-    return request('/coordination-email', {
-      method: 'PUT',
-      body: JSON.stringify({ email }),
-    });
-  },
-
   async getEmailLogs(): Promise<any[]> {
     return request('/emails/logs');
   },

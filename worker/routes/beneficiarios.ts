@@ -1,10 +1,8 @@
 // Beneficiários: inscrição pública, LGPD e gestão.
-import { defer } from '../http';
 import type { Req as Request, Res as Response, AuthenticatedRequest } from '../http';
 import { db, logAudit } from '../db';
 import { authenticateToken, requireRole, requireAdmin, getOptionalUser } from '../auth';
 import { validateCPF, validatePhone, validateEmail, sanitizeString, checkHoneypot, checkRateLimit } from '../validation';
-import { notifyCoordinationNewBeneficiary, sendBeneficiaryConfirmation } from '../email';
 import { apiRouter } from './router';
 
 // =========================================================================
@@ -144,24 +142,6 @@ apiRouter.post('/beneficiaries', async (req: Request, res: Response) => {
     details: `Novo cadastro salvo no banco de dados: ${nome} (${projeto})`,
     ipAddress: clientIp,
   });
-
-  // Notificação por E-mail automática para a coordenação e confirmação para o beneficiário
-  defer(req, notifyCoordinationNewBeneficiary({
-    nome: sanitizeString(nome, 120),
-    cpf: sanitizeString(cpf, 20),
-    telefone: sanitizeString(telefone, 30),
-    projeto: sanitizeString(projeto || 'Aulas de Ballet Solidário', 100),
-    endereco: sanitizeString(endereco || 'Trindade - GO', 200),
-    email: sanitizeString(email || '', 100),
-  }), 'Erro ao despachar e-mail para coordenacao');
-
-  if (email && email.trim()) {
-    defer(req, sendBeneficiaryConfirmation({
-      nome: sanitizeString(nome, 120),
-      email: sanitizeString(email, 100),
-      projeto: sanitizeString(projeto || 'Aulas de Ballet Solidário', 100),
-    }), 'Erro ao despachar confirmacao ao beneficiario');
-  }
 
   return res.status(201).json({
     message: 'Inscrição gravada no banco de dados com sucesso! Nossa equipe analisará os dados.',

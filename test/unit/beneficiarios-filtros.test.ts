@@ -7,7 +7,6 @@ import {
   filtrarBeneficiarios,
   filtroDoProjeto,
   isProjectMatch,
-  mensagemMudancaStatus,
   nomeArquivoCsv,
   normalize,
   temFiltrosAtivos,
@@ -138,10 +137,3 @@ describe('nomeArquivoCsv', () => {
   });
 });
 
-describe('mensagemMudancaStatus', () => {
-  it('parabeniza quando aprova e agradece quando atende', () => {
-    expect(mensagemMudancaStatus('Ana', 'Ballet', 'Aprovado')).toMatch(/APROVADO\. Parabéns!/);
-    expect(mensagemMudancaStatus('Ana', 'Ballet', 'Atendido/Entregue')).toMatch(/alegria/);
-    expect(mensagemMudancaStatus('Ana', 'Ballet', 'Pendente')).toMatch(/PENDENTE\.$/);
-  });
-});

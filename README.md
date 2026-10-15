@@ -18,6 +18,8 @@ acolhimento, projetos sociais, doações via PIX, voluntariado e transparência.
 - Gráficos, exportação CSV e backup
 - Backup automático diário do banco (últimos 30 dias, no R2), com download e restauração pelo painel
 - Registro de atividades (auditoria): quem fez o quê e quando, só para o administrador
+- Senhas sem depender de e-mail: cada pessoa troca a própria senha ("Trocar minha senha") e o
+  administrador define uma senha provisória para quem esqueceu (aba Usuários)
 - Dados sensíveis (CPF, endereço, telefone) mascarados para o perfil voluntário
 
 ## Tecnologias
@@ -28,7 +30,7 @@ acolhimento, projetos sociais, doações via PIX, voluntariado e transparência.
 | Backend (`worker/`) | Cloudflare Workers (API em `/api/*`) |
 | Banco de dados | Cloudflare D1 (SQLite) — estrutura em `migrations/` |
 | Fotos | Cloudflare R2 (bucket `novo-amanhecer-fotos`), servidas em `/api/fotos/...` |
-| E-mail | Resend |
+| E-mail | Resend — usado **só** para recuperar senha (opcional) |
 
 O mesmo Worker responde a API e entrega o site compilado (pasta `dist/`).
 

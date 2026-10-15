@@ -1,10 +1,8 @@
 // Doações (PIX) e gestão administrativa.
-import { defer } from '../http';
 import type { Req as Request, Res as Response, AuthenticatedRequest } from '../http';
 import { db, logAudit } from '../db';
 import { authenticateToken, requireRole, requireAdmin } from '../auth';
 import { validateEmail, sanitizeString, checkHoneypot, checkRateLimit } from '../validation';
-import { notifyCoordinationNewDonation, sendDonationConfirmation } from '../email';
 import { apiRouter } from './router';
 
 // =========================================================================
@@ -64,25 +62,6 @@ apiRouter.post('/donations', async (req: Request, res: Response) => {
     details: `Doação de R$ ${numValor.toFixed(2)} registrada via ${metodo || 'PIX'} por ${nome}`,
     ipAddress: clientIp,
   });
-
-  // Notificação por E-mail para Coordenação e Doador
-  defer(req, notifyCoordinationNewDonation({
-    nome: sanitizeString(nome, 100),
-    valor: numValor,
-    metodo: sanitizeString(metodo || 'PIX', 30),
-    mensagem: sanitizeString(mensagem || '', 500),
-    email: sanitizeString(email || '', 100),
-    telefone: sanitizeString(telefone || '', 30),
-  }), 'Erro ao notificar doação à coordenação');
-
-  if (email && email.trim()) {
-    defer(req, sendDonationConfirmation({
-      nome: sanitizeString(nome, 100),
-      email: sanitizeString(email, 100),
-      valor: numValor,
-      metodo: sanitizeString(metodo || 'PIX', 30),
-    }), 'Erro ao enviar confirmação de doação ao doador');
-  }
 
   return res.status(201).json({
     message: 'Doação registrada! Assim que a equipe confirmar o recebimento, ela entra nos números de transparência. Obrigado pelo apoio!',
