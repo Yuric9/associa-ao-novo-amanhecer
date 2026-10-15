@@ -10,3 +10,7 @@ coverage/
 # Banco de dados local (contém dados pessoais e senhas) - nunca versionar
 data/*.db
 data/*.db-*
+
+# Testes de navegador (Playwright)
+/test-results/
+/playwright-report/

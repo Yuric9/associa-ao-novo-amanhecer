@@ -77,6 +77,7 @@ Login do painel: `ADMIN_EMAIL` (em `wrangler.jsonc`) + `ADMIN_INITIAL_PASSWORD` 
 | `npm run lint` | Checagem de tipos do frontend, do Worker e dos testes |
 | `npm test` | Roda todos os testes automáticos |
 | `npm run test:watch` | Roda os testes de novo a cada arquivo salvo |
+| `npm run test:e2e` | Testes no navegador: abre o site e usa como uma pessoa (computador e celular) |
 | `npm run deploy` | Compila e publica na Cloudflare |
 | `npm run db:migrate` | Aplica as migrações no banco D1 remoto |
 | `npm run fotos` | Gera as versões WebP (400/800/1600 px) das fotos de `public/fotos` — rode ao adicionar uma foto lá |
@@ -93,6 +94,31 @@ Os testes ficam em `test/` e rodam sem internet e sem tocar em nenhum banco real
   temporário. Cobre login, sessões (logout e troca de senha derrubam o token), limite de
   tentativas, formulário público (CPF, LGPD, anti-spam) e o que cada perfil pode ver.
 - `test/unit/` — funções do site: validação e máscaras de CPF/telefone e o código PIX copia e cola.
+
+### Testes no navegador (ponta a ponta)
+
+```bash
+npx playwright install chromium   # só na primeira vez
+npm run test:e2e
+```
+
+Ficam em `e2e/` e usam o [Playwright](https://playwright.dev): o site sobe num banco de teste
+separado (`.wrangler/e2e`, zerado a cada execução) e um navegador faz o que uma pessoa faria,
+no tamanho de computador e de celular:
+
+- inscrever uma criança pelo formulário (e ver o CPF inválido ser recusado);
+- se oferecer como voluntária e ver o QR Code do PIX;
+- abrir o menu no celular;
+- entrar no painel, aprovar uma inscrição e conferir, depois de recarregar, que ficou gravada;
+- gerar um backup pela aba Backup.
+
+Se um teste falhar, a pasta `test-results/` guarda o print da tela e um "trace" para ver o passo a passo:
+`npx playwright show-trace test-results/<pasta-do-teste>/trace.zip`.
+
+### Testes automáticos no GitHub
+
+A cada PR (e a cada push na `main`), o GitHub Actions roda a checagem de tipos, `npm test` e
+`npm run test:e2e` (`.github/workflows/testes.yml`). O resultado aparece no PR antes do merge.
 
 ## Publicação
 

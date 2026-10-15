@@ -1,0 +1,51 @@
+# Roda todos os testes a cada PR e a cada push na main.
+# O resultado aparece no PR (✅ ou ❌) antes do merge.
+name: Testes
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: testes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Checagem de tipos
+        run: npm run lint
+
+      - name: Testes da API e das funções
+        run: npm test
+
+      - name: Instalar o navegador dos testes
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes no navegador (computador e celular)
+        run: npm run test:e2e
+
+      - name: Guardar o relatório se algo falhar
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-playwright
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
