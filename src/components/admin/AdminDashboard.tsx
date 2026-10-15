@@ -635,6 +635,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {activeTab === 'galeria' && (
           <GaleriaCrud
             photos={gallery}
+            projects={projects}
             onUpdatePhotos={onUpdateGallery}
           />
         )}

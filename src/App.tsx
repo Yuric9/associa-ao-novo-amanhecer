@@ -425,7 +425,7 @@ export default function App() {
         <ImpactoNumeros content={content} />
         <ProjetosSection projects={projects} onOpenCadastro={handleOpenCadastro} />
         <Destaques instagramUrl={content.instagram_url} />
-        <GaleriaLightbox photos={gallery} instagramUrl={content.instagram_url} />
+        <GaleriaLightbox photos={gallery} projects={projects} instagramUrl={content.instagram_url} />
         <Sobre content={content} />
         <ComoAjudar
           content={content}

@@ -39,7 +39,8 @@ export interface GalleryPhoto {
   foto_url: string;
   legenda: string;
   ordem: number;
-  categoria?: 'ballet' | 'futebol' | 'book' | 'festas' | 'geral';
+  /** Código da categoria: futebol, ballet, book, festas, geral ou o id de um projeto (ver utils/categoriasGaleria) */
+  categoria?: string;
   data?: string;
 }
 

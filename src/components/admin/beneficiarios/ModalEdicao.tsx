@@ -1,7 +1,8 @@
 // Modal para editar o cadastro de um beneficiário.
 import React from 'react';
 import { X } from 'lucide-react';
-import type { Beneficiary, BeneficiaryStatus } from '../../../types';
+import type { Beneficiary, BeneficiaryStatus, ProjectCard } from '../../../types';
+import { opcoesDeProjeto } from './filtros';
 import { formatCPF, formatPhone } from '../../../utils/validation';
 import { useJanelaModal } from '../../../utils/useJanelaModal';
 
@@ -10,9 +11,10 @@ interface ModalEdicaoProps {
   setFormData: (data: Partial<Beneficiary>) => void;
   onSave: (e: React.FormEvent) => void;
   onClose: () => void;
+  projects?: ProjectCard[];
 }
 
-export const ModalEdicao: React.FC<ModalEdicaoProps> = ({ formData, setFormData, onSave, onClose }) => {
+export const ModalEdicao: React.FC<ModalEdicaoProps> = ({ formData, setFormData, onSave, onClose, projects }) => {
   const janela = useJanelaModal(true, onClose);
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -85,10 +87,11 @@ export const ModalEdicao: React.FC<ModalEdicaoProps> = ({ formData, setFormData,
                 onChange={(e) => setFormData({ ...formData, projeto: e.target.value })}
                 className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
               >
-                <option value="Aulas de Ballet Solidário">Aulas de Ballet Solidário</option>
-                <option value="Escolinha de Futebol Comunitário">Escolinha de Futebol Comunitário</option>
-                <option value="Projeto Book Solidário para Gestantes">Projeto Book Solidário para Gestantes</option>
-                <option value="Festas em Datas Comemorativas">Festas em Datas Comemorativas</option>
+                {opcoesDeProjeto(projects, formData.projeto).map((nome) => (
+                  <option key={nome} value={nome}>
+                    {nome}
+                  </option>
+                ))}
               </select>
             </div>
 

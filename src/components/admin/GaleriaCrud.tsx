@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, ArrowUp, ArrowDown, X, Image as ImageIcon } from 'lucide-react';
-import { GalleryPhoto } from '../../types';
+import { GalleryPhoto, ProjectCard } from '../../types';
+import { CATEGORIA_GERAL, categoriasDaGaleria } from '../../utils/categoriasGaleria';
 import { CampoFoto } from './comum/CampoFoto';
 import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface GaleriaCrudProps {
   photos: GalleryPhoto[];
+  /** Projetos da associação: cada um vira uma categoria de foto */
+  projects?: ProjectCard[];
   onUpdatePhotos: (photos: GalleryPhoto[]) => void;
 }
 
-export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos }) => {
+export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, projects, onUpdatePhotos }) => {
+  const categorias = [...categoriasDaGaleria(projects), CATEGORIA_GERAL];
+  const rotuloDaCategoria = (id?: string) => categorias.find((c) => c.id === id)?.rotulo ?? 'Geral';
   const [showAddModal, setShowAddModal] = useState(false);
   const janela = useJanelaModal(showAddModal, () => setShowAddModal(false));
   const [newUrl, setNewUrl] = useState('');
   const [newLegenda, setNewLegenda] = useState('');
-  const [newCategoria, setNewCategoria] = useState<'ballet' | 'futebol' | 'book' | 'festas' | 'geral'>('geral');
+  const [newCategoria, setNewCategoria] = useState<string>('geral');
   const [newData, setNewData] = useState('Novo Registro');
 
   const sortedPhotos = [...photos].sort((a, b) => a.ordem - b.ordem);
@@ -92,7 +97,7 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
                   className="w-full h-full object-cover"
                 />
                 <span className="absolute top-2 left-2 text-[10px] font-bold bg-slate-950/70 text-white px-2 py-0.5 rounded-md uppercase">
-                  #{photo.ordem} · {photo.categoria || 'Geral'}
+                  #{photo.ordem} · {rotuloDaCategoria(photo.categoria)}
                 </span>
               </div>
 
@@ -183,14 +188,14 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
                   <select
                     id="galeria-categoria"
                     value={newCategoria}
-                    onChange={(e) => setNewCategoria(e.target.value as any)}
+                    onChange={(e) => setNewCategoria(e.target.value)}
                     className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
                   >
-                    <option value="ballet">Ballet Solidário</option>
-                    <option value="futebol">Escolinha de Futebol</option>
-                    <option value="book">Book de Gestantes</option>
-                    <option value="festas">Festas Comunitárias</option>
-                    <option value="geral">Geral / Sede</option>
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.rotulo}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

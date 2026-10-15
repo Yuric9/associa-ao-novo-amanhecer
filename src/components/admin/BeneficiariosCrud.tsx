@@ -231,6 +231,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
       {editingBeneficiary && (
         <ModalEdicao
           formData={formData}
+          projects={projects}
           setFormData={setFormData}
           onSave={handleSaveEdit}
           onClose={() => setEditingBeneficiary(null)}

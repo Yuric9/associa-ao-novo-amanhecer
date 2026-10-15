@@ -3,6 +3,7 @@ import React from 'react';
 import { UserPlus, X } from 'lucide-react';
 import type { Beneficiary, BeneficiaryStatus, ProjectCard } from '../../../types';
 import { formatCPF, formatPhone } from '../../../utils/validation';
+import { opcoesDeProjeto } from './filtros';
 import { useJanelaModal } from '../../../utils/useJanelaModal';
 
 interface ModalCadastroProps {
@@ -127,23 +128,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
                 onChange={(e) => setFormData({ ...formData, projeto: e.target.value })}
                 className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
-                <option value="Escolinha de Futebol Comunitário">Escolinha de Futebol Comunitário</option>
-                <option value="Aulas de Ballet Solidário">Aulas de Ballet Solidário</option>
-                <option value="Projeto Book Solidário para Gestantes">Projeto Book Solidário para Gestantes</option>
-                <option value="Festas em Datas Comemorativas">Festas em Datas Comemorativas</option>
-                {projects
-                  ?.filter(
-                    (p) =>
-                      !p.titulo.toLowerCase().includes('futebol') &&
-                      !p.titulo.toLowerCase().includes('ballet') &&
-                      !p.titulo.toLowerCase().includes('book') &&
-                      !p.titulo.toLowerCase().includes('festa')
-                  )
-                  .map((p) => (
-                    <option key={p.id} value={p.titulo}>
-                      {p.titulo}
-                    </option>
-                  ))}
+                {opcoesDeProjeto(projects, formData.projeto).map((nome) => (
+                  <option key={nome} value={nome}>
+                    {nome}
+                  </option>
+                ))}
               </select>
             </div>
 
