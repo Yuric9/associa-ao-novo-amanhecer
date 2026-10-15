@@ -28,6 +28,9 @@
     <meta name="apple-mobile-web-app-title" content="Novo Amanhecer" />
     <meta name="application-name" content="Associação Novo Amanhecer" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <!-- Foto principal do topo: o navegador começa a baixar antes do React carregar (versão do tamanho da tela) -->
+    <link rel="preload" as="image" type="image/webp" fetchpriority="high" imagesizes="100vw"
+      imagesrcset="/fotos/hero-futebol-comemoracao-400.webp 400w, /fotos/hero-futebol-comemoracao-800.webp 800w, /fotos/hero-futebol-comemoracao.webp 1600w" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">

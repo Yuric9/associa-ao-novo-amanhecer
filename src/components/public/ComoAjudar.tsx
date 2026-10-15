@@ -3,6 +3,7 @@ import { Check, Copy } from 'lucide-react';
 import { SiteContent } from '../../types';
 import { generatePixPayload, generateQrCodeDataUrl } from '../../utils/pix';
 import { DoacaoModal } from './DoacaoModal';
+import { Foto } from './Foto';
 
 interface ComoAjudarProps {
   content: SiteContent;
@@ -53,8 +54,9 @@ const IconeBox: React.FC<{ d: string }> = ({ d }) => (
 
   return (
     <section id="como-ajudar" className="relative overflow-hidden bg-brand-dark">
-      <img
+      <Foto
         src="/fotos/projeto-futebol.jpg"
+        sizes="100vw"
         alt=""
         aria-hidden="true"
         loading="lazy"

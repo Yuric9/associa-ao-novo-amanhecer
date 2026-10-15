@@ -13,7 +13,8 @@
     "lint": "tsc --noEmit && tsc --noEmit -p worker && tsc --noEmit -p test",
     "clean": "rm -rf dist .wrangler",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "fotos": "bash scripts/otimizar-fotos.sh"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

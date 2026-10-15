@@ -79,6 +79,7 @@ Login do painel: `ADMIN_EMAIL` (em `wrangler.jsonc`) + `ADMIN_INITIAL_PASSWORD` 
 | `npm run test:watch` | Roda os testes de novo a cada arquivo salvo |
 | `npm run deploy` | Compila e publica na Cloudflare |
 | `npm run db:migrate` | Aplica as migrações no banco D1 remoto |
+| `npm run fotos` | Gera as versões WebP (400/800/1600 px) das fotos de `public/fotos` — rode ao adicionar uma foto lá |
 
 ## Testes
 
