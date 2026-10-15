@@ -3,6 +3,7 @@ import { Plus, Edit2, Trash2, Eye, EyeOff, X, Image as ImageIcon, FileSpreadshee
 import { ProjectCard, Beneficiary } from '../../types';
 import { exportProjectsReportToCsv } from '../../utils/exportCsv';
 import { CampoFoto } from './comum/CampoFoto';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface ProjetosCrudProps {
   projects: ProjectCard[];
@@ -12,6 +13,7 @@ interface ProjetosCrudProps {
 
 export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiaries = [], onUpdateProjects }) => {
   const [editingProject, setEditingProject] = useState<ProjectCard | null>(null);
+  const janela = useJanelaModal(!!editingProject, () => setEditingProject(null));
   const [isNew, setIsNew] = useState(false);
 
   const [formData, setFormData] = useState<Partial<ProjectCard>>({});
@@ -77,7 +79,7 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-ink">Cards de Projetos Sociais</h3>
+          <h2 className="text-lg font-bold text-ink">Cards de Projetos Sociais</h2>
           <p className="text-xs text-muted">
             Gerencie os projetos exibidos no site público (Ballet, Futebol, Book Solidário, Festas).
           </p>
@@ -96,7 +98,7 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
 
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-700 hover:bg-amber-800 rounded-xl transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Projeto Social</span>
@@ -121,7 +123,7 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
 
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <h4 className="font-bold text-ink text-sm break-words">{project.titulo}</h4>
+                  <h3 className="font-bold text-ink text-sm break-words">{project.titulo}</h3>
                   <span
                     className={`shrink-0 whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full ${
                       project.ativo
@@ -161,6 +163,7 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                   <span>Editar</span>
                 </button>
                 <button
+                  aria-label={`Excluir o projeto ${project.titulo}`}
                   onClick={() => handleDelete(project.id, project.titulo)}
                   className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"
                 >
@@ -175,24 +178,26 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
       {/* Modal de Criação / Edição */}
       {editingProject && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+          <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="projeto-modal-titulo" tabIndex={-1} className="outline-none relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
+              aria-label="Fechar"
               onClick={() => setEditingProject(null)}
               className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-bold text-ink mb-4">
+            <h2 id="projeto-modal-titulo" className="text-lg font-bold text-ink mb-4">
               {isNew ? 'Criar Novo Projeto Social' : 'Editar Projeto Social'}
-            </h3>
+            </h2>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="proj-titulo-projeto" className="block text-xs font-bold text-body uppercase mb-1">
                   Título do Projeto
                 </label>
                 <input
+                  id="proj-titulo-projeto"
                   type="text"
                   required
                   value={formData.titulo || ''}
@@ -203,10 +208,11 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="proj-descricao-curta-card" className="block text-xs font-bold text-body uppercase mb-1">
                   Descrição Curta (para o card)
                 </label>
                 <textarea
+                  id="proj-descricao-curta-card"
                   rows={2}
                   required
                   value={formData.descricao || ''}
@@ -223,10 +229,11 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-body uppercase mb-1">
+                  <label htmlFor="proj-publico-alvo-idade" className="block text-xs font-bold text-body uppercase mb-1">
                     Público-Alvo / Idade
                   </label>
                   <input
+                    id="proj-publico-alvo-idade"
                     type="text"
                     value={formData.idade_publico || ''}
                     onChange={(e) => setFormData({ ...formData, idade_publico: e.target.value })}
@@ -236,10 +243,11 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-body uppercase mb-1">
+                  <label htmlFor="proj-horarios" className="block text-xs font-bold text-body uppercase mb-1">
                     Horários
                   </label>
                   <input
+                    id="proj-horarios"
                     type="text"
                     value={formData.horario || ''}
                     onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
@@ -250,10 +258,11 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="proj-detalhes-operacionais-exibido" className="block text-xs font-bold text-body uppercase mb-1">
                   Detalhes Operacionais (exibido no modal "Saiba Mais")
                 </label>
                 <textarea
+                  id="proj-detalhes-operacionais-exibido"
                   rows={2}
                   value={formData.detalhes || ''}
                   onChange={(e) => setFormData({ ...formData, detalhes: e.target.value })}

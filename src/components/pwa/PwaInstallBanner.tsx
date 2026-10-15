@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { usePwa } from '../../pwa/usePwa';
 import { NovoAmanhecerLogo } from '../brand/NovoAmanhecerLogo';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 export const PwaInstallBanner: React.FC = () => {
   const {
@@ -26,6 +27,7 @@ export const PwaInstallBanner: React.FC = () => {
 
   const [dismissed, setDismissed] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
+  const janela = useJanelaModal(showIOSModal, () => setShowIOSModal(false));
   const [installSuccess, setInstallSuccess] = useState(false);
 
   useEffect(() => {
@@ -74,7 +76,7 @@ export const PwaInstallBanner: React.FC = () => {
             </div>
             <div>
               <p className="text-xs font-bold text-slate-100">Nova versão disponível!</p>
-              <p className="text-[11px] text-slate-400">Atualize para ver as últimas novidades da Associação.</p>
+              <p className="text-[11px] text-slate-500">Atualize para ver as últimas novidades da Associação.</p>
             </div>
           </div>
           <button
@@ -115,7 +117,7 @@ export const PwaInstallBanner: React.FC = () => {
 
             <button
               onClick={handleDismiss}
-              className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+              className="text-slate-500 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
               aria-label="Dispensar aviso de instalação"
             >
               <X className="w-4 h-4" />
@@ -156,8 +158,9 @@ export const PwaInstallBanner: React.FC = () => {
           className="fixed inset-0 z-50 bg-slate-950/80 flex items-end sm:items-center justify-center p-4 animate-in fade-in"
         >
           <div
+            ref={janela} role="dialog" aria-modal="true" aria-labelledby="ios-modal-titulo" tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-lg p-6 max-w-md w-full border border-slate-200 text-slate-900 space-y-4 animate-in slide-in-from-bottom sm:zoom-in-95"
+            className="outline-none bg-white rounded-lg p-6 max-w-md w-full border border-slate-200 text-slate-900 space-y-4 animate-in slide-in-from-bottom sm:zoom-in-95"
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
@@ -165,13 +168,14 @@ export const PwaInstallBanner: React.FC = () => {
                   <Smartphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Instalar no iPhone / iPad</h3>
+                  <h3 id="ios-modal-titulo" className="text-sm font-bold text-slate-900">Instalar no iPhone / iPad</h3>
                   <p className="text-[11px] text-slate-500">Adicione à tela de início em 3 passos simples</p>
                 </div>
               </div>
               <button
+                aria-label="Fechar"
                 onClick={() => setShowIOSModal(false)}
-                className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="p-1.5 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

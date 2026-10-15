@@ -86,7 +86,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
           <NovoAmanhecerLogo size="md" inverted />
           <div className="flex flex-col gap-4">
             <span className="self-start rounded bg-sun px-3 py-1.5 text-[13px] font-extrabold text-ink">Área da equipe</span>
-            <h1 className="text-[40px] font-extrabold leading-[1.1] tracking-[-0.03em]">Inscrições, projetos e conteúdo do site em um só lugar.</h1>
+            <p className="text-[40px] font-extrabold leading-[1.1] tracking-[-0.03em]">Inscrições, projetos e conteúdo do site em um só lugar.</p>
             <p className="max-w-md text-base leading-relaxed text-brand-light">Acesso restrito à coordenação e aos voluntários da Associação Novo Amanhecer.</p>
           </div>
           <span className="text-[13px] text-brand-muted">Setor Ponta Kayana · Trindade — GO</span>
@@ -103,9 +103,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
             <div className="mb-7 flex flex-col gap-2">
               <div className="mb-2 lg:hidden"><NovoAmanhecerLogo size="md" /></div>
               <span className="kicker">{isResetMode ? 'Recuperar acesso' : 'Painel de gestão'}</span>
-              <h2 className="text-[26px] font-extrabold leading-tight tracking-[-0.02em] text-brand-dark">
+              <h1 className="text-[26px] font-extrabold leading-tight tracking-[-0.02em] text-brand-dark">
                 {isResetMode ? 'Vamos criar uma nova senha' : 'Entrar no painel'}
-              </h2>
+              </h1>
             </div>
 
             {error && (
@@ -115,7 +115,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
             )}
             {resetMessage && (
               <div role="status" className="mb-5 flex items-start gap-2 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" /><span>{resetMessage}</span>
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /><span>{resetMessage}</span>
               </div>
             )}
 

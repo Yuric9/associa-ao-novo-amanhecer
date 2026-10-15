@@ -141,7 +141,7 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
               type="button"
               onClick={() => onFiltrar({ tipoBusca: id })}
               className={`${Icone ? 'inline-flex items-center gap-1 ' : ''}px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                filtros.tipoBusca === id ? 'bg-amber-600 text-white shadow-xs' : 'bg-sand text-body hover:bg-slate-200'
+                filtros.tipoBusca === id ? 'bg-amber-700 text-white shadow-xs' : 'bg-sand text-body hover:bg-slate-200'
               }`}
             >
               {Icone ? (
@@ -180,6 +180,7 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
           <Filter className="w-3.5 h-3.5 text-muted" />
           <span className="font-semibold text-body">Status:</span>
           <select
+            aria-label="Filtrar por status"
             value={filtros.status}
             onChange={(e) => onFiltrar({ status: e.target.value })}
             className="px-2.5 py-1.5 bg-paper border border-line rounded-lg text-ink focus:outline-none"
@@ -196,6 +197,7 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
         <div className="flex items-center gap-2">
           <span className="font-semibold text-body">Projeto:</span>
           <select
+            aria-label="Filtrar por projeto"
             value={filtros.projeto}
             onChange={(e) => onFiltrar({ projeto: e.target.value })}
             className="px-2.5 py-1.5 bg-paper border border-line rounded-lg text-ink focus:outline-none"

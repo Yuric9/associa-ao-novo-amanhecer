@@ -6,7 +6,7 @@ import { isProjectMatch, type Filtros } from './filtros';
 import type { ProjetoPreset } from './presets';
 
 const COR_DO_ATALHO: Record<string, string> = {
-  futebol: 'bg-emerald-600',
+  futebol: 'bg-emerald-700',
   ballet: 'bg-rose-600',
   book: 'bg-purple-600',
 };
@@ -44,7 +44,7 @@ export const BannerProjeto: React.FC<BannerProjetoProps> = ({
       <div className="flex items-center gap-3">
         <div
           className={`w-11 h-11 rounded-[14px] flex items-center justify-center text-white shadow-2xs ${
-            COR_DO_ATALHO[preset.id] ?? 'bg-amber-600'
+            COR_DO_ATALHO[preset.id] ?? 'bg-amber-700'
           }`}
         >
           <preset.icon className="w-5 h-5" />
@@ -59,7 +59,7 @@ export const BannerProjeto: React.FC<BannerProjetoProps> = ({
               {totalFiltrado} {totalFiltrado === 1 ? 'inscrito encontrado' : 'inscritos encontrados'}
             </span>
           </div>
-          <h4 className="text-base font-black text-ink mt-0.5">{preset.projectName || preset.label}</h4>
+          <h3 className="text-base font-black text-ink mt-0.5">{preset.projectName || preset.label}</h3>
         </div>
       </div>
 

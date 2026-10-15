@@ -44,7 +44,7 @@ const CARTOES_STATUS: CartaoStatusConfig[] = [
     ativo: 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-300 shadow-xs',
     inativo: 'bg-paper/70 border-line/80 hover:bg-emerald-50/50 hover:border-emerald-200',
     corTitulo: 'text-emerald-800',
-    corIcone: 'text-emerald-600',
+    corIcone: 'text-emerald-700',
     corNumero: 'text-emerald-950',
     corPercentual: 'text-emerald-700',
   },
@@ -136,12 +136,12 @@ export const ResumoCard: React.FC<ResumoCardProps> = ({
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <CheckCircle2 className="w-3 h-3 text-emerald-700" />
                 Base Completa Visível
               </span>
             )}
           </div>
-          <h3 className="text-xl sm:text-2xl font-black text-ink tracking-tight">Resumo Geral de Beneficiários</h3>
+          <h2 className="text-xl sm:text-2xl font-black text-ink tracking-tight">Resumo Geral de Beneficiários</h2>
           <p className="hidden md:block text-xs sm:text-sm text-muted">
             Monitoramento instantâneo do cadastro institucional com atualização dinâmica a cada filtro aplicado.
           </p>
@@ -164,7 +164,7 @@ export const ResumoCard: React.FC<ResumoCardProps> = ({
             className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-sand hover:bg-slate-200 text-ink text-xs font-bold rounded-[14px] border border-line transition-all cursor-pointer"
             title="Exportar registros filtrados em tempo real"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
             <span>Exportar CSV ({totalFiltrado})</span>
           </button>
         </div>

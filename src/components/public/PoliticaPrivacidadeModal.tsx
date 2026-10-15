@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, ShieldCheck, Lock, FileText, CheckCircle2, UserCheck } from 'lucide-react';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface PoliticaPrivacidadeModalProps {
   isOpen: boolean;
@@ -7,11 +8,12 @@ interface PoliticaPrivacidadeModalProps {
 }
 
 export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> = ({ isOpen, onClose }) => {
+  const janela = useJanelaModal(isOpen, onClose);
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-white rounded-lg border border-slate-100 flex flex-col overflow-hidden">
+      <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="privacidade-modal-titulo" tabIndex={-1} className="outline-none relative w-full max-w-2xl max-h-[85vh] bg-white rounded-lg border border-slate-100 flex flex-col overflow-hidden">
         {/* Cabeçalho */}
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-brand">
           <div className="flex items-center gap-3">
@@ -19,7 +21,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900 leading-tight">
+              <h3 id="privacidade-modal-titulo" className="text-lg font-bold text-slate-900 leading-tight">
                 Aviso de Privacidade & Proteção de Dados (LGPD)
               </h3>
               <p className="text-xs text-slate-500">
@@ -29,7 +31,7 @@ export const PoliticaPrivacidadeModal: React.FC<PoliticaPrivacidadeModalProps> =
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Fechar modal"
           >
             <X className="w-5 h-5" />

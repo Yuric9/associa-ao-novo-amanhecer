@@ -252,10 +252,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
             <span className="text-xs text-muted">·</span>
             <span className="text-xs text-muted">Dados em Tempo Real</span>
           </div>
-          <h3 className="text-lg font-black text-ink mt-1 flex items-center gap-2">
+          <h2 className="text-lg font-black text-ink mt-1 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-amber-600" />
             <span>Indicadores de Impacto e Crescimento</span>
-          </h3>
+          </h2>
           <p className="text-xs text-body mt-0.5">
             Visualize o fluxo de novos acolhidos e a representatividade de cada oficina comunitária em Trindade.
           </p>
@@ -296,7 +296,7 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
             <Users className="w-4 h-4 text-amber-600" />
           </div>
           <div className="text-2xl font-black text-ink">{totalBeneficiarios}</div>
-          <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+          <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
             <TrendingUp className="w-3 h-3" />
             <span>Base ativa comunitária</span>
           </div>
@@ -305,9 +305,9 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
         <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-1">
           <div className="flex items-center justify-between text-muted text-xs font-bold uppercase">
             <span>Taxa de Vagas / Efetivação</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-black text-emerald-600">{taxaAprovacao}%</div>
+          <div className="text-2xl font-black text-emerald-700">{taxaAprovacao}%</div>
           <div className="text-[11px] text-muted">
             {totalAprovados} de {totalBeneficiarios} confirmados
           </div>
@@ -344,10 +344,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
         <div className="lg:col-span-7 bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-amber-600" />
                 <span>Crescimento Mensal de Beneficiários</span>
-              </h4>
+              </h3>
               <span className="text-[11px] font-semibold text-muted">
                 Novos Cadastros x Acumulado
               </span>
@@ -413,10 +413,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
         <div className="lg:col-span-5 bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2">
                 <PieChartIcon className="w-4 h-4 text-purple-600" />
                 <span>Distribuição por Projeto Social</span>
-              </h4>
+              </h3>
               <span className="text-[11px] font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded-full">
                 {totalBeneficiarios} inscritos
               </span>
@@ -513,10 +513,10 @@ export const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
       <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
           <div>
-            <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+            <h3 className="text-sm font-bold text-ink flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-600" />
               <span>Funil de Atendimento & Status das Inscrições</span>
-            </h4>
+            </h3>
             <p className="text-xs text-muted">
               Acompanhamento de filas de espera, verificação de documentos e entregas de fardamentos/kits.
             </p>

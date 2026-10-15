@@ -1,5 +1,5 @@
 // Campo de foto dos formulários do painel: enviar do celular/computador ou colar um link.
-import React, { useRef, useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { Camera, Link2, Loader2, RefreshCw, X } from 'lucide-react';
 import { api } from '../../../services/api';
 import { reduzirFoto } from '../../../utils/reduzirFoto';
@@ -15,6 +15,7 @@ export const CampoFoto: React.FC<CampoFotoProps> = ({ label, value, onChange, pl
   const inputArquivo = useRef<HTMLInputElement>(null);
   const [estado, setEstado] = useState<'parado' | 'reduzindo' | 'enviando'>('parado');
   const [erro, setErro] = useState('');
+  const idTitulo = useId();
 
   const escolherArquivo = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const arquivo = e.target.files?.[0];
@@ -37,8 +38,8 @@ export const CampoFoto: React.FC<CampoFotoProps> = ({ label, value, onChange, pl
   const ocupado = estado !== 'parado';
 
   return (
-    <div>
-      <label className="block text-xs font-bold text-body uppercase mb-1">{label}</label>
+    <div role="group" aria-labelledby={idTitulo}>
+      <p id={idTitulo} className="block text-xs font-bold text-body uppercase mb-1">{label}</p>
 
       <input ref={inputArquivo} type="file" accept="image/*" className="hidden" onChange={escolherArquivo} />
 
@@ -86,6 +87,7 @@ export const CampoFoto: React.FC<CampoFotoProps> = ({ label, value, onChange, pl
             <input
               type="text"
               required
+              aria-label="Link da foto"
               disabled={ocupado}
               placeholder={`ou cole o link de uma imagem (${placeholderLink})`}
               value={value}
@@ -96,7 +98,7 @@ export const CampoFoto: React.FC<CampoFotoProps> = ({ label, value, onChange, pl
         </div>
       )}
 
-      {erro && <p className="mt-1 text-xs font-medium text-red-600">{erro}</p>}
+      {erro && <p role="alert" className="mt-1 text-xs font-medium text-red-600">{erro}</p>}
     </div>
   );
 };

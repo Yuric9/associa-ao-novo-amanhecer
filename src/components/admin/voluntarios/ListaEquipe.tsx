@@ -32,10 +32,10 @@ export const ListaEquipe: React.FC<ListaEquipeProps> = ({
   <div className="bg-white p-6 sm:p-8 rounded-[14px] border border-line shadow-2xs space-y-6">
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4">
       <div>
-        <h3 className="text-base sm:text-lg font-black text-ink flex items-center gap-2">
+        <h2 className="text-base sm:text-lg font-black text-ink flex items-center gap-2">
           <Users className="w-5 h-5 text-amber-600" />
           <span>Escala e Contato com a Equipe ({filteredVolunteers.length})</span>
-        </h3>
+        </h2>
         <p className="text-xs text-body mt-0.5">
           Acione voluntários via WhatsApp para plantões, aulas de dança, treinos de futebol ou preparo de lanches.
         </p>
@@ -77,6 +77,7 @@ export const ListaEquipe: React.FC<ListaEquipeProps> = ({
       />
       {searchTerm && (
         <button
+          aria-label="Limpar busca"
           type="button"
           onClick={() => setSearchTerm('')}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body p-1 rounded-full cursor-pointer"
@@ -121,14 +122,15 @@ export const ListaEquipe: React.FC<ListaEquipeProps> = ({
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h4 className="font-bold text-ink text-sm leading-snug">
+                    <h3 className="font-bold text-ink text-sm leading-snug">
                       {vol.nome}
-                    </h4>
+                    </h3>
                     <span
                       className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md mt-1"
                       style={{
                         backgroundColor: `${areaColor}15`,
-                        color: areaColor,
+                        // Cor da área escurecida para o texto ficar legível (contraste WCAG AA)
+                        color: `color-mix(in srgb, ${areaColor} 55%, black)`,
                       }}
                     >
                       <span
@@ -178,7 +180,7 @@ export const ListaEquipe: React.FC<ListaEquipeProps> = ({
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors cursor-pointer"
                   title="Conversar no WhatsApp"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <MessageCircle className="w-3.5 h-3.5 text-emerald-700" />
                   <span>Chamar no Zap</span>
                 </a>
 

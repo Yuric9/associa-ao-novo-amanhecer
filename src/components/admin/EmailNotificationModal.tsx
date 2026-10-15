@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mail, Send, CheckCircle2 } from 'lucide-react';
 import { StatusEmailNotification } from '../../types';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface EmailNotificationModalProps {
   notification: StatusEmailNotification | null;
@@ -15,6 +16,7 @@ export const EmailNotificationModal: React.FC<EmailNotificationModalProps> = ({
 }) => {
   const [customMessage, setCustomMessage] = useState(notification?.messageText || '');
   const [sent, setSent] = useState(false);
+  const janela = useJanelaModal(!!notification, onClose);
 
   if (!notification) return null;
 
@@ -29,7 +31,7 @@ export const EmailNotificationModal: React.FC<EmailNotificationModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="email-modal-titulo" tabIndex={-1} className="outline-none relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
@@ -43,9 +45,9 @@ export const EmailNotificationModal: React.FC<EmailNotificationModalProps> = ({
             <Mail className="w-5 h-5 text-amber-700" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-ink">
+            <h2 id="email-modal-titulo" className="text-lg font-bold text-ink">
               Notificação por E-mail ao Beneficiário
-            </h3>
+            </h2>
             <span className="text-xs text-muted">
               Disparo automático de atualização de status (Serviço de Notificações)
             </span>
@@ -57,7 +59,7 @@ export const EmailNotificationModal: React.FC<EmailNotificationModalProps> = ({
             <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h4 className="text-base font-bold text-ink">E-mail enviado com sucesso!</h4>
+            <h3 className="text-base font-bold text-ink">E-mail enviado com sucesso!</h3>
             <p className="text-xs text-body">
               O beneficiário {notification.beneficiaryName} foi notificado sobre a alteração para status{' '}
               <strong>{notification.newStatus}</strong>.
@@ -85,10 +87,11 @@ export const EmailNotificationModal: React.FC<EmailNotificationModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1.5">
+              <label htmlFor="email-mensagem-mail-editavel" className="block text-xs font-bold text-body uppercase mb-1.5">
                 Mensagem do E-mail (Editável)
               </label>
               <textarea
+                id="email-mensagem-mail-editavel"
                 rows={5}
                 value={customMessage}
                 onChange={(e) => setCustomMessage(e.target.value)}
@@ -108,7 +111,7 @@ export const EmailNotificationModal: React.FC<EmailNotificationModalProps> = ({
               <button
                 type="button"
                 onClick={handleSend}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-xs transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-bold text-white bg-amber-700 hover:bg-amber-800 rounded-xl shadow-xs transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Confirmar & Enviar E-mail</span>

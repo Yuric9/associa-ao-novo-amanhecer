@@ -3,6 +3,7 @@ import React from 'react';
 import { UserPlus, X } from 'lucide-react';
 import type { Beneficiary, BeneficiaryStatus, ProjectCard } from '../../../types';
 import { formatCPF, formatPhone } from '../../../utils/validation';
+import { useJanelaModal } from '../../../utils/useJanelaModal';
 
 interface ModalCadastroProps {
   formData: Partial<Beneficiary>;
@@ -12,10 +13,13 @@ interface ModalCadastroProps {
   onClose: () => void;
 }
 
-export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormData, projects, onSave, onClose }) => (
+export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormData, projects, onSave, onClose }) => {
+  const janela = useJanelaModal(true, onClose);
+  return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="beneficiario-cadastro-titulo" tabIndex={-1} className="outline-none relative w-full max-w-xl bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
+          aria-label="Fechar"
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full cursor-pointer"
         >
@@ -27,9 +31,9 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
             <UserPlus className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-ink">
+            <h2 id="beneficiario-cadastro-titulo" className="text-lg font-bold text-ink">
               Cadastrar Novo Beneficiário
-            </h3>
+            </h2>
             <p className="text-xs text-muted">
               Adicione um participante manualmente à base de dados da associação.
             </p>
@@ -38,10 +42,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
 
         <form onSubmit={onSave} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="benef-novo-nome-completo" className="block text-xs font-bold text-body uppercase mb-1">
               Nome Completo *
             </label>
             <input
+              id="benef-novo-nome-completo"
               type="text"
               required
               placeholder="Nome do aluno ou assistido"
@@ -53,10 +58,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="benef-novo-cpf" className="block text-xs font-bold text-body uppercase mb-1">
                 CPF *
               </label>
               <input
+                id="benef-novo-cpf"
                 type="text"
                 required
                 placeholder="000.000.000-00"
@@ -67,10 +73,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="benef-novo-data-nascimento" className="block text-xs font-bold text-body uppercase mb-1">
                 Data de Nascimento
               </label>
               <input
+                id="benef-novo-data-nascimento"
                 type="date"
                 value={formData.nascimento || ''}
                 onChange={(e) => setFormData({ ...formData, nascimento: e.target.value })}
@@ -81,10 +88,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="benef-novo-telefone-whatsapp" className="block text-xs font-bold text-body uppercase mb-1">
                 Telefone / WhatsApp
               </label>
               <input
+                id="benef-novo-telefone-whatsapp"
                 type="text"
                 placeholder="(62) 99999-0000"
                 value={formData.telefone || ''}
@@ -94,10 +102,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="benef-novo-mail" className="block text-xs font-bold text-body uppercase mb-1">
                 E-mail (opcional)
               </label>
               <input
+                id="benef-novo-mail"
                 type="email"
                 placeholder="email@exemplo.com"
                 value={formData.email || ''}
@@ -109,10 +118,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="benef-novo-projeto-social" className="block text-xs font-bold text-body uppercase mb-1">
                 Projeto Social
               </label>
               <select
+                id="benef-novo-projeto-social"
                 value={formData.projeto || 'Escolinha de Futebol Comunitário'}
                 onChange={(e) => setFormData({ ...formData, projeto: e.target.value })}
                 className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -138,10 +148,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="benef-novo-status-inicial" className="block text-xs font-bold text-body uppercase mb-1">
                 Status Inicial
               </label>
               <select
+                id="benef-novo-status-inicial"
                 value={formData.status || 'Pendente'}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as BeneficiaryStatus })}
                 className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -155,10 +166,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="benef-novo-endereco-bairro-trindade" className="block text-xs font-bold text-body uppercase mb-1">
               Endereço / Bairro (Trindade - GO)
             </label>
             <input
+              id="benef-novo-endereco-bairro-trindade"
               type="text"
               placeholder="Rua, número, setor"
               value={formData.endereco || ''}
@@ -168,10 +180,11 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="benef-novo-observacoes" className="block text-xs font-bold text-body uppercase mb-1">
               Observações
             </label>
             <textarea
+              id="benef-novo-observacoes"
               rows={2}
               placeholder="Informações adicionais, tamanho do uniforme, responsável legal..."
               value={formData.observacoes || ''}
@@ -198,4 +211,5 @@ export const ModalCadastro: React.FC<ModalCadastroProps> = ({ formData, setFormD
         </form>
       </div>
     </div>
-);
+  );
+};

@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({ content, onOpenCadastro, onOpenA
   return (
     <>
       {/* Faixa superior (só no computador) */}
-      <div className="hidden bg-brand-dark text-[13px] text-brand-light lg:block">
+      <aside aria-label="Contatos da associação" className="hidden bg-brand-dark text-[13px] text-brand-light lg:block">
         <div className="container-site flex h-10 items-center justify-between">
           <span>
             CNPJ {content.contato_cnpj} · Setor Ponta Kayana, {content.contato_cidade} — GO
@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({ content, onOpenCadastro, onOpenA
             </a>
           </div>
         </div>
-      </div>
+      </aside>
 
       <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
         <div className="container-site flex h-16 items-center justify-between gap-6 lg:h-[84px]">
