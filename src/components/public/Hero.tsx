@@ -132,7 +132,7 @@ export const Hero: React.FC<HeroProps> = ({ content, onOpenCadastro }) => {
               onClick={() => setIdx(i)}
               aria-label={`Ir para o banner ${i + 1}`}
               aria-current={i === idx}
-              className={`h-2.5 rounded-full transition-all ${i === idx ? 'w-7 bg-sun' : 'w-2.5 bg-white'}`}
+              className={`alvo-toque h-2.5 rounded-full transition-all ${i === idx ? 'w-7 bg-sun' : 'w-2.5 bg-white'}`}
             />
           ))}
         </div>
@@ -157,7 +157,7 @@ export const Hero: React.FC<HeroProps> = ({ content, onOpenCadastro }) => {
               onClick={() => setIdx(i)}
               aria-label={`Ir para o banner ${i + 1}`}
               aria-current={i === idx}
-              className={`h-2.5 rounded-full transition-all ${i === idx ? 'w-7 bg-sun' : 'w-2.5 bg-white'}`}
+              className={`alvo-toque h-2.5 rounded-full transition-all ${i === idx ? 'w-7 bg-sun' : 'w-2.5 bg-white'}`}
             />
           ))}
           <button

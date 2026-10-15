@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCada
   const wa = onlyDigits(content.contato_whatsapp);
   const mesmoNumero = tel && tel === wa;
 
-  const linkCls = 'text-left text-brand-light hover:text-white';
+  const linkCls = 'text-left text-brand-light hover:text-white py-2.5 lg:py-0';
 
   return (
     <footer id="contato" className="bg-footer text-[15px] text-brand-light">
@@ -62,7 +62,7 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCada
         <div className="flex flex-col gap-2.5 lg:col-span-3 lg:col-start-10">
           <span className="text-[13px] font-extrabold uppercase text-sun">Contato</span>
           {wa && (
-            <a href={`https://wa.me/55${wa}`} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 font-bold text-white hover:opacity-80">
+            <a href={`https://wa.me/55${wa}`} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 py-2.5 font-bold text-white hover:opacity-80 lg:py-0">
               <Icon d={CHAT} />
               {mesmoNumero ? 'Telefone e WhatsApp' : 'WhatsApp'} {content.contato_whatsapp}
             </a>
@@ -86,7 +86,7 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin, onOpenCada
       </div>
 
       <div className="container-site">
-        <div className="flex flex-col gap-3 border-t border-brand-line py-6 text-[13px] text-brand-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-brand-line pt-6 pb-24 text-[13px] text-brand-muted sm:flex-row sm:items-center sm:justify-between sm:pb-6">
           <span>
             © {new Date().getFullYear()} Associação Novo Amanhecer · CNPJ {content.contato_cnpj}
           </span>

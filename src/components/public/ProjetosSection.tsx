@@ -74,7 +74,7 @@ export const ProjetosSection: React.FC<ProjetosSectionProps> = ({ projects, onOp
                   <button onClick={() => onOpenCadastro(project.titulo)} className="link-arrow">
                     Inscrever-se →
                   </button>
-                  <button onClick={() => setSelectedProject(project)} className="text-[15px] font-semibold text-muted hover:text-ink">
+                  <button onClick={() => setSelectedProject(project)} className="alvo-toque text-[15px] font-semibold text-muted hover:text-ink">
                     Saiba mais
                   </button>
                 </div>

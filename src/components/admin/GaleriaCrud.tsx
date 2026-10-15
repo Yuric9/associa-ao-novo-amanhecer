@@ -59,7 +59,7 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-bold text-ink">Gerenciador da Galeria de Fotos</h3>
           <p className="text-xs text-muted">
@@ -69,7 +69,7 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors cursor-pointer"
+          className="inline-flex shrink-0 self-start items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-600 sm:self-auto hover:bg-amber-700 rounded-xl transition-colors cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Adicionar Foto</span>

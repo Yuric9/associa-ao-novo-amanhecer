@@ -175,7 +175,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const roleChip = isAdmin ? 'bg-sun text-ink' : isCoordinator ? 'bg-brand-soft text-brand-ink' : 'bg-white/15 text-white';
 
   return (
-    <div className="min-h-screen bg-paper font-sans lg:flex">
+    <div className="painel-admin min-h-screen bg-paper font-sans lg:flex">
       <aside className="bg-footer sticky top-0 hidden h-screen w-64 shrink-0 flex-col text-brand-light lg:flex">
         <div className="border-b border-brand-line px-5 py-5">
           <NovoAmanhecerLogo size="sm" inverted />

@@ -35,7 +35,7 @@ const ACOES_STATUS: { status: BeneficiaryStatus; label: string; titulo: string; 
     status: 'Recusado',
     label: 'Recusar',
     titulo: 'Recusar cadastro',
-    classe: 'px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer',
+    classe: 'px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer border border-red-200 sm:border-0',
   },
 ];
 
@@ -161,21 +161,26 @@ export const ListaBeneficiarios: React.FC<ListaBeneficiariosProps> = ({
               </div>
 
               {/* Ações de Gestão de Status e Edição */}
-              <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0">
-                {/* Botões Rápidos de Status */}
-                <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-between lg:justify-end border-t border-line lg:border-t-0 pt-3 lg:pt-0">
+                {/* Botões Rápidos de Status (no celular, grade de botões grandes) */}
+                <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:items-center sm:gap-1 sm:w-auto">
                   {ACOES_STATUS.filter((a) => a.status !== b.status).map((a) => (
-                    <button key={a.status} onClick={() => onMudarStatus(b.id, a.status)} className={a.classe} title={a.titulo}>
+                    <button
+                      key={a.status}
+                      onClick={() => onMudarStatus(b.id, a.status)}
+                      className={`${a.classe} min-h-11 sm:min-h-0 text-center whitespace-nowrap`}
+                      title={a.titulo}
+                    >
                       {a.label}
                     </button>
                   ))}
                 </div>
 
                 {/* Editar e Excluir */}
-                <div className="flex items-center gap-1 pl-2 border-l border-line">
+                <div className="flex items-center justify-end gap-1 w-full sm:w-auto sm:pl-2 sm:border-l sm:border-line">
                   <button
                     onClick={() => onEditar(b)}
-                    className="p-1.5 text-muted hover:text-ink hover:bg-sand rounded-lg"
+                    className="p-2.5 sm:p-1.5 text-muted hover:text-ink hover:bg-sand rounded-lg"
                     title="Editar cadastro"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -183,7 +188,7 @@ export const ListaBeneficiarios: React.FC<ListaBeneficiariosProps> = ({
 
                   <button
                     onClick={() => onExcluir(b.id, b.nome)}
-                    className="p-1.5 text-muted hover:text-red-600 hover:bg-red-50 rounded-lg"
+                    className="p-2.5 sm:p-1.5 text-muted hover:text-red-600 hover:bg-red-50 rounded-lg"
                     title="Excluir cadastro"
                   >
                     <Trash2 className="w-4 h-4" />

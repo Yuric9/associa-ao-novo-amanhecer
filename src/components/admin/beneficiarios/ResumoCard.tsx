@@ -114,16 +114,17 @@ export const ResumoCard: React.FC<ResumoCardProps> = ({
   onFiltrar,
   onLimparFiltros,
 }) => (
-  <div className="bg-white rounded-[14px] border border-line/90 shadow-sm p-6 sm:p-7 relative overflow-hidden transition-all duration-300">
+  <div className="bg-white rounded-[14px] border border-line/90 shadow-sm p-4 sm:p-7 relative overflow-hidden transition-all duration-300">
     {/* Glows sutis decorativos de fundo */}
     <div className="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
     <div className="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-    <div className="relative z-10 space-y-6">
+    <div className="relative z-10 space-y-4 md:space-y-6">
       {/* Cabeçalho do Card */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-line">
         <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Etiquetas e descrição: só em telas maiores (no celular empurravam a lista para baixo) */}
+          <div className="hidden md:flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-amber-100/90 text-amber-900 border border-amber-300/80">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Contador em Tempo Real
@@ -141,17 +142,17 @@ export const ResumoCard: React.FC<ResumoCardProps> = ({
             )}
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-ink tracking-tight">Resumo Geral de Beneficiários</h3>
-          <p className="text-xs sm:text-sm text-muted">
+          <p className="hidden md:block text-xs sm:text-sm text-muted">
             Monitoramento instantâneo do cadastro institucional com atualização dinâmica a cada filtro aplicado.
           </p>
         </div>
 
-        {/* Ações Rápidas no Topo do Card */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Ações Rápidas no Topo do Card (no celular, lado a lado ocupando a largura) */}
+        <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center">
           <button
             type="button"
             onClick={onNovoBeneficiario}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-dark hover:bg-brand-dark text-white text-xs font-bold rounded-[14px] shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-brand-dark hover:bg-brand-dark text-white text-xs font-bold rounded-[14px] shadow-xs transition-all cursor-pointer"
           >
             <UserPlus className="w-4 h-4 text-amber-400" />
             <span>Novo Beneficiário</span>
@@ -160,7 +161,7 @@ export const ResumoCard: React.FC<ResumoCardProps> = ({
           <button
             type="button"
             onClick={onExportar}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-sand hover:bg-slate-200 text-ink text-xs font-bold rounded-[14px] border border-line transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-sand hover:bg-slate-200 text-ink text-xs font-bold rounded-[14px] border border-line transition-all cursor-pointer"
             title="Exportar registros filtrados em tempo real"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
@@ -171,8 +172,9 @@ export const ResumoCard: React.FC<ResumoCardProps> = ({
 
       {/* Destaque Principal: Contador Gigante e Submétricas em Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-        {/* Bloco 1: Contador Principal em Tempo Real (5 cols) */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white rounded-[14px] p-6 sm:p-7 shadow-md flex flex-col justify-between relative overflow-hidden">
+        {/* Bloco 1: Contador Principal em Tempo Real (5 cols). Só em telas grandes: no celular
+            repetia o que os cartões de status já mostram e ocupava quase uma tela inteira. */}
+        <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white rounded-[14px] p-6 sm:p-7 shadow-md flex-col justify-between relative overflow-hidden">
           <div className="absolute -right-6 -bottom-6 w-36 h-36 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
 
           <div>
