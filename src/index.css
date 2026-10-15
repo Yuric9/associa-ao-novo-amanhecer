@@ -35,6 +35,14 @@
 }
 
 @layer base {
+  /* Tailwind 4 usa a cor do texto como cor padrão de borda: sem esta regra, uma borda
+     sem cor definida (ex.: só "border-t") aparecia como uma linha escura. */
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--color-line);
+  }
   html {
     scroll-behavior: smooth;
   }
@@ -83,10 +91,10 @@
     @apply rounded-xl border border-white/20 border-t-[3px] border-t-sun bg-white/[0.08];
   }
   .link-underline {
-    @apply border-b border-ink pb-0.5 text-[15px] font-semibold text-ink hover:border-brand hover:text-brand;
+    @apply alvo-toque border-b border-ink pb-0.5 text-[15px] font-semibold text-ink hover:border-brand hover:text-brand;
   }
   .link-arrow {
-    @apply text-[15px] font-extrabold text-brand hover:text-brand-dark;
+    @apply alvo-toque text-[15px] font-extrabold text-brand hover:text-brand-dark;
   }
   .chip {
     @apply inline-flex items-center rounded px-2.5 py-1 text-[13px] font-semibold;
@@ -118,5 +126,31 @@
   }
   .bg-footer {
     background: linear-gradient(180deg, var(--color-brand-dark) 0%, rgba(var(--brand-rgb), 1) 60%, #0e0d0c 140%);
+  }
+}
+
+/* Área de toque de no mínimo 44x44 px (recomendação de Google e Apple) sem mudar a aparência:
+   um elemento invisível, centralizado, maior que o link/botão pequeno. */
+@utility alvo-toque {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Em telas de toque, campos de formulário com 16 px: com menos que isso o iPhone
+   dá zoom na página toda vez que a pessoa toca num campo. (Fora de @layer para
+   valer mais que as classes de tamanho de texto dos componentes.) */
+@media (pointer: coarse), (max-width: 767px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  select,
+  textarea {
+    font-size: 16px;
   }
 }

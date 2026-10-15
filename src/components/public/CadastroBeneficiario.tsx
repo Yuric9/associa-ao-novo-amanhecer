@@ -493,7 +493,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   <button
                     type="button"
                     onClick={() => setManualAddressMode(!manualAddressMode)}
-                    className="text-[11px] text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                    className="alvo-toque text-xs text-slate-500 hover:text-slate-800 underline cursor-pointer"
                   >
                     {manualAddressMode ? 'Usar busca por CEP' : 'Digitar em campo único'}
                   </button>
@@ -548,7 +548,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                           type="button"
                           onClick={() => fetchAddressByCep(cep)}
                           disabled={cleanDigits(cep).length !== 8 || isCepLoading}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-brand disabled:opacity-30 transition-colors cursor-pointer"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded-lg text-slate-400 hover:text-brand disabled:opacity-30 transition-colors cursor-pointer"
                           title="Buscar CEP na API ViaCEP"
                         >
                           {isCepLoading ? (
@@ -723,7 +723,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   required
                   checked={consentimentoLgpd}
                   onChange={(e) => setConsentimentoLgpd(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded text-brand focus:ring-brand border-slate-300 cursor-pointer"
+                  className="mt-0.5 w-6 h-6 sm:w-4 sm:h-4 shrink-0 rounded text-brand focus:ring-brand border-slate-300 cursor-pointer"
                 />
                 <span className="leading-relaxed">
                   Autorizo e concordo com o tratamento dos dados pessoais e cadastrais informados acima pela <strong>Associação Beneficente Novo Amanhecer</strong> (CNPJ 35.157.094/0001-91) para fins exclusivos de inscrição, organização de turmas e prestação de contas dos projetos sociais, em integral conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)</strong>.
@@ -731,7 +731,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     <button
                       type="button"
                       onClick={onOpenPrivacidade}
-                      className="text-brand underline font-bold ml-1.5 hover:text-brand cursor-pointer"
+                      className="alvo-toque text-brand underline font-bold ml-1.5 hover:text-brand cursor-pointer"
                     >
                       Ler Política de Privacidade
                     </button>
