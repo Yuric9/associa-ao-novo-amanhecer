@@ -9,5 +9,6 @@ import './painel';
 import './doacoes';
 import './emails';
 import './fotos';
+import './backups';
 
 export { apiRouter } from './router';

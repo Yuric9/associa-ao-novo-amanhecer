@@ -31,6 +31,10 @@
     }
   ],
 
+  // Backup automático do banco: todo dia às 06:00 UTC (03:00 em Brasília), guardado no R2
+  // em FOTOS/backups/. Ficam os últimos 30 dias. Ver worker/backup.ts.
+  "triggers": { "crons": ["0 6 * * *"] },
+
   // Permite importar o arquivo .sql como texto (estrutura do banco).
   "rules": [{ "type": "Text", "globs": ["**/*.sql"], "fallthrough": true }],
 

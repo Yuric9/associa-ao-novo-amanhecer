@@ -42,6 +42,22 @@ npm run dev                        # compila o site e abre em http://localhost:8
 O banco local fica em `.wrangler/` (separado do banco da Cloudflare) e já vem com dados de exemplo.
 Login: `ADMIN_EMAIL` + `ADMIN_INITIAL_PASSWORD` do `.dev.vars`.
 
+## 4. Backup automático do banco
+
+- Todo dia às **03:00 (Brasília)** o Worker grava uma cópia completa do banco no R2
+  (bucket `novo-amanhecer-fotos`, pasta `backups/`). Ficam os **últimos 30 dias**.
+  O agendamento está em `wrangler.jsonc` → `triggers.crons`; o código, em `worker/backup.ts`.
+- No painel (aba **Backup e dados**, só administrador): lista dos backups, botão
+  **Fazer backup agora** e download de cada arquivo.
+- **Restaurar**: baixe o arquivo e use **Restaurar de Arquivo** na mesma aba. Antes de trocar os dados,
+  o sistema guarda uma cópia do estado atual (`backup-AAAA-MM-DD-antes-da-restauracao.json`).
+  Contas de usuário não são restauradas (as atuais continuam) e senhas nunca vão para o backup.
+- Para ver se o agendamento rodou: painel da Cloudflare → Worker → **Settings → Trigger Events**
+  (ou a aba Auditoria do painel, ação `BACKUP_CREATED`).
+- Para testar no computador: `npx wrangler dev --test-scheduled` e abra
+  `http://localhost:8787/cdn-cgi/local/scheduled`.
+- As prévias (branches) não rodam o agendamento; lá, use o botão **Fazer backup agora**.
+
 ## Limites do plano gratuito (valem para a conta toda)
 
 - 100 mil requisições/dia nos Workers.

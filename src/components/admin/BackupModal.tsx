@@ -18,6 +18,8 @@ import {
   exportProjectsReportToCsv,
   exportExecutiveSummaryToCsv,
 } from '../../utils/exportCsv';
+import { BackupsAutomaticos } from './BackupsAutomaticos';
+import { api } from '../../services/api';
 
 interface BackupModalProps {
   beneficiaries: Beneficiary[];
@@ -91,32 +93,42 @@ export const BackupModal: React.FC<BackupModalProps> = ({
     downloadAnchor.remove();
   };
 
-  // Carregar e Restaurar Backup a partir de arquivo JSON
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Restaurar a partir de um arquivo JSON (do "Baixar Arquivo JSON" ou dos backups automáticos).
+  // Grava no banco: o servidor guarda antes uma cópia do estado atual e faz tudo numa transação.
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = '';
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const parsed = JSON.parse(event.target?.result as string);
-        if (parsed.beneficiarios && parsed.projetos) {
-          onRestoreAll({
-            beneficiaries: parsed.beneficiarios,
-            projects: parsed.projetos,
-            gallery: parsed.galeria || gallery,
-            content: parsed.conteudo_site || content,
-          });
-          alert('Backup restaurado com sucesso!');
-        } else {
-          alert('Arquivo de backup inválido. Não foram encontradas as tabelas necessárias.');
-        }
-      } catch (err) {
-        alert('Erro ao processar o arquivo JSON de backup.');
-      }
-    };
-    reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    let parsed: any;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch {
+      alert('Erro ao ler o arquivo: ele não é um JSON de backup válido.');
+      return;
+    }
+    if (!Array.isArray(parsed?.beneficiarios) || !Array.isArray(parsed?.projetos)) {
+      alert('Arquivo de backup inválido. Não foram encontradas as tabelas necessárias.');
+      return;
+    }
+
+    const data = parsed.data_backup ? new Date(parsed.data_backup).toLocaleString('pt-BR') : 'data desconhecida';
+    const ok = window.confirm(
+      `Restaurar o backup de ${data}?\n\n` +
+        `Os dados ATUAIS (${beneficiaries.length} beneficiários, projetos, galeria, textos` +
+        `${parsed.voluntarios ? ', voluntários e doações' : ''}) serão substituídos pelos do arquivo ` +
+        `(${parsed.beneficiarios.length} beneficiários).\n\n` +
+        'Antes disso, o sistema guarda automaticamente uma cópia do estado atual na lista de backups.'
+    );
+    if (!ok) return;
+
+    try {
+      const { copia_de_seguranca } = await api.restaurarBackup(parsed);
+      alert(`Backup restaurado com sucesso!\n\nCópia do estado anterior guardada como: ${copia_de_seguranca}`);
+      window.location.reload(); // recarrega tudo do banco já restaurado
+    } catch (err) {
+      alert((err as Error).message);
+    }
   };
 
   // Resetar para os dados originais
@@ -145,6 +157,8 @@ export const BackupModal: React.FC<BackupModalProps> = ({
           <span className="text-xs sm:text-sm font-bold">{successMsg}</span>
         </div>
       )}
+
+      <BackupsAutomaticos />
 
       {/* SEÇÃO 1: EXPORTAÇÃO CSV PARA CONTROLE OFFLINE E PRESTAÇÃO DE CONTAS */}
       <div className="space-y-4">
@@ -283,7 +297,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
             </div>
             <h3 className="font-bold text-ink text-base mb-1">Restaurar de Arquivo</h3>
             <p className="text-xs text-body leading-relaxed mb-4">
-              Carregue um arquivo JSON de backup gerado anteriormente para restaurar os dados no sistema.
+              Carregue um arquivo JSON de backup (baixado aqui ou da lista de backups diários). Os dados atuais são substituídos; uma cópia deles é guardada antes.
             </p>
           </div>
 

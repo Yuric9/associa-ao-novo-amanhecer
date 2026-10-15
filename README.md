@@ -16,6 +16,7 @@ acolhimento, projetos sociais, doações via PIX, voluntariado e transparência.
 - Login com perfis de acesso: administrador, coordenador, equipe e voluntário
 - Gestão de beneficiários, voluntários, doações, projetos, galeria e textos do site
 - Gráficos, exportação CSV e backup
+- Backup automático diário do banco (últimos 30 dias, no R2), com download e restauração pelo painel
 - Histórico de e-mails e registro de auditoria
 - Dados sensíveis (CPF, endereço, telefone) mascarados para o perfil voluntário
 
@@ -47,6 +48,7 @@ worker/
   auth.ts, crypto.ts   login, JWT e senhas (PBKDF2)
   db.ts, d1.ts         acesso ao banco D1
   routes/fotos.ts      envio e leitura de fotos (Cloudflare R2)
+  backup.ts            backup diário do banco no R2 e restauração
 migrations/            estrutura do banco
 test/                  testes automáticos (npm test)
 public/                imagens, ícones e manifesto PWA
