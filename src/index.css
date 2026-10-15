@@ -154,3 +154,16 @@
     font-size: 16px;
   }
 }
+
+/* Painel em telas de toque: botões com no mínimo 44x44 px e texto com no mínimo 12 px.
+   Uma regra só para o painel inteiro, em vez de ajustar dezenas de botões um a um;
+   no computador nada muda. */
+@media (pointer: coarse), (max-width: 767px) {
+  .painel-admin :is(button, select, [role='button']) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .painel-admin :is(.text-\[9px\], .text-\[10px\], .text-\[11px\]) {
+    font-size: 12px;
+  }
+}

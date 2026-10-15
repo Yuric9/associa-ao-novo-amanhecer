@@ -1,6 +1,6 @@
 // Barra de busca e filtros: atalhos por projeto, busca por nome/CPF, status e projeto.
-import React from 'react';
-import { CreditCard, FileSpreadsheet, Filter, RotateCcw, Search, SlidersHorizontal, User, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronDown, CreditCard, FileSpreadsheet, Filter, RotateCcw, Search, SlidersHorizontal, User, X } from 'lucide-react';
 import type { ProjectCard } from '../../../types';
 import { ATALHOS_PROJETO, isProjectMatch, type contarPorProjeto, type Filtros, type TipoBusca } from './filtros';
 import { presetSelecionado, type ProjetoPreset } from './presets';
@@ -35,10 +35,32 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
   onFiltrar,
   onLimparFiltros,
   onExportar,
-}) => (
-  <div className="bg-white p-5 rounded-[14px] border border-line shadow-2xs space-y-4">
+}) => {
+  // No celular os filtros ficam recolhidos (a busca continua sempre visível);
+  // em telas maiores aparecem sempre.
+  const [abertos, setAbertos] = useState(false);
+  const ativos = [filtros.status !== 'todos', filtros.projeto !== 'todos', filtros.tipoBusca !== 'todos'].filter(Boolean).length;
+  // Classes escritas por extenso: o Tailwind só gera as classes que encontra no código.
+  const noCelular = (exibicao: 'block' | 'flex') =>
+    abertos ? exibicao : exibicao === 'block' ? 'hidden md:block' : 'hidden md:flex';
+
+  return (
+  <div className="bg-white p-4 sm:p-5 rounded-[14px] border border-line shadow-2xs space-y-4">
+    <button
+      type="button"
+      onClick={() => setAbertos(!abertos)}
+      aria-expanded={abertos}
+      className="md:hidden w-full inline-flex items-center justify-between gap-2 px-4 min-h-11 rounded-xl border border-line bg-paper text-sm font-bold text-ink"
+    >
+      <span className="inline-flex items-center gap-2">
+        <SlidersHorizontal className="w-4 h-4 text-amber-600" />
+        Filtros{ativos > 0 ? ` (${ativos} ativo${ativos > 1 ? 's' : ''})` : ''}
+      </span>
+      <ChevronDown className={`w-4 h-4 transition-transform ${abertos ? 'rotate-180' : ''}`} />
+    </button>
+
     {/* FILTROS RÁPIDOS AVANÇADOS POR PROJETO SOCIAL */}
-    <div className="space-y-2.5 pb-3 border-b border-line">
+    <div className={`${noCelular('block')} space-y-2.5 pb-3 border-b border-line`}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
         <span className="text-xs font-bold text-ink flex items-center gap-1.5">
           <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
@@ -111,7 +133,7 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
         </div>
 
         {/* Chips de Seleção de Tipo de Busca (Nome / CPF / Ambos) */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+        <div className={`${noCelular('flex')} flex-wrap items-center gap-1.5 text-xs`}>
           <span className="text-[11px] text-muted font-medium mr-1">Filtrar por:</span>
           {TIPOS_BUSCA.map(({ id, label, icone: Icone }) => (
             <button
@@ -135,8 +157,8 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
         </div>
       </div>
 
-      {/* Botões de Ação: Exportar CSV */}
-      <div className="flex items-center gap-2 self-end lg:self-center">
+      {/* Botões de Ação: Exportar CSV (no celular já existe o botão no resumo acima) */}
+      <div className="hidden md:flex items-center gap-2 self-end lg:self-center">
         <button
           onClick={onExportar}
           className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-ink bg-sand hover:bg-slate-200 rounded-xl transition-colors cursor-pointer border border-line"
@@ -152,7 +174,7 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
     </div>
 
     {/* Filtros por Status e Projeto */}
-    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line text-xs">
+    <div className={`${noCelular('flex')} flex-wrap items-center justify-between gap-3 pt-3 border-t border-line text-xs`}>
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           <Filter className="w-3.5 h-3.5 text-muted" />
@@ -213,3 +235,4 @@ export const BarraFiltros: React.FC<BarraFiltrosProps> = ({
     </div>
   </div>
 );
+};

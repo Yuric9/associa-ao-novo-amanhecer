@@ -120,10 +120,10 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-ink text-sm truncate">{project.titulo}</h4>
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <h4 className="font-bold text-ink text-sm break-words">{project.titulo}</h4>
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    className={`shrink-0 whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full ${
                       project.ativo
                         ? 'bg-emerald-100 text-emerald-800'
                         : 'bg-sand text-muted'
