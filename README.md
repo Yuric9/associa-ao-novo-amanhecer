@@ -17,7 +17,7 @@ acolhimento, projetos sociais, doações via PIX, voluntariado e transparência.
 - Gestão de beneficiários, voluntários, doações, projetos, galeria e textos do site
 - Gráficos, exportação CSV e backup
 - Backup automático diário do banco (últimos 30 dias, no R2), com download e restauração pelo painel
-- Histórico de e-mails e registro de auditoria
+- Registro de atividades (auditoria): quem fez o quê e quando, só para o administrador
 - Dados sensíveis (CPF, endereço, telefone) mascarados para o perfil voluntário
 
 ## Tecnologias

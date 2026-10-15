@@ -18,6 +18,13 @@ const NOME_VALIDO = /^backup-\d{4}-\d{2}-\d{2}(-antes-da-restauracao)?\.json$/;
 
 type Origem = 'agendado' | 'manual' | 'antes-da-restauracao';
 
+/** Quem pediu o backup (para o registro de atividades). Vazio = o agendamento automático. */
+export interface Quem {
+  id?: string;
+  email?: string;
+  role?: string;
+}
+
 export function nomeDoBackup(data: Date, origem: Origem = 'agendado'): string {
   const sufixo = origem === 'antes-da-restauracao' ? '-antes-da-restauracao' : '';
   return `backup-${data.toISOString().slice(0, 10)}${sufixo}.json`;
@@ -57,7 +64,7 @@ export async function montarBackup(agora: Date) {
 }
 
 /** Grava o backup do dia (substitui o do mesmo dia, se houver) e apaga os antigos. */
-export async function fazerBackup(agora = new Date(), origem: Origem = 'agendado') {
+export async function fazerBackup(agora = new Date(), origem: Origem = 'agendado', quem: Quem = {}) {
   const bucket = fotosBucket();
   const dados = await montarBackup(agora);
   const nome = nomeDoBackup(agora, origem);
@@ -67,6 +74,9 @@ export async function fazerBackup(agora = new Date(), origem: Origem = 'agendado
   const apagados = await apagarAntigos(bucket);
 
   await logAudit({
+    userId: quem.id,
+    userEmail: quem.email,
+    userRole: quem.role,
     action: 'BACKUP_CREATED',
     entity: 'BACKUP',
     entityId: nome,
@@ -114,12 +124,12 @@ export class BackupInvalido extends Error {}
  *   consultas não cresce com a quantidade de registros (o plano gratuito limita consultas por requisição).
  * - Aceita também os backups antigos baixados pelo painel (sem voluntários/doações: essas tabelas ficam como estão).
  */
-export async function restaurarBackup(dados: any, agora = new Date()) {
+export async function restaurarBackup(dados: any, agora = new Date(), quem: Quem = {}) {
   if (!dados || typeof dados !== 'object' || !Array.isArray(dados.beneficiarios) || !Array.isArray(dados.projetos)) {
     throw new BackupInvalido('Arquivo de backup inválido: faltam os beneficiários ou os projetos.');
   }
 
-  const copia = await fazerBackup(agora, 'antes-da-restauracao');
+  const copia = await fazerBackup(agora, 'antes-da-restauracao', quem);
 
   const comandos: D1PreparedStatement[] = [];
   const restaurados: Record<string, number> = {};
