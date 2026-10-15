@@ -355,19 +355,6 @@ export default function App() {
     }
   };
 
-  const handleRestoreAll = (data: {
-    beneficiaries: Beneficiary[];
-    projects: ProjectCard[];
-    gallery: GalleryPhoto[];
-    content: SiteContent;
-  }) => {
-    setBeneficiaries(data.beneficiaries);
-    setProjects(data.projects);
-    setGallery(data.gallery);
-    setContent(data.content);
-    showToast('Todos os dados foram restaurados com sucesso!');
-  };
-
   // Se a rota for /login ou se for /admin sem autenticação
   if (currentView === 'login' || !authUser) {
     if (currentView === 'admin' || currentView === 'login') {
@@ -413,7 +400,6 @@ export default function App() {
           volunteers={volunteers}
           onUpdateVolunteers={setVolunteers}
           onRequestEmailNotification={(notif) => setPendingEmailNotification(notif)}
-          onRestoreAll={handleRestoreAll}
         />
 
         {/* Modal de Confirmação de E-mail */}

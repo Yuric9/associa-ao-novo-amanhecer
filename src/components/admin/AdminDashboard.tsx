@@ -65,12 +65,6 @@ interface AdminDashboardProps {
   onUpdateVolunteers?: (volunteers: Volunteer[]) => void;
 
   onRequestEmailNotification: (notif: StatusEmailNotification) => void;
-  onRestoreAll: (data: {
-    beneficiaries: Beneficiary[];
-    projects: ProjectCard[];
-    gallery: GalleryPhoto[];
-    content: SiteContent;
-  }) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -91,7 +85,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   volunteers = [],
   onUpdateVolunteers,
   onRequestEmailNotification,
-  onRestoreAll,
 }) => {
   const userRole = currentUser?.role || 'admin';
   const isVolunteer = userRole === 'voluntario';
@@ -653,7 +646,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             gallery={gallery}
             content={content}
             admins={admins}
-            onRestoreAll={onRestoreAll}
           />
         )}
 
