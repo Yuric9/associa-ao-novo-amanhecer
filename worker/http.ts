@@ -19,6 +19,8 @@ export interface Req {
   ip: string;
   secure: boolean;
   ctx: ExecutionContext;
+  /** Requisição original (para ler corpos que não são JSON, como o envio de fotos). */
+  raw: Request;
   user?: AuthRequestUser;
   /** Sessão do usuário logado (tabela sessions), preenchida por authenticateToken. */
   sessionId?: string;
@@ -37,7 +39,8 @@ interface CookieOptions {
 export class Res {
   statusCode = 200;
   private readonly headers = new Headers();
-  private body: string | null = null;
+  private body: BodyInit | null = null;
+  private cacheControl = 'no-store';
 
   status(code: number) {
     this.statusCode = code;
@@ -65,14 +68,22 @@ export class Res {
     return this;
   }
 
+  /** Responde com um arquivo (ex.: foto), com o tipo e o cache informados. */
+  file(body: BodyInit, contentType: string, cacheControl: string) {
+    this.body = body;
+    this.headers.set('Content-Type', contentType);
+    this.cacheControl = cacheControl;
+    return this;
+  }
+
   get sent() {
     return this.body !== null;
   }
 
   toResponse(): Response {
-    this.headers.set('Cache-Control', 'no-store');
+    this.headers.set('Cache-Control', this.cacheControl);
     this.headers.set('X-Content-Type-Options', 'nosniff');
-    return new Response(this.body ?? '', { status: this.statusCode, headers: this.headers });
+    return new Response(this.body, { status: this.statusCode, headers: this.headers });
   }
 }
 

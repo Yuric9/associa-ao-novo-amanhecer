@@ -25,7 +25,8 @@ acolhimento, projetos sociais, doações via PIX, voluntariado e transparência.
 |---|---|
 | Frontend (`src/`) | React 19, TypeScript, Vite, Tailwind CSS, Recharts, Motion |
 | Backend (`worker/`) | Cloudflare Workers (API em `/api/*`) |
-| Banco de dados | Cloudflare D1 (SQLite) — estrutura em `migrations/0001_init.sql` |
+| Banco de dados | Cloudflare D1 (SQLite) — estrutura em `migrations/` |
+| Fotos | Cloudflare R2 (bucket `novo-amanhecer-fotos`), servidas em `/api/fotos/...` |
 | E-mail | Resend |
 
 O mesmo Worker responde a API e entrega o site compilado (pasta `dist/`).
@@ -45,6 +46,7 @@ worker/
                        (auth, beneficiarios, voluntarios, doacoes, conteudo...)
   auth.ts, crypto.ts   login, JWT e senhas (PBKDF2)
   db.ts, d1.ts         acesso ao banco D1
+  routes/fotos.ts      envio e leitura de fotos (Cloudflare R2)
 migrations/            estrutura do banco
 test/                  testes automáticos (npm test)
 public/                imagens, ícones e manifesto PWA

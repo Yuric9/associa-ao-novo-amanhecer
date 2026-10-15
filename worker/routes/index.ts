@@ -8,5 +8,6 @@ import './conteudo';
 import './painel';
 import './doacoes';
 import './emails';
+import './fotos';
 
 export { apiRouter } from './router';

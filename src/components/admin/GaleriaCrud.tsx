@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, ArrowUp, ArrowDown, X, Image as ImageIcon } from 'lucide-react';
 import { GalleryPhoto } from '../../types';
+import { CampoFoto } from './comum/CampoFoto';
 
 interface GaleriaCrudProps {
   photos: GalleryPhoto[];
@@ -149,19 +150,12 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
             <h3 className="text-lg font-bold text-ink mb-4">Adicionar Nova Foto na Galeria</h3>
 
             <form onSubmit={handleAdd} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
-                  URL da Imagem / Foto
-                </label>
-                <input
-                  type="url"
-                  required
-                  placeholder="https://images.unsplash.com/..."
-                  value={newUrl}
-                  onChange={(e) => setNewUrl(e.target.value)}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
-                />
-              </div>
+              <CampoFoto
+                label="Foto"
+                value={newUrl}
+                onChange={setNewUrl}
+                placeholderLink="https://images.unsplash.com/..."
+              />
 
               <div>
                 <label className="block text-xs font-bold text-body uppercase mb-1">
