@@ -198,6 +198,19 @@ export const api = {
     return request<GalleryPhoto[]>('/gallery');
   },
 
+  /** Envia uma foto (já reduzida) e devolve o endereço dela no site. */
+  async uploadFoto(foto: Blob): Promise<{ url: string }> {
+    const response = await fetch('/api/uploads', {
+      method: 'POST',
+      headers: { 'Content-Type': foto.type },
+      body: foto,
+      credentials: 'same-origin',
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Não foi possível enviar a foto.');
+    return data as { url: string };
+  },
+
   async updateGallery(photos: GalleryPhoto[]): Promise<{ message: string }> {
     return request('/gallery', {
       method: 'PUT',

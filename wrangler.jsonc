@@ -23,6 +23,14 @@
     }
   ],
 
+  // Fotos enviadas pelo painel (galeria e projetos). Servidas pelo Worker em /api/fotos/...
+  "r2_buckets": [
+    {
+      "binding": "FOTOS",
+      "bucket_name": "novo-amanhecer-fotos"
+    }
+  ],
+
   // Permite importar o arquivo .sql como texto (estrutura do banco).
   "rules": [{ "type": "Text", "globs": ["**/*.sql"], "fallthrough": true }],
 
@@ -53,6 +61,12 @@
       {
         "binding": "DB",
         "database_id": "c10e78ab-eedf-4b78-a51b-4fbcc9b777bb"
+      }
+    ],
+    "r2_buckets": [
+      {
+        "binding": "FOTOS",
+        "bucket_name": "novo-amanhecer-fotos-preview"
       }
     ]
   }

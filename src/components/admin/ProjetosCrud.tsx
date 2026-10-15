@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, Eye, EyeOff, X, Image as ImageIcon, FileSpreadsheet, Download } from 'lucide-react';
 import { ProjectCard, Beneficiary } from '../../types';
 import { exportProjectsReportToCsv } from '../../utils/exportCsv';
+import { CampoFoto } from './comum/CampoFoto';
 
 interface ProjetosCrudProps {
   projects: ProjectCard[];
@@ -214,19 +215,11 @@ export const ProjetosCrud: React.FC<ProjetosCrudProps> = ({ projects, beneficiar
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
-                  URL da Imagem / Foto
-                </label>
-                <input
-                  type="url"
-                  required
-                  value={formData.foto_url || ''}
-                  onChange={(e) => setFormData({ ...formData, foto_url: e.target.value })}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-paper border border-line rounded-xl"
-                  placeholder="https://..."
-                />
-              </div>
+              <CampoFoto
+                label="Foto do Projeto"
+                value={formData.foto_url || ''}
+                onChange={(url) => setFormData({ ...formData, foto_url: url })}
+              />
 
               <div className="grid grid-cols-2 gap-3">
                 <div>

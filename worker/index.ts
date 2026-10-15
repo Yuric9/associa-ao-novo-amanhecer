@@ -56,6 +56,7 @@ async function handleApi(request: Request, env: Env, ctx: ExecutionContext): Pro
     ip: request.headers.get('cf-connecting-ip') || '0.0.0.0',
     secure: url.protocol === 'https:',
     ctx,
+    raw: request,
   };
   const res = new Res();
 
