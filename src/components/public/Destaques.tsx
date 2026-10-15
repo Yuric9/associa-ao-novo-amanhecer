@@ -1,5 +1,6 @@
 import React from 'react';
 import { DESTAQUES, Destaque } from '../../data/destaques';
+import { Foto } from './Foto';
 
 interface DestaquesProps {
   instagramUrl: string;
@@ -29,8 +30,9 @@ export const Destaques: React.FC<DestaquesProps> = ({ instagramUrl }) => {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <article className="relative h-[380px] overflow-hidden rounded-[14px] bg-brand-dark text-white lg:col-span-7 lg:h-[460px]">
-          <img
+          <Foto
             src={principal.foto_url}
+            sizes="(min-width: 1024px) 58vw, 100vw"
             alt={principal.alt}
             loading="lazy"
             style={{ objectPosition: principal.posicao }}
@@ -49,8 +51,9 @@ export const Destaques: React.FC<DestaquesProps> = ({ instagramUrl }) => {
           <div className="hidden flex-col gap-6 lg:col-span-5 lg:flex">
             {outros.map((d) => (
               <article key={d.id} className="flex h-[218px] gap-5 overflow-hidden rounded-[10px] border border-line bg-white">
-                <img
+                <Foto
                   src={d.foto_url}
+                  sizes="200px"
                   alt={d.alt}
                   loading="lazy"
                   style={{ objectPosition: d.posicao }}

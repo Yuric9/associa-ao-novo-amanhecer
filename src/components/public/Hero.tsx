@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SiteContent } from '../../types';
+import { Foto } from './Foto';
 
 interface HeroProps {
   content: SiteContent;
@@ -58,6 +59,10 @@ export const Hero: React.FC<HeroProps> = ({ content, onOpenCadastro }) => {
 
   const [idx, setIdx] = useState(0);
   const [pausado, setPausado] = useState(false);
+  // Quantos slides já podem baixar a foto: começa só com o 1º; quando uma foto aparece,
+  // libera a do slide seguinte. Assim a página abre baixando uma foto só (mais rápido no celular).
+  const [liberados, setLiberados] = useState(1);
+  const liberarProximo = (i: number) => setLiberados((n) => Math.max(n, i + 2));
   const total = slides.length;
   const go = (step: number) => setIdx((i) => (i + step + total) % total);
 
@@ -67,6 +72,10 @@ export const Hero: React.FC<HeroProps> = ({ content, onOpenCadastro }) => {
     const t = window.setTimeout(() => setIdx((i) => (i + 1) % total), INTERVALO_MS);
     return () => window.clearTimeout(t);
   }, [idx, pausado, total]);
+
+  useEffect(() => {
+    if (idx > 0) liberarProximo(idx);
+  }, [idx]);
 
   const slide = slides[idx];
 
@@ -92,16 +101,19 @@ export const Hero: React.FC<HeroProps> = ({ content, onOpenCadastro }) => {
       onBlur={() => setPausado(false)}
       className="relative overflow-hidden bg-brand-dark"
     >
-      {slides.map((s, i) => (
-        <img
+      {slides.map((s, i) => (i < liberados || i === idx) && (
+        <Foto
           key={s.img}
           src={s.img}
+          sizes="100vw"
           alt={i === idx ? s.alt : ''}
           aria-hidden={i !== idx}
           style={{ objectPosition: s.pos }}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === idx ? 'opacity-100' : 'opacity-0'}`}
           fetchPriority={i === 0 ? 'high' : undefined}
           loading={i === 0 ? 'eager' : 'lazy'}
+          onLoad={() => i === idx && liberarProximo(i)}
+          onError={() => i === idx && liberarProximo(i)}
         />
       ))}
       <div className="bg-hero-scrim absolute inset-0" />

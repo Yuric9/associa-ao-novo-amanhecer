@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { ProjectCard } from '../../types';
+import { Foto } from './Foto';
 
 interface ProjetosSectionProps {
   projects: ProjectCard[];
@@ -50,8 +51,9 @@ export const ProjetosSection: React.FC<ProjetosSectionProps> = ({ projects, onOp
           {activeProjects.map((project) => (
             <article key={project.id} className="card flex flex-col overflow-hidden">
               <div className="relative">
-                <img
+                <Foto
                   src={project.foto_url}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   alt={project.titulo}
                   loading="lazy"
                   className="block h-[180px] w-full bg-sand object-cover lg:h-[200px]"
@@ -97,7 +99,7 @@ export const ProjetosSection: React.FC<ProjetosSectionProps> = ({ projects, onOp
             className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-lg bg-white sm:rounded-lg"
           >
             <div className="relative">
-              <img src={selectedProject.foto_url} alt="" className="aspect-[16/9] w-full object-cover" />
+              <Foto src={selectedProject.foto_url} sizes="(min-width: 640px) 576px, 100vw" alt="" className="aspect-[16/9] w-full object-cover" />
               <button onClick={() => setSelectedProject(null)} className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-md bg-white text-ink" aria-label="Fechar">
                 <X className="h-5 w-5" />
               </button>

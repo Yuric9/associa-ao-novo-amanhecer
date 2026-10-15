@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GalleryPhoto } from '../../types';
+import { Foto } from './Foto';
 
 interface GaleriaLightboxProps {
   photos: GalleryPhoto[];
@@ -85,8 +86,9 @@ export const GaleriaLightbox: React.FC<GaleriaLightboxProps> = ({ photos, instag
             className="group overflow-hidden rounded-lg bg-sand text-left"
             aria-label={`Ampliar foto: ${photo.legenda}`}
           >
-            <img
+            <Foto
               src={photo.foto_url}
+              sizes="(min-width: 1024px) 25vw, 50vw"
               alt={photo.legenda}
               loading="lazy"
               className="aspect-square w-full object-cover transition-opacity group-hover:opacity-90"
@@ -135,7 +137,7 @@ export const GaleriaLightbox: React.FC<GaleriaLightboxProps> = ({ photos, instag
             </>
           )}
           <figure onClick={(e) => e.stopPropagation()} className="flex max-w-5xl flex-col items-center gap-4">
-            <img src={current.foto_url} alt={current.legenda} className="max-h-[78vh] w-auto rounded-md object-contain" />
+            <Foto src={current.foto_url} sizes="100vw" alt={current.legenda} className="max-h-[78vh] w-auto rounded-md object-contain" />
             <figcaption className="max-w-2xl text-center text-sm leading-relaxed text-stone-300">
               {current.legenda}
               <span className="mt-1 block text-stone-500">
