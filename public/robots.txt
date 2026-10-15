@@ -1,0 +1,10 @@
+# Permite que buscadores (Google, Bing...) leiam o site público.
+# O painel e a API não devem aparecer nas buscas.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /api/
+Allow: /api/fotos/
+
+Sitemap: https://anovoamanhecer.org/sitemap.xml
