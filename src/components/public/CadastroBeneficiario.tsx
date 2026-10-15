@@ -321,7 +321,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     href="https://wa.me/5562993418820?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20ou%20atualizar%20meu%20cadastro%20na%20Associa%C3%A7%C3%A3o%20Novo%20Amanhecer."
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-md transition-colors"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>Falar no WhatsApp para Atualizar Dados</span>
@@ -345,7 +345,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
           <div className="mb-8 p-6 bg-emerald-50 border-2 border-emerald-300 rounded-lg shadow-sm animate-in fade-in duration-300">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+                <CheckCircle2 className="w-7 h-7 text-emerald-700" />
               </div>
               <div className="flex-1">
                 <span className="text-xs font-bold text-emerald-800">
@@ -382,10 +382,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
             {/* Nome Completo e CPF */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label htmlFor="cadastro-nome-completo" className="block text-xs font-bold text-slate-700 mb-1.5">
                   Nome Completo *
                 </label>
                 <input
+                  id="cadastro-nome-completo"
                   type="text"
                   required
                   placeholder="Nome do(a) participante ou responsável"
@@ -396,11 +397,12 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                <label htmlFor="cadastro-cpf-validacao-real" className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                   <span>CPF (com validação real) *</span>
-                  <span className="text-[10px] text-slate-400 font-normal">Apenas números</span>
+                  <span className="text-[10px] text-slate-600 font-normal">Apenas números</span>
                 </label>
                 <input
+                  id="cadastro-cpf-validacao-real"
                   type="text"
                   required
                   placeholder="000.000.000-00"
@@ -421,10 +423,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
             {/* Data de Nascimento e Telefone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label htmlFor="cadastro-data-nascimento" className="block text-xs font-bold text-slate-700 mb-1.5">
                   Data de Nascimento *
                 </label>
                 <input
+                  id="cadastro-data-nascimento"
                   type="date"
                   required
                   value={nascimento}
@@ -434,10 +437,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label htmlFor="cadastro-telefone-whatsapp" className="block text-xs font-bold text-slate-700 mb-1.5">
                   Telefone / WhatsApp *
                 </label>
                 <input
+                  id="cadastro-telefone-whatsapp"
                   type="tel"
                   required
                   placeholder="(62) 99999-9999"
@@ -451,10 +455,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
             {/* E-mail de Contato */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label htmlFor="cadastro-mail-contato" className="block text-xs font-bold text-slate-700 mb-1.5">
                 E-mail de Contato (Opcional)
               </label>
               <input
+                id="cadastro-mail-contato"
                 type="email"
                 placeholder="exemplo@gmail.com"
                 value={email}
@@ -471,9 +476,9 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900">
+                    <h3 className="text-xs font-bold text-slate-900">
                       Endereço de Residência
-                    </h4>
+                    </h3>
                     <p className="text-[11px] text-slate-500">
                       Digite o CEP para preencher a rua, bairro e cidade automaticamente
                     </p>
@@ -502,10 +507,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
               {manualAddressMode ? (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label htmlFor="cadastro-endereco-completo-manual" className="block text-xs font-bold text-slate-700 mb-1.5">
                     Endereço Completo Manual *
                   </label>
                   <input
+                    id="cadastro-endereco-completo-manual"
                     type="text"
                     required
                     placeholder="Ex: Rua 14, Qd. 05, Lt. 12, Setor Maysa II, Trindade - GO"
@@ -519,7 +525,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   {/* Campo de CEP com indicador de busca ViaCEP */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div className="sm:col-span-1">
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                      <label htmlFor="cadastro-cep" className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
                         <span>CEP *</span>
                         {isCepLoading && (
                           <span className="text-[10px] text-brand flex items-center gap-1 font-normal">
@@ -536,6 +542,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                       </label>
                       <div className="relative">
                         <input
+                          id="cadastro-cep"
                           type="text"
                           required
                           placeholder="00000-000"
@@ -548,7 +555,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                           type="button"
                           onClick={() => fetchAddressByCep(cep)}
                           disabled={cleanDigits(cep).length !== 8 || isCepLoading}
-                          className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded-lg text-slate-400 hover:text-brand disabled:opacity-30 transition-colors cursor-pointer"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded-lg text-slate-500 hover:text-brand disabled:opacity-30 transition-colors cursor-pointer"
                           title="Buscar CEP na API ViaCEP"
                         >
                           {isCepLoading ? (
@@ -566,10 +573,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      <label htmlFor="cadastro-rua-avenida-alameda" className="block text-xs font-bold text-slate-700 mb-1.5">
                         Rua / Avenida / Alameda *
                       </label>
                       <input
+                        id="cadastro-rua-avenida-alameda"
                         type="text"
                         required
                         placeholder="Ex: Alameda das Rosas, Rua 12, etc."
@@ -583,7 +591,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   {/* Número e Complemento / Quadra e Lote */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      <label htmlFor="cadastro-numero" className="block text-xs font-bold text-slate-700 mb-1.5">
                         Número / Lote *
                       </label>
                       <input
@@ -598,10 +606,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      <label htmlFor="cadastro-complemento-quadra" className="block text-xs font-bold text-slate-700 mb-1.5">
                         Complemento / Quadra (Opcional)
                       </label>
                       <input
+                        id="cadastro-complemento-quadra"
                         type="text"
                         placeholder="Ex: Qd. 14, Chácara 26/27, Casa 2, Fundos"
                         value={complemento}
@@ -614,10 +623,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   {/* Bairro, Cidade e UF */}
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      <label htmlFor="cadastro-bairro-setor" className="block text-xs font-bold text-slate-700 mb-1.5">
                         Bairro / Setor *
                       </label>
                       <input
+                        id="cadastro-bairro-setor"
                         type="text"
                         required
                         placeholder="Ex: Setor Ponta Kayana"
@@ -628,10 +638,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      <label htmlFor="cadastro-cidade" className="block text-xs font-bold text-slate-700 mb-1.5">
                         Cidade *
                       </label>
                       <input
+                        id="cadastro-cidade"
                         type="text"
                         required
                         value={cidade}
@@ -641,10 +652,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      <label htmlFor="cadastro-estado-uf" className="block text-xs font-bold text-slate-700 mb-1.5">
                         Estado (UF) *
                       </label>
                       <input
+                        id="cadastro-estado-uf"
                         type="text"
                         required
                         maxLength={2}
@@ -673,10 +685,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
             {/* Projeto de Interesse */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label htmlFor="cadastro-projeto-social-desejado" className="block text-xs font-bold text-slate-700 mb-1.5">
                 Projeto Social Desejado *
               </label>
               <select
+                id="cadastro-projeto-social-desejado"
                 value={projeto}
                 onChange={(e) => setProjeto(e.target.value)}
                 className="w-full px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brand shadow-2xs text-slate-900 font-semibold"
@@ -691,10 +704,11 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
             {/* Observações */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label htmlFor="cadastro-observacoes-informacoes-importantes" className="block text-xs font-bold text-slate-700 mb-1.5">
                 Observações / Informações Importantes (Opcional)
               </label>
               <textarea
+                id="cadastro-observacoes-informacoes-importantes"
                 rows={3}
                 placeholder="Ex: Tamanho de roupa/calçado para o ballet ou futebol; meses de gestação para o Book Solidário; restrições de saúde..."
                 value={observacoes}
@@ -705,8 +719,9 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
 
             {/* Proteção Anti-Spam (Honeypot para robôs) */}
             <div className="hidden" aria-hidden="true">
-              <label>Não preencha este campo de segurança</label>
+              <label htmlFor="cadastro-nao-preencha-este">Não preencha este campo de segurança</label>
               <input
+                id="cadastro-nao-preencha-este"
                 type="text"
                 tabIndex={-1}
                 autoComplete="off"
@@ -766,7 +781,7 @@ export const CadastroBeneficiario: React.FC<CadastroBeneficiarioProps> = ({
                   </>
                 )}
               </button>
-              <p className="text-[11px] text-slate-500 text-center mt-2">
+              <p className="text-[11px] text-slate-600 text-center mt-2">
                 Ao enviar, seu cadastro entrará na fila de análise da Associação Novo Amanhecer. Seus dados estão seguros e protegidos.
               </p>
             </div>

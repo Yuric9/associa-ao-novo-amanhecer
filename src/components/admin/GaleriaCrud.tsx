@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Trash2, ArrowUp, ArrowDown, X, Image as ImageIcon } from 'lucide-react';
 import { GalleryPhoto } from '../../types';
 import { CampoFoto } from './comum/CampoFoto';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface GaleriaCrudProps {
   photos: GalleryPhoto[];
@@ -10,6 +11,7 @@ interface GaleriaCrudProps {
 
 export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos }) => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const janela = useJanelaModal(showAddModal, () => setShowAddModal(false));
   const [newUrl, setNewUrl] = useState('');
   const [newLegenda, setNewLegenda] = useState('');
   const [newCategoria, setNewCategoria] = useState<'ballet' | 'futebol' | 'book' | 'festas' | 'geral'>('geral');
@@ -61,7 +63,7 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-bold text-ink">Gerenciador da Galeria de Fotos</h3>
+          <h2 className="text-lg font-bold text-ink">Gerenciador da Galeria de Fotos</h2>
           <p className="text-xs text-muted">
             Adicione registros das aulas de ballet, futebol, ensaios de gestantes e festas comunitárias.
           </p>
@@ -69,7 +71,7 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex shrink-0 self-start items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-600 sm:self-auto hover:bg-amber-700 rounded-xl transition-colors cursor-pointer"
+          className="inline-flex shrink-0 self-start items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-700 sm:self-auto hover:bg-amber-800 rounded-xl transition-colors cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Adicionar Foto</span>
@@ -139,15 +141,16 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
       {/* Modal Adicionar Foto */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-lg bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+          <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="galeria-modal-titulo" tabIndex={-1} className="outline-none relative w-full max-w-lg bg-white rounded-[14px] shadow-2xl border border-line overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
+              aria-label="Fechar"
               onClick={() => setShowAddModal(false)}
               className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-bold text-ink mb-4">Adicionar Nova Foto na Galeria</h3>
+            <h2 id="galeria-modal-titulo" className="text-lg font-bold text-ink mb-4">Adicionar Nova Foto na Galeria</h2>
 
             <form onSubmit={handleAdd} className="space-y-4">
               <CampoFoto
@@ -158,10 +161,11 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
               />
 
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="galeria-legenda-descritiva" className="block text-xs font-bold text-body uppercase mb-1">
                   Legenda Descritiva
                 </label>
                 <textarea
+                  id="galeria-legenda-descritiva"
                   rows={2}
                   required
                   placeholder="Ex: Alunas de ballet ensaiando com as sapatilhas novas na sede de Trindade."
@@ -173,10 +177,11 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-body uppercase mb-1">
+                  <label htmlFor="galeria-categoria" className="block text-xs font-bold text-body uppercase mb-1">
                     Categoria
                   </label>
                   <select
+                    id="galeria-categoria"
                     value={newCategoria}
                     onChange={(e) => setNewCategoria(e.target.value as any)}
                     className="w-full px-3 py-2 text-xs bg-paper border border-line rounded-xl"
@@ -190,10 +195,11 @@ export const GaleriaCrud: React.FC<GaleriaCrudProps> = ({ photos, onUpdatePhotos
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-body uppercase mb-1">
+                  <label htmlFor="galeria-data-evento" className="block text-xs font-bold text-body uppercase mb-1">
                     Data / Evento
                   </label>
                   <input
+                    id="galeria-data-evento"
                     type="text"
                     value={newData}
                     onChange={(e) => setNewData(e.target.value)}

@@ -16,6 +16,7 @@ import {
 import { SiteContent } from '../../types';
 import { generatePixPayload, generateQrCodeDataUrl } from '../../utils/pix';
 import { api } from '../../services/api';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface DoacaoModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
   const [telefone, setTelefone] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [hpSecurityCheck, setHpSecurityCheck] = useState('');
+  const janela = useJanelaModal(isOpen, onClose);
 
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedPayload, setCopiedPayload] = useState(false);
@@ -150,21 +152,21 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-xl w-full p-6 sm:p-8 border border-line relative my-8">
+      <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="doacao-modal-titulo" tabIndex={-1} className="outline-none bg-white rounded-lg max-w-xl w-full p-6 sm:p-8 border border-line relative my-8">
         <button
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+          className="absolute top-5 right-5 p-2 text-slate-500 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {isSuccess ? (
           <div className="text-center py-6 space-y-4">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900">
+            <h3 id="doacao-modal-titulo" className="text-2xl font-bold text-slate-900">
               Gratidão pelo seu Gesto de Amor!
             </h3>
             <p className="text-sm text-slate-600 max-w-md mx-auto">
@@ -239,14 +241,15 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
 
             {/* Seleção de Valor */}
             <div className="mb-5">
-              <label className="block text-xs font-bold text-slate-700 mb-2">
+              <p id="doacao-valor-titulo" className="block text-xs font-bold text-slate-700 mb-2">
                 Escolha o valor que deseja doar:
-              </label>
-              <div className="grid grid-cols-4 gap-2 mb-3">
+              </p>
+              <div role="group" aria-labelledby="doacao-valor-titulo" className="grid grid-cols-4 gap-2 mb-3">
                 {suggestedAmounts.map((val) => (
                   <button
                     key={val}
                     type="button"
+                    aria-pressed={selectedAmount === val && !customAmount}
                     onClick={() => handleAmountSelect(val)}
                     className={`py-2 px-3 rounded-md font-bold text-xs transition-all cursor-pointer border ${ selectedAmount === val && !customAmount ? 'bg-brand text-white border-brand shadow-xs' : 'bg-sand text-slate-700 border-line hover:bg-brand-soft' }`}
                   >
@@ -262,6 +265,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                 </span>
                 <input
                   type="text"
+                  aria-label="Outro valor, em reais"
                   placeholder="Outro valor livre (ex: 75,00)"
                   value={customAmount}
                   onChange={handleCustomChange}
@@ -306,7 +310,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                           className="p-1 text-brand hover:text-brand cursor-pointer shrink-0"
                           title="Copiar Chave"
                         >
-                          {copiedKey ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                          {copiedKey ? <Check className="w-4 h-4 text-emerald-700" /> : <Copy className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>
@@ -325,7 +329,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                         onClick={handleCopyPayload}
                         className="flex-1 py-1.5 px-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-[11px] font-bold rounded-md flex items-center justify-center gap-1 cursor-pointer"
                       >
-                        {copiedPayload ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <QrCode className="w-3.5 h-3.5" />}
+                        {copiedPayload ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <QrCode className="w-3.5 h-3.5" />}
                         <span>{copiedPayload ? 'Copia & Cola OK' : 'Pix Copia e Cola'}</span>
                       </button>
                     </div>
@@ -338,7 +342,7 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
             {activeTab === 'CARTAO' && (
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-5 text-left space-y-3">
                 <div className="flex items-center gap-2 text-slate-900 font-bold text-xs">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
                   <span>Checkout Seguro com Cartão</span>
                   <span className="ml-auto text-[10px] px-2 py-0.5 bg-brand-soft text-brand rounded-full font-bold">
                     Preparado / Stripe
@@ -361,10 +365,11 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                <label htmlFor="doacao-seu-nome-ou" className="block text-[11px] font-semibold text-slate-700 mb-1">
                   Seu Nome ou Empresa *
                 </label>
                 <input
+                  id="doacao-seu-nome-ou"
                   type="text"
                   required
                   placeholder="Ex: Ana Maria da Silva"
@@ -376,10 +381,11 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  <label htmlFor="doacao-mail-confirmacao" className="block text-[11px] font-semibold text-slate-700 mb-1">
                     E-mail (para confirmação)
                   </label>
                   <input
+                    id="doacao-mail-confirmacao"
                     type="email"
                     placeholder="voce@exemplo.com"
                     value={email}
@@ -388,10 +394,11 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                  <label htmlFor="doacao-telefone-whatsapp" className="block text-[11px] font-semibold text-slate-700 mb-1">
                     Telefone / WhatsApp
                   </label>
                   <input
+                    id="doacao-telefone-whatsapp"
                     type="tel"
                     placeholder="(62) 99999-0000"
                     value={telefone}
@@ -402,10 +409,11 @@ export const DoacaoModal: React.FC<DoacaoModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                <label htmlFor="doacao-mensagem-ou-dedicacao" className="block text-[11px] font-semibold text-slate-700 mb-1">
                   Mensagem ou dedicação (opcional)
                 </label>
                 <input
+                  id="doacao-mensagem-ou-dedicacao"
                   type="text"
                   placeholder="Ex: Para apoiar as sapatilhas do ballet infantil..."
                   value={mensagem}

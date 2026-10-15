@@ -30,7 +30,7 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold text-ink">Edição de Textos do Site (CMS Sem Código)</h3>
+          <h2 className="text-lg font-bold text-ink">Edição de Textos do Site (CMS Sem Código)</h2>
           <p className="text-xs text-muted">
             Atualize frases da página inicial, história, números de impacto e chave PIX. As alterações são aplicadas instantaneamente no site público.
           </p>
@@ -49,16 +49,17 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Bloco 1: Página Inicial / Hero */}
         <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4">
-          <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
             1. Seção Principal (Hero)
-          </h4>
+          </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-tagline-superior" className="block text-xs font-bold text-body uppercase mb-1">
                 Tagline Superior
               </label>
               <input
+                id="cms-tagline-superior"
                 type="text"
                 value={formData.hero_tagline}
                 onChange={(e) => setFormData({ ...formData, hero_tagline: e.target.value })}
@@ -67,10 +68,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-link-instagram-oficial" className="block text-xs font-bold text-body uppercase mb-1">
                 Link do Instagram Oficial
               </label>
               <input
+                id="cms-link-instagram-oficial"
                 type="url"
                 value={formData.instagram_url}
                 onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
@@ -80,10 +82,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="cms-subtitulo-acolhedor-hero" className="block text-xs font-bold text-body uppercase mb-1">
               Subtítulo Acolhedor do Hero
             </label>
             <textarea
+              id="cms-subtitulo-acolhedor-hero"
               rows={2}
               value={formData.hero_subtitle}
               onChange={(e) => setFormData({ ...formData, hero_subtitle: e.target.value })}
@@ -94,15 +97,16 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
 
         {/* Bloco 2: Sobre a Associação */}
         <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4">
-          <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
             2. História, Missão, Visão e Valores
-          </h4>
+          </h3>
 
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="cms-historia-curta-associacao" className="block text-xs font-bold text-body uppercase mb-1">
               História Curta da Associação em Trindade
             </label>
             <textarea
+              id="cms-historia-curta-associacao"
               rows={3}
               value={formData.sobre_historia}
               onChange={(e) => setFormData({ ...formData, sobre_historia: e.target.value })}
@@ -112,10 +116,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-missao" className="block text-xs font-bold text-body uppercase mb-1">
                 Missão
               </label>
               <textarea
+                id="cms-missao"
                 rows={3}
                 value={formData.sobre_missao}
                 onChange={(e) => setFormData({ ...formData, sobre_missao: e.target.value })}
@@ -124,10 +129,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-visao" className="block text-xs font-bold text-body uppercase mb-1">
                 Visão
               </label>
               <textarea
+                id="cms-visao"
                 rows={3}
                 value={formData.sobre_visao}
                 onChange={(e) => setFormData({ ...formData, sobre_visao: e.target.value })}
@@ -136,10 +142,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-valores" className="block text-xs font-bold text-body uppercase mb-1">
                 Valores
               </label>
               <textarea
+                id="cms-valores"
                 rows={3}
                 value={formData.sobre_valores}
                 onChange={(e) => setFormData({ ...formData, sobre_valores: e.target.value })}
@@ -151,16 +158,17 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
 
         {/* Bloco 3: Números de Impacto */}
         <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4">
-          <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
             3. Números de Impacto Social
-          </h4>
+          </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-criancas-atendidas" className="block text-xs font-bold text-body uppercase mb-1">
                 Crianças Atendidas
               </label>
               <input
+                id="cms-criancas-atendidas"
                 type="number"
                 value={formData.impacto_criancas}
                 onChange={(e) => setFormData({ ...formData, impacto_criancas: Number(e.target.value) })}
@@ -169,10 +177,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-voluntarios-ativos" className="block text-xs font-bold text-body uppercase mb-1">
                 Voluntários Ativos
               </label>
               <input
+                id="cms-voluntarios-ativos"
                 type="number"
                 value={formData.impacto_voluntarios}
                 onChange={(e) => setFormData({ ...formData, impacto_voluntarios: Number(e.target.value) })}
@@ -181,10 +190,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-edicoes-eventos" className="block text-xs font-bold text-body uppercase mb-1">
                 Edições de Eventos
               </label>
               <input
+                id="cms-edicoes-eventos"
                 type="number"
                 value={formData.impacto_eventos}
                 onChange={(e) => setFormData({ ...formData, impacto_eventos: Number(e.target.value) })}
@@ -193,10 +203,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-projetos-ativos" className="block text-xs font-bold text-body uppercase mb-1">
                 Projetos Ativos
               </label>
               <input
+                id="cms-projetos-ativos"
                 type="number"
                 value={formData.impacto_projetos}
                 onChange={(e) => setFormData({ ...formData, impacto_projetos: Number(e.target.value) })}
@@ -208,16 +219,17 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
 
         {/* Bloco 4: Dados de Contato e Chave PIX */}
         <div className="bg-white p-6 rounded-[14px] border border-line shadow-2xs space-y-4">
-          <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-amber-900 uppercase tracking-wider">
             4. Dados Oficiais & Chave PIX
-          </h4>
+          </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-chave-pix-oficial" className="block text-xs font-bold text-body uppercase mb-1">
                 Chave PIX Oficial (CNPJ)
               </label>
               <input
+                id="cms-chave-pix-oficial"
                 type="text"
                 value={formData.contato_pix_chave}
                 onChange={(e) => setFormData({ ...formData, contato_pix_chave: e.target.value })}
@@ -226,10 +238,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-cnpj" className="block text-xs font-bold text-body uppercase mb-1">
                 CNPJ
               </label>
               <input
+                id="cms-cnpj"
                 type="text"
                 value={formData.contato_cnpj}
                 onChange={(e) => setFormData({ ...formData, contato_cnpj: e.target.value })}
@@ -238,10 +251,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-whatsapp-atendimento" className="block text-xs font-bold text-body uppercase mb-1">
                 WhatsApp de Atendimento
               </label>
               <input
+                id="cms-whatsapp-atendimento"
                 type="text"
                 value={formData.contato_whatsapp}
                 onChange={(e) => setFormData({ ...formData, contato_whatsapp: e.target.value })}
@@ -251,10 +265,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="cms-mensagem-inicial-whatsapp" className="block text-xs font-bold text-body uppercase mb-1">
               Mensagem Inicial do WhatsApp (Botão Flutuante "Fale Conosco")
             </label>
             <input
+              id="cms-mensagem-inicial-whatsapp"
               type="text"
               value={formData.contato_whatsapp_mensagem || ''}
               onChange={(e) => setFormData({ ...formData, contato_whatsapp_mensagem: e.target.value })}
@@ -268,10 +283,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-endereco-sede-em" className="block text-xs font-bold text-body uppercase mb-1">
                 Endereço da Sede em Trindade
               </label>
               <input
+                id="cms-endereco-sede-em"
                 type="text"
                 value={formData.contato_endereco}
                 onChange={(e) => setFormData({ ...formData, contato_endereco: e.target.value })}
@@ -280,10 +296,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-body uppercase mb-1">
+              <label htmlFor="cms-mail-institucional" className="block text-xs font-bold text-body uppercase mb-1">
                 E-mail Institucional
               </label>
               <input
+                id="cms-mail-institucional"
                 type="email"
                 value={formData.contato_email}
                 onChange={(e) => setFormData({ ...formData, contato_email: e.target.value })}
@@ -293,10 +310,11 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-body uppercase mb-1">
+            <label htmlFor="cms-url-pagina-oficial" className="block text-xs font-bold text-body uppercase mb-1">
               URL da Página Oficial no Instagram (Alimenta o Feed em Tempo Real)
             </label>
             <input
+              id="cms-url-pagina-oficial"
               type="url"
               value={formData.instagram_url}
               onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
@@ -312,7 +330,7 @@ export const CmsConteudo: React.FC<CmsConteudoProps> = ({ content, onUpdateConte
         {/* Botão Salvar CMS */}
         <div className="flex items-center justify-end gap-3 pt-2">
           {saved && (
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 animate-in fade-in">
+            <span className="text-xs font-bold text-emerald-700 flex items-center gap-1 animate-in fade-in">
               <Check className="w-4 h-4" />
               <span>Textos atualizados com sucesso no site!</span>
             </span>

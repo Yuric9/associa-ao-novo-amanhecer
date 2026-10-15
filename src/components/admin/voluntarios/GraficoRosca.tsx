@@ -41,10 +41,10 @@ export const GraficoRosca: React.FC<GraficoRoscaProps> = ({
           <span className="text-xs text-muted">·</span>
           <span className="text-xs text-muted">Gráfico de Rosca Interativo</span>
         </div>
-        <h3 className="text-base sm:text-lg font-black text-ink mt-1 flex items-center gap-2">
+        <h2 className="text-base sm:text-lg font-black text-ink mt-1 flex items-center gap-2">
           <HandHeart className="w-5 h-5 text-rose-600" />
           <span>Distribuição de Voluntários</span>
-        </h3>
+        </h2>
         <p className="text-xs text-body mt-0.5">
           Alterne entre áreas de atuação e disponibilidade para planejar escalas de oficinas, ensaios e cozinha.
         </p>

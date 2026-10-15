@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Shield, Trash2, Key, UserCheck, X, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { UserRole } from '../../types';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface AdminUsersProps {
   currentEmail: string;
@@ -28,6 +29,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
 
   // Modal de Adição
   const [showAdd, setShowAdd] = useState(false);
+  const janela = useJanelaModal(showAdd, () => setShowAdd(false));
   const [newNome, setNewNome] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -149,7 +151,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold text-ink">Perfis de Acesso & Usuários Administrativos</h3>
+          <h2 className="text-lg font-bold text-ink">Perfis de Acesso & Usuários Administrativos</h2>
           <p className="text-xs text-muted max-w-2xl mt-0.5">
             Gerenciamento de contas com autenticação real por hash bcrypt. Os papéis (RBAC) são armazenados em tabela separada e verificados exclusivamente no servidor a cada requisição.
           </p>
@@ -180,7 +182,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
 
       {success && (
         <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
           <span>{success}</span>
         </div>
       )}
@@ -244,8 +246,9 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
       {/* Modal Adicionar Novo Usuário */}
       {showAdd && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-brand-dark/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="relative w-full max-w-md bg-white rounded-[14px] shadow-2xl border border-line p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+          <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="usuario-modal-titulo" tabIndex={-1} className="outline-none relative w-full max-w-md bg-white rounded-[14px] shadow-2xl border border-line p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
             <button
+              aria-label="Fechar"
               onClick={() => setShowAdd(false)}
               className="absolute top-4 right-4 p-2 text-muted hover:text-body rounded-full"
             >
@@ -257,17 +260,18 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
                 <Shield className="w-5 h-5 text-amber-700" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-ink">Cadastrar Novo Usuário</h3>
+                <h2 id="usuario-modal-titulo" className="text-lg font-bold text-ink">Cadastrar Novo Usuário</h2>
                 <span className="text-xs text-muted">Atribuição de papel seguro (RBAC)</span>
               </div>
             </div>
 
             <form onSubmit={handleAddUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="usuario-nome-completo" className="block text-xs font-bold text-body uppercase mb-1">
                   Nome Completo
                 </label>
                 <input
+                  id="usuario-nome-completo"
                   type="text"
                   required
                   placeholder="Ex: Maria Coordenação Social"
@@ -278,10 +282,11 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="usuario-mail-login" className="block text-xs font-bold text-body uppercase mb-1">
                   E-mail de Login
                 </label>
                 <input
+                  id="usuario-mail-login"
                   type="email"
                   required
                   placeholder="maria@novoamanhecer.org.br"
@@ -292,10 +297,11 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="usuario-senha-provisoria-minimo" className="block text-xs font-bold text-body uppercase mb-1">
                   Senha Provisória (Mínimo 8 caracteres)
                 </label>
                 <input
+                  id="usuario-senha-provisoria-minimo"
                   type="password"
                   required
                   minLength={8}
@@ -307,10 +313,11 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-body uppercase mb-1">
+                <label htmlFor="usuario-nivel-acesso-papel" className="block text-xs font-bold text-body uppercase mb-1">
                   Nível de Acesso (Papel RBAC)
                 </label>
                 <select
+                  id="usuario-nivel-acesso-papel"
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as UserRole)}
                   className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-paper border border-line rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/30 font-medium text-slate-800"

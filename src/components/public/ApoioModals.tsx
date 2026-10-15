@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, HandHeart, Briefcase, CheckCircle2, MessageCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { formatPhone } from '../../utils/validation';
+import { useJanelaModal } from '../../utils/useJanelaModal';
 
 interface VoluntarioModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface VoluntarioModalProps {
 }
 
 export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClose, onOpenPrivacidade }) => {
+  const janela = useJanelaModal(isOpen, onClose);
   const [submitted, setSubmitted] = useState(false);
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -52,11 +54,11 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+    <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="voluntario-apoio-titulo" tabIndex={-1} className="outline-none fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
       <div className="relative w-full max-w-lg bg-white rounded-lg border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
+          className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-600 rounded-full"
           aria-label="Fechar"
         >
           <X className="w-5 h-5" />
@@ -67,7 +69,7 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
             <HandHeart className="w-5 h-5 text-brand" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Seja Voluntário(a)</h3>
+            <h3 id="voluntario-apoio-titulo" className="text-xl font-bold text-slate-900">Seja Voluntário(a)</h3>
             <span className="text-xs text-slate-500">Associação Novo Amanhecer · Trindade/GO</span>
           </div>
         </div>
@@ -94,10 +96,11 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label htmlFor="apoio-seu-nome-completo" className="block text-xs font-bold text-slate-700 mb-1">
                 Seu Nome Completo
               </label>
               <input
+                id="apoio-seu-nome-completo"
                 type="text"
                 required
                 placeholder="Ex: Maria das Graças"
@@ -108,10 +111,11 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label htmlFor="apoio-telefone-whatsapp" className="block text-xs font-bold text-slate-700 mb-1">
                 Telefone / WhatsApp *
               </label>
               <input
+                id="apoio-telefone-whatsapp"
                 type="tel"
                 required
                 placeholder="(62) 99999-9999"
@@ -122,10 +126,11 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label htmlFor="apoio-seu-mail" className="block text-xs font-bold text-slate-700 mb-1">
                 Seu E-mail (Opcional)
               </label>
               <input
+                id="apoio-seu-mail"
                 type="email"
                 placeholder="seu.email@exemplo.com"
                 value={email}
@@ -136,10 +141,11 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label htmlFor="apoio-area-interesse" className="block text-xs font-bold text-slate-700 mb-1">
                   Área de Interesse
                 </label>
                 <select
+                  id="apoio-area-interesse"
                   value={area}
                   onChange={(e) => setArea(e.target.value)}
                   className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none"
@@ -155,10 +161,11 @@ export const VoluntarioModal: React.FC<VoluntarioModalProps> = ({ isOpen, onClos
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label htmlFor="apoio-disponibilidade" className="block text-xs font-bold text-slate-700 mb-1">
                   Disponibilidade
                 </label>
                 <select
+                  id="apoio-disponibilidade"
                   value={disponibilidade}
                   onChange={(e) => setDisponibilidade(e.target.value)}
                   className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-none"
@@ -252,6 +259,7 @@ interface ParceiroModalProps {
 }
 
 export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose }) => {
+  const janela = useJanelaModal(isOpen, onClose);
   const [submitted, setSubmitted] = useState(false);
   const [empresa, setEmpresa] = useState('');
   const [contato, setContato] = useState('');
@@ -267,10 +275,10 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-lg bg-white rounded-lg border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+      <div ref={janela} role="dialog" aria-modal="true" aria-labelledby="parceiro-modal-titulo" tabIndex={-1} className="outline-none relative w-full max-w-lg bg-white rounded-lg border border-slate-100 overflow-hidden p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full"
+          className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-600 rounded-full"
           aria-label="Fechar"
         >
           <X className="w-5 h-5" />
@@ -281,7 +289,7 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
             <Briefcase className="w-5 h-5 text-brand" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Seja um Parceiro Comunitário</h3>
+            <h3 id="parceiro-modal-titulo" className="text-xl font-bold text-slate-900">Seja um Parceiro Comunitário</h3>
             <span className="text-xs text-slate-500">Empresas e Amigos de Trindade/GO</span>
           </div>
         </div>
@@ -308,10 +316,11 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label htmlFor="apoio-nome-empresa-ou" className="block text-xs font-bold text-slate-700 mb-1">
                 Nome da Empresa ou Apoiador
               </label>
               <input
+                id="apoio-nome-empresa-ou"
                 type="text"
                 required
                 placeholder="Ex: Comercial Goiás / Farmácia do Bairro"
@@ -323,10 +332,11 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label htmlFor="apoio-pessoa-contato" className="block text-xs font-bold text-slate-700 mb-1">
                   Pessoa de Contato
                 </label>
                 <input
+                  id="apoio-pessoa-contato"
                   type="text"
                   required
                   placeholder="Seu nome"
@@ -337,10 +347,11 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label htmlFor="apoio-telefone-whatsapp-2" className="block text-xs font-bold text-slate-700 mb-1">
                   Telefone / WhatsApp
                 </label>
                 <input
+                  id="apoio-telefone-whatsapp-2"
                   type="tel"
                   required
                   placeholder="(62) 99999-9999"
@@ -352,10 +363,11 @@ export const ParceiroModal: React.FC<ParceiroModalProps> = ({ isOpen, onClose })
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label htmlFor="apoio-como-gostaria-contribuir" className="block text-xs font-bold text-slate-700 mb-1">
                 Como Gostaria de Contribuir?
               </label>
               <textarea
+                id="apoio-como-gostaria-contribuir"
                 rows={3}
                 placeholder="Ex: Doação de kits de fraldas para o Book de Gestantes, lanches para os treinos de futebol, patrocínio de figurino de ballet ou brinquedos para o Dia das Crianças."
                 value={proposta}

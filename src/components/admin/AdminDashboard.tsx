@@ -278,7 +278,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Banner Global de Notificação de Download CSV */}
         {exportNotification && (
-          <div className="bg-emerald-600 text-white px-5 py-3.5 rounded-2xl shadow-lg flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="bg-emerald-700 text-white px-5 py-3.5 rounded-2xl shadow-lg flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="w-5 h-5 text-emerald-200 shrink-0" />
               <span className="text-xs sm:text-sm font-bold">{exportNotification}</span>
@@ -335,31 +335,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
                   <div className="text-xs font-bold text-slate-500 uppercase">Pendente</div>
                   <div className="text-2xl font-black text-amber-600 mt-1">{countPendentes}</div>
-                  <div className="text-[11px] text-slate-400 mt-1">Aguardando aprovação</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Aguardando aprovação</div>
                 </div>
 
                 <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
                   <div className="text-xs font-bold text-slate-500 uppercase">Em Análise</div>
                   <div className="text-2xl font-black text-amber-700 mt-1">{countEmAnalise}</div>
-                  <div className="text-[11px] text-slate-400 mt-1">Conferindo documentos</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Conferindo documentos</div>
                 </div>
 
                 <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
                   <div className="text-xs font-bold text-slate-500 uppercase">Aprovado</div>
-                  <div className="text-2xl font-black text-emerald-600 mt-1">{countAprovados}</div>
-                  <div className="text-[11px] text-slate-400 mt-1">Vaga confirmada</div>
+                  <div className="text-2xl font-black text-emerald-700 mt-1">{countAprovados}</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Vaga confirmada</div>
                 </div>
 
                 <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs">
                   <div className="text-xs font-bold text-slate-500 uppercase">Atendido / Entregue</div>
                   <div className="text-2xl font-black text-blue-600 mt-1">{countAtendidos}</div>
-                  <div className="text-[11px] text-slate-400 mt-1">Kit ou ensaio entregue</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Kit ou ensaio entregue</div>
                 </div>
 
                 <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-2xs col-span-2 sm:col-span-1">
                   <div className="text-xs font-bold text-slate-500 uppercase">Recusado</div>
-                  <div className="text-2xl font-black text-slate-400 mt-1">{countRecusados}</div>
-                  <div className="text-[11px] text-slate-400 mt-1">Inscrições canceladas</div>
+                  <div className="text-2xl font-black text-slate-500 mt-1">{countRecusados}</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Inscrições canceladas</div>
                 </div>
               </div>
             </div>
@@ -658,12 +658,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         )}
 
         {/* Rodapé do Painel Administrativo com Assinatura */}
-        <footer className="pt-8 pb-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <footer className="pt-8 pb-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
           <div>
             Painel de Gestão Administrativa · Associação Novo Amanhecer
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-slate-400 font-medium">Desenvolvido por</span>
+            <span className="text-[11px] text-slate-600 font-medium">Desenvolvido por</span>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 shadow-2xs">
               <span className="w-4 h-4 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-black text-[9px] flex items-center justify-center shadow-xs">
                 YC

@@ -141,7 +141,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
       {/* Toast / Alerta de Notificação de Sucesso */}
       {successMsg && (
         <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-xs animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />
           <span className="text-xs sm:text-sm font-bold">{successMsg}</span>
         </div>
       )}
@@ -154,9 +154,9 @@ export const BackupModal: React.FC<BackupModalProps> = ({
               Planilhas Offline
             </span>
           </div>
-          <h3 className="text-lg font-black text-ink mt-1">
+          <h2 className="text-lg font-black text-ink mt-1">
             Exportação de Relatórios Oficiais em CSV / Excel
-          </h3>
+          </h2>
           <p className="text-xs text-body">
             Baixe planilhas compatíveis com Microsoft Excel e Google Sheets com dados completos para impressões, listas de presença, auditorias e reuniões de coordenação.
           </p>
@@ -170,7 +170,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
                 <FileSpreadsheet className="w-6 h-6 text-emerald-700" />
               </div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h4 className="font-bold text-ink text-base">Lista de Beneficiários</h4>
+                <h3 className="font-bold text-ink text-base">Lista de Beneficiários</h3>
                 <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   {beneficiaries.length} cadastros
                 </span>
@@ -196,7 +196,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
                 <Layers className="w-6 h-6 text-amber-700" />
               </div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h4 className="font-bold text-ink text-base">Relatório de Projetos</h4>
+                <h3 className="font-bold text-ink text-base">Relatório de Projetos</h3>
                 <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                   {projects.length} projetos
                 </span>
@@ -222,7 +222,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
                 <FileText className="w-6 h-6 text-blue-700" />
               </div>
               <div className="flex items-center justify-between gap-2 mb-1">
-                <h4 className="font-bold text-ink text-base">Resumo de Impacto</h4>
+                <h3 className="font-bold text-ink text-base">Resumo de Impacto</h3>
                 <span className="text-[11px] font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
                   Oficial
                 </span>
@@ -247,7 +247,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
 
       {/* SEÇÃO 2: BACKUP COMPLETO JSON */}
       <div>
-        <h3 className="text-lg font-bold text-ink">Backup Completo do Sistema (JSON)</h3>
+        <h2 className="text-lg font-bold text-ink">Backup Completo do Sistema (JSON)</h2>
         <p className="text-xs text-muted">
           Gere cópias de segurança integrais em formato JSON, importe backups anteriores ou restaure a base de dados inicial de Trindade.
         </p>
@@ -260,7 +260,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
             <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center mb-4">
               <Download className="w-6 h-6 text-amber-700" />
             </div>
-            <h4 className="font-bold text-ink text-base mb-1">Exportar Backup Completo</h4>
+            <h3 className="font-bold text-ink text-base mb-1">Exportar Backup Completo</h3>
             <p className="text-xs text-body leading-relaxed mb-4">
               Baixe um arquivo JSON com todas as tabelas: lista de beneficiários, cards dos projetos, fotos da galeria e textos do site.
             </p>
@@ -281,7 +281,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
             <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-900 flex items-center justify-center mb-4">
               <Upload className="w-6 h-6 text-blue-700" />
             </div>
-            <h4 className="font-bold text-ink text-base mb-1">Restaurar de Arquivo</h4>
+            <h3 className="font-bold text-ink text-base mb-1">Restaurar de Arquivo</h3>
             <p className="text-xs text-body leading-relaxed mb-4">
               Carregue um arquivo JSON de backup gerado anteriormente para restaurar os dados no sistema.
             </p>
@@ -312,7 +312,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({
             <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-900 flex items-center justify-center mb-4">
               <RotateCcw className="w-6 h-6 text-orange-700" />
             </div>
-            <h4 className="font-bold text-ink text-base mb-1">Base Padrão de Trindade</h4>
+            <h3 className="font-bold text-ink text-base mb-1">Base Padrão de Trindade</h3>
             <p className="text-xs text-body leading-relaxed mb-4">
               Restaura os dados originais da Associação Novo Amanhecer (Ballet, Futebol, Book Solidário de Gestantes e Festas).
             </p>

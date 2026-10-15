@@ -17,7 +17,7 @@ const ACOES_STATUS: { status: BeneficiaryStatus; label: string; titulo: string; 
     status: 'Aprovado',
     label: 'Aprovar',
     titulo: 'Aprovar e disparar notificação',
-    classe: 'px-2.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors cursor-pointer',
+    classe: 'px-2.5 py-1.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg transition-colors cursor-pointer',
   },
   {
     status: 'Em análise',
