@@ -6,6 +6,7 @@ import { db } from './d1';
 import { ensureInitialized } from './db';
 import { apiRouter } from './routes';
 import { Res, parseCookies, type Req } from './http';
+import { fazerBackup } from './backup';
 
 const MAX_BODY_BYTES = 1_000_000; // 1 MB
 
@@ -85,5 +86,14 @@ export default {
 
     // Qualquer outra rota: arquivos do site (o wrangler devolve index.html para rotas do React)
     return env.ASSETS.fetch(request);
+  },
+
+  // Agendamento diário (triggers.crons no wrangler.jsonc): backup do banco no R2.
+  async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+    setEnv(env);
+    db.attach(env.DB);
+    await ensureInitialized();
+    const { nome, tamanho } = await fazerBackup(new Date(controller.scheduledTime));
+    console.log(`[BACKUP] ${nome} gravado (${Math.round(tamanho / 1024)} KB).`);
   },
 } satisfies ExportedHandler<Env>;

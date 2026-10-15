@@ -72,6 +72,12 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   return data as T;
 }
 
+export interface BackupSalvo {
+  nome: string;
+  tamanho: number;
+  criado_em: string;
+}
+
 export const api = {
   // === AUTENTICAÇÃO ===
   async login(email: string, password: string): Promise<{ user: AuthUser }> {
@@ -228,6 +234,25 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(content),
     });
+  },
+
+  // === BACKUPS AUTOMÁTICOS (só administrador) ===
+  async getBackups(): Promise<BackupSalvo[]> {
+    return request<BackupSalvo[]>('/backups');
+  },
+
+  async criarBackup(): Promise<{ nome: string; tamanho: number }> {
+    return request('/backups', { method: 'POST' });
+  },
+
+  /** Substitui os dados atuais pelos do arquivo (o servidor guarda antes uma cópia do estado atual). */
+  async restaurarBackup(arquivo: unknown): Promise<{ copia_de_seguranca: string; restaurados: Record<string, number> }> {
+    return request('/backups/restaurar', { method: 'POST', body: JSON.stringify(arquivo) });
+  },
+
+  /** Endereço para baixar um backup (o cookie de sessão vai junto no download). */
+  urlDoBackup(nome: string): string {
+    return `/api/backups/${encodeURIComponent(nome)}`;
   },
 
   // === AUDITORIA E MÉTRICAS ===

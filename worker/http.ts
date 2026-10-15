@@ -68,6 +68,11 @@ export class Res {
     return this;
   }
 
+  header(name: string, value: string) {
+    this.headers.set(name, value);
+    return this;
+  }
+
   /** Responde com um arquivo (ex.: foto), com o tipo e o cache informados. */
   file(body: BodyInit, contentType: string, cacheControl: string) {
     this.body = body;
