@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Beneficiary } from '../../src/types';
+import type { Beneficiary, ProjectCard } from '../../src/types';
 import {
   FILTROS_VAZIOS,
   contarPorProjeto,
@@ -11,6 +11,7 @@ import {
   normalize,
   temFiltrosAtivos,
   type Filtros,
+  opcoesDeProjeto,
 } from '../../src/components/admin/beneficiarios/filtros';
 
 function ben(over: Partial<Beneficiary>): Beneficiary {
@@ -50,7 +51,8 @@ describe('normalize e isProjectMatch', () => {
     ['Escolinha de Futebol Comunitário', 'futebol', true],
     ['Futsal de Sábado', 'futebol', true],
     ['Aulas de Ballet Solidário', 'ballet', true],
-    ['Oficina de Dança Livre', 'ballet', true], // "dança" conta como ballet
+    ['Oficina de Dança Livre', 'ballet', false], // dança é um projeto próprio, não ballet
+    ['Aulas de Dança', 'Aulas de Dança', true],
     ['Projeto Book Solidário para Gestantes', 'book', true],
     ['Festas em Datas Comemorativas', 'festas', true],
     ['Aulas de Ballet Solidário', 'futebol', false],
@@ -93,7 +95,8 @@ describe('filtrarBeneficiarios', () => {
   });
 
   it('combina status e projeto', () => {
-    expect(filtrar({ projeto: 'ballet' })).toEqual(['1', '5']);
+    expect(filtrar({ projeto: 'ballet' })).toEqual(['1']); // a "Oficina de Dança Livre" não é ballet
+    expect(filtrar({ projeto: 'Oficina de Dança Livre' })).toEqual(['5']);
     expect(filtrar({ projeto: 'ballet', status: 'Aprovado' })).toEqual(['1']);
     expect(filtrar({ status: 'Pendente', busca: 'ana' })).toEqual([]);
   });
@@ -106,8 +109,8 @@ describe('filtrarBeneficiarios', () => {
 });
 
 describe('contagens', () => {
-  it('conta por projeto (um beneficiário de "Dança" entra em ballet)', () => {
-    expect(contarPorProjeto(BASE)).toEqual({ todos: 5, futebol: 1, ballet: 2, book: 1, festas: 1 });
+  it('conta por projeto (a "Dança" não entra na conta do ballet)', () => {
+    expect(contarPorProjeto(BASE)).toEqual({ todos: 5, futebol: 1, ballet: 1, book: 1, festas: 1 });
   });
 
   it('conta por status e calcula a porcentagem do total', () => {
@@ -121,6 +124,25 @@ describe('contagens', () => {
     });
     expect(contarPorStatus(BASE.slice(0, 1), 3).percentOfTotal).toBe(33);
     expect(contarPorStatus([], 0).percentOfTotal).toBe(0);
+  });
+});
+
+describe('opcoesDeProjeto (campo Projeto no cadastro/edição)', () => {
+  const projetos = [
+    { id: 'proj-ballet', titulo: 'Ballet — Na Pontinha do Pé' },
+    { id: 'proj-1', titulo: 'Aulas de Dança' },
+  ] as ProjectCard[];
+
+  it('inclui os nomes antigos e os projetos novos do banco', () => {
+    const opcoes = opcoesDeProjeto(projetos);
+    expect(opcoes).toContain('Aulas de Ballet Solidário');
+    expect(opcoes).toContain('Aulas de Dança');
+    expect(opcoes).not.toContain('Ballet — Na Pontinha do Pé'); // já coberto por "Aulas de Ballet Solidário"
+  });
+
+  it('mantém o projeto atual da pessoa, mesmo que não esteja na lista (salvar não troca sem querer)', () => {
+    expect(opcoesDeProjeto(projetos, 'Ballet — Na Pontinha do Pé')).toContain('Ballet — Na Pontinha do Pé');
+    expect(opcoesDeProjeto([], 'Projeto que foi apagado')).toContain('Projeto que foi apagado');
   });
 });
 

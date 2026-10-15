@@ -1,22 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { GalleryPhoto } from '../../types';
+import { GalleryPhoto, ProjectCard } from '../../types';
+import { categoriasDaGaleria } from '../../utils/categoriasGaleria';
 import { Foto } from './Foto';
 
 interface GaleriaLightboxProps {
   photos: GalleryPhoto[];
+  projects?: ProjectCard[];
   instagramUrl: string;
 }
 
-const categories = [
-  { id: 'todas', label: 'Todas' },
-  { id: 'futebol', label: 'Futebol' },
-  { id: 'ballet', label: 'Ballet' },
-  { id: 'book', label: 'Book Solidário' },
-  { id: 'festas', label: 'Ações sociais' },
-];
-
-export const GaleriaLightbox: React.FC<GaleriaLightboxProps> = ({ photos, instagramUrl }) => {
+export const GaleriaLightbox: React.FC<GaleriaLightboxProps> = ({ photos, projects, instagramUrl }) => {
+  // Um filtro por projeto (só aparecem os que têm foto); "Geral / Sede" fica só em "Todas"
+  const categories = [{ id: 'todas', label: 'Todas' }, ...categoriasDaGaleria(projects).map((c) => ({ id: c.id, label: c.rotulo }))];
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState('todas');
 

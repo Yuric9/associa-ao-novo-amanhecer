@@ -1,6 +1,6 @@
 // Regras de busca, filtro e contagem da tela de beneficiários.
 // Funções puras (sem React): recebem dados e devolvem resultado, por isso têm testes em test/unit/.
-import type { Beneficiary, BeneficiaryStatus } from '../../../types';
+import type { Beneficiary, BeneficiaryStatus, ProjectCard } from '../../../types';
 import { cleanDigits } from '../../../utils/validation';
 
 export type TipoBusca = 'todos' | 'nome' | 'cpf';
@@ -48,7 +48,8 @@ export function isProjectMatch(beneficiaryProject: string, filterVal: string): b
     return bLower.includes('futebol') || bLower.includes('futsal');
   }
   if (fLower === 'ballet' || fLower === 'apenas ballet') {
-    return bLower.includes('ballet') || bLower.includes('danca');
+    // Só "ballet": outras danças (ex.: "Aulas de Dança") são projetos próprios
+    return bLower.includes('ballet');
   }
   if (fLower === 'book' || fLower === 'apenas book' || fLower === 'gestante' || fLower === 'apenas book gestante') {
     return bLower.includes('book') || bLower.includes('gestante');
@@ -150,3 +151,25 @@ export function nomeArquivoCsv(projeto: string, data: string): string | undefine
 
 /** Data de hoje no formato AAAA-MM-DD. */
 export const hoje = () => new Date().toISOString().split('T')[0];
+
+/** Nomes de projeto usados nas inscrições antigas (antes dos projetos virem do banco). */
+export const PROJETOS_LEGADOS = [
+  'Escolinha de Futebol Comunitário',
+  'Aulas de Ballet Solidário',
+  'Projeto Book Solidário para Gestantes',
+  'Festas em Datas Comemorativas',
+];
+
+/**
+ * Opções do campo "Projeto" ao cadastrar ou editar um beneficiário no painel:
+ * os 4 nomes antigos + todo projeto do banco que não seja um deles (ex.: "Aulas de Dança")
+ * + o projeto atual da pessoa, se não estiver na lista (assim salvar nunca troca o projeto sem querer).
+ */
+export function opcoesDeProjeto(projects: ProjectCard[] = [], atual?: string): string[] {
+  const novos = projects
+    .map((p) => p.titulo)
+    .filter((titulo) => !ATALHOS_PROJETO.some((atalho) => isProjectMatch(titulo, atalho)));
+  const opcoes = [...PROJETOS_LEGADOS, ...novos];
+  if (atual && !opcoes.includes(atual)) opcoes.push(atual);
+  return [...new Set(opcoes)];
+}
