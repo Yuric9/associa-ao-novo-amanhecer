@@ -7,6 +7,7 @@ import {
   Shield,
   Download,
   LogOut,
+  KeyRound,
   ExternalLink,
   Sun,
   Clock,
@@ -25,7 +26,7 @@ import {
   HandHeart,
   History,
 } from 'lucide-react';
-import { Beneficiary, ProjectCard, GalleryPhoto, SiteContent, AdminUser, StatusEmailNotification, Volunteer, AuthUser } from '../../types';
+import { Beneficiary, ProjectCard, GalleryPhoto, SiteContent, AdminUser, Volunteer, AuthUser } from '../../types';
 import { NovoAmanhecerLogo } from '../brand/NovoAmanhecerLogo';
 import { BeneficiariosCrud } from './BeneficiariosCrud';
 import { ProjetosCrud } from './ProjetosCrud';
@@ -34,6 +35,7 @@ import { GaleriaCrud } from './GaleriaCrud';
 import { AdminUsers } from './AdminUsers';
 import { BackupModal } from './BackupModal';
 import { RegistroAtividades } from './RegistroAtividades';
+import { TrocarMinhaSenha } from './comum/ModaisSenha';
 import { AnalyticsCharts } from './AnalyticsCharts';
 import { VoluntariosRoscaChart } from './VoluntariosRoscaChart';
 import {
@@ -66,7 +68,6 @@ interface AdminDashboardProps {
   volunteers?: Volunteer[];
   onUpdateVolunteers?: (volunteers: Volunteer[]) => void;
 
-  onRequestEmailNotification: (notif: StatusEmailNotification) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -86,7 +87,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onUpdateAdmins,
   volunteers = [],
   onUpdateVolunteers,
-  onRequestEmailNotification,
 }) => {
   const userRole = currentUser?.role || 'admin';
   const isVolunteer = userRole === 'voluntario';
@@ -99,6 +99,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Estado para feedback de exportação CSV
   const [exportNotification, setExportNotification] = useState<string | null>(null);
+  const [trocandoSenha, setTrocandoSenha] = useState(false);
   const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
   const exportDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -206,6 +207,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <button onClick={onBackToSite} className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-brand-light hover:text-white">
             <ExternalLink className="h-4 w-4" /> Ver o site
           </button>
+          <button onClick={() => setTrocandoSenha(true)} className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-brand-light hover:text-white">
+            <KeyRound className="h-4 w-4" /> Trocar minha senha
+          </button>
           <button onClick={onLogout} className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-brand-light hover:text-white">
             <LogOut className="h-4 w-4" /> Sair
           </button>
@@ -250,6 +254,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
               <button onClick={onBackToSite} className="hidden min-h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-brand hover:bg-brand-soft sm:inline-flex lg:hidden">
                 <ExternalLink className="h-4 w-4" /> Ver o site
+              </button>
+              <button onClick={() => setTrocandoSenha(true)} aria-label="Trocar minha senha" title="Trocar minha senha" className="inline-flex min-h-10 items-center rounded-md px-3 text-body hover:bg-sand lg:hidden">
+                <KeyRound className="h-4 w-4" />
               </button>
               <button onClick={onLogout} aria-label="Sair do painel" className="inline-flex min-h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-body hover:bg-sand lg:hidden">
                 <LogOut className="h-4 w-4" /><span className="hidden sm:inline">Sair</span>
@@ -595,7 +602,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <BeneficiariosCrud
             beneficiaries={beneficiaries}
             onUpdateBeneficiaries={onUpdateBeneficiaries}
-            onRequestEmailNotification={onRequestEmailNotification}
             projects={projects}
           />
         )}
@@ -649,6 +655,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             gallery={gallery}
             content={content}
             admins={admins}
+          />
+        )}
+
+        {trocandoSenha && (
+          <TrocarMinhaSenha
+            aoFechar={() => setTrocandoSenha(false)}
+            aoConcluir={(msg) => {
+              setTrocandoSenha(false);
+              triggerExportNotification(msg);
+            }}
           />
         )}
 

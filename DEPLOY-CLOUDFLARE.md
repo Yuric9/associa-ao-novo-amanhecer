@@ -22,9 +22,9 @@ O site roda como um único Cloudflare Worker:
 |---|---|
 | `JWT_SECRET` | texto aleatório com 48+ caracteres (`python -c "import secrets; print(secrets.token_hex(48))"`) |
 | `ADMIN_INITIAL_PASSWORD` | senha do primeiro administrador (mínimo 12 caracteres) |
-| `RESEND_API_KEY` | chave do Resend (para os e-mails saírem de verdade) |
+| `RESEND_API_KEY` | opcional: chave do Resend. O sistema só manda e-mail no "Esqueci minha senha"; sem a chave, o administrador redefine a senha pela aba Usuários |
 
-As variáveis não secretas (`ADMIN_EMAIL`, `EMAIL_FROM`, `COORDINATION_EMAIL`, `SEED_DEMO_DATA`)
+As variáveis não secretas (`ADMIN_EMAIL`, `EMAIL_FROM`, `SEED_DEMO_DATA`)
 ficam em `wrangler.jsonc`. Altere lá e faça push.
 
 > A conta administrativa é criada automaticamente na primeira visita, **somente** se o banco

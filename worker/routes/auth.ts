@@ -174,7 +174,7 @@ apiRouter.post('/auth/request-password-reset', async (req: Request, res: Respons
     // o que permitia a qualquer pessoa trocar a senha de qualquer conta (inclusive do admin).
     // O corpo gravado no histórico não contém o código.
     defer(req, sendSystemEmail({
-      tipo: 'AVISO_SISTEMA',
+      tipo: 'RECUPERACAO_SENHA',
       destinatario: user.email,
       assunto: 'Código para redefinir sua senha - Associação Novo Amanhecer',
       corpo: `Olá, ${user.nome}. Foi solicitada a redefinição da sua senha. Seu código de redefinição é: ${token}. Ele expira em 1 hora. Se você não pediu, ignore este e-mail.`,
@@ -240,6 +240,87 @@ apiRouter.post('/auth/reset-password', async (req: Request, res: Response) => {
 });
 
 // Listagem de Usuários e Níveis (Somente Administrador - consulta tabela separada user_roles)
+// =========================================================================
+// SENHAS SEM E-MAIL
+// =========================================================================
+
+// Trocar a própria senha (qualquer pessoa logada). Exige a senha atual.
+// As outras sessões abertas (outros aparelhos) são encerradas; esta continua.
+apiRouter.put('/auth/password', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+  if (typeof currentPassword !== 'string' || typeof newPassword !== 'string' || !currentPassword) {
+    return res.status(400).json({ error: 'Informe a senha atual e a nova senha.' });
+  }
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'A nova senha deve ter pelo menos 8 caracteres.' });
+  }
+
+  // Mesmo limite do login: impede adivinhar a senha atual por aqui
+  if (!(await checkRateLimit(req.ip, 'auth_login', 10, 15))) {
+    return res.status(429).json({ error: 'Muitas tentativas. Aguarde alguns minutos e tente novamente.' });
+  }
+
+  const user = await db.prepare('SELECT id, password_hash FROM users WHERE id = ?')
+    .get<{ id: string; password_hash: string }>(req.user!.id);
+  if (!user || !(await verifyPassword(currentPassword, user.password_hash))) {
+    return res.status(400).json({ error: 'A senha atual está incorreta.' });
+  }
+
+  const now = new Date().toISOString();
+  await db.batch([
+    db.prepare('UPDATE users SET password_hash = ?, atualizado_em = ? WHERE id = ?').bind(await hashPassword(newPassword), now, user.id),
+    db.prepare('DELETE FROM sessions WHERE user_id = ? AND id != ?').bind(user.id, req.sessionId),
+    db.prepare('UPDATE password_resets SET usado = 1 WHERE user_id = ?').bind(user.id),
+  ]);
+
+  await logAudit({
+    userId: req.user?.id,
+    userEmail: req.user?.email,
+    userRole: req.user?.role,
+    action: 'PASSWORD_CHANGED',
+    entity: 'SECURITY',
+    details: 'Trocou a própria senha. Sessões em outros aparelhos foram encerradas.',
+    ipAddress: req.ip,
+  });
+
+  return res.json({ message: 'Senha alterada com sucesso.' });
+});
+
+// Administrador define uma senha provisória para outra pessoa (quando ela esquece a senha).
+// Todas as sessões dessa pessoa são encerradas.
+apiRouter.put('/auth/users/:id/password', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  const { newPassword } = req.body;
+  if (typeof newPassword !== 'string' || newPassword.length < 8) {
+    return res.status(400).json({ error: 'A senha provisória deve ter pelo menos 8 caracteres.' });
+  }
+  if (req.params.id === req.user?.id) {
+    return res.status(400).json({ error: 'Para a sua própria senha, use "Trocar minha senha".' });
+  }
+
+  const alvo = await db.prepare('SELECT id, email FROM users WHERE id = ?').get<{ id: string; email: string }>(req.params.id);
+  if (!alvo) return res.status(404).json({ error: 'Usuário não encontrado.' });
+
+  const now = new Date().toISOString();
+  await db.batch([
+    db.prepare('UPDATE users SET password_hash = ?, atualizado_em = ? WHERE id = ?').bind(await hashPassword(newPassword), now, alvo.id),
+    db.prepare('DELETE FROM sessions WHERE user_id = ?').bind(alvo.id),
+    db.prepare('UPDATE password_resets SET usado = 1 WHERE user_id = ?').bind(alvo.id),
+  ]);
+
+  await logAudit({
+    userId: req.user?.id,
+    userEmail: req.user?.email,
+    userRole: req.user?.role,
+    action: 'PASSWORD_RESET_BY_ADMIN',
+    entity: 'USER',
+    entityId: alvo.id,
+    details: `Definiu uma senha provisória para ${alvo.email}.`,
+    ipAddress: req.ip,
+  });
+
+  return res.json({ message: `Senha provisória definida para ${alvo.email}.` });
+});
+
 apiRouter.get('/auth/users', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
   const users = await db.prepare(`
     SELECT 

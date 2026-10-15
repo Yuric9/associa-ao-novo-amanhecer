@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Shield, Trash2, Key, UserCheck, X, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
+import { Plus, Shield, Trash2, Key, UserCheck, X, AlertCircle, Loader2, CheckCircle2, KeyRound } from 'lucide-react';
+import { RedefinirSenhaDeUsuario } from './comum/ModaisSenha';
 import { api } from '../../services/api';
 import { UserRole } from '../../types';
 import { useJanelaModal } from '../../utils/useJanelaModal';
@@ -26,6 +27,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [redefinindo, setRedefinindo] = useState<{ id: string; nome: string; email: string } | null>(null);
 
   // Modal de Adição
   const [showAdd, setShowAdd] = useState(false);
@@ -226,7 +228,15 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
               </div>
 
               {currentUserRole === 'admin' && u.email !== currentEmail && (
-                <div className="self-end sm:self-center">
+                <div className="self-end sm:self-center flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setRedefinindo({ id: u.id, nome: u.nome, email: u.email })}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand hover:bg-brand-soft rounded-xl transition-colors cursor-pointer border border-line"
+                  >
+                    <KeyRound className="w-3.5 h-3.5" />
+                    <span>Redefinir senha</span>
+                  </button>
                   <button
                     onClick={() => handleDelete(u.id, u.email)}
                     disabled={actionLoading}
@@ -352,6 +362,17 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ currentEmail, currentUse
             </form>
           </div>
         </div>
+      )}
+      {redefinindo && (
+        <RedefinirSenhaDeUsuario
+          usuario={redefinindo}
+          aoFechar={() => setRedefinindo(null)}
+          aoConcluir={(msg) => {
+            setRedefinindo(null);
+            setError('');
+            setSuccess(msg);
+          }}
+        />
       )}
     </div>
   );

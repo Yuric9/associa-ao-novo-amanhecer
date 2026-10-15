@@ -4,6 +4,7 @@ JWT_SECRET="troque-por-um-texto-aleatorio-com-mais-de-32-caracteres"
 ADMIN_INITIAL_PASSWORD="NovoAmanhecer@Teste1"
 SEED_DEMO_DATA="true"
 DEV_MODE="true"
-# Opcional, para testar envio real de e-mail:
+# Opcional: o único e-mail do sistema é o código do "Esqueci minha senha".
+# Para testar o envio de verdade:
 # RESEND_API_KEY=""
 # EMAIL_FROM="Associação Novo Amanhecer <nao-responda@seudominio.org.br>"

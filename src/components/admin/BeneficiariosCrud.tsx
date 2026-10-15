@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Beneficiary, BeneficiaryStatus, StatusEmailNotification, ProjectCard } from '../../types';
+import { Beneficiary, BeneficiaryStatus, ProjectCard } from '../../types';
 import { validateCPF, cleanDigits } from '../../utils/validation';
 import { exportBeneficiariesToCsv } from '../../utils/exportCsv';
 import { api } from '../../services/api';
@@ -10,7 +10,6 @@ import {
   filtrarBeneficiarios,
   hoje,
   isProjectMatch,
-  mensagemMudancaStatus,
   nomeArquivoCsv,
   temFiltrosAtivos,
   type Filtros,
@@ -26,7 +25,6 @@ import { ModalCadastro } from './beneficiarios/ModalCadastro';
 interface BeneficiariosCrudProps {
   beneficiaries: Beneficiary[];
   onUpdateBeneficiaries: (beneficiaries: Beneficiary[]) => void;
-  onRequestEmailNotification: (notif: StatusEmailNotification) => void;
   projects?: ProjectCard[];
 }
 
@@ -38,7 +36,6 @@ interface BeneficiariosCrudProps {
 export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
   beneficiaries,
   onUpdateBeneficiaries,
-  onRequestEmailNotification,
   projects,
 }) => {
   const [filtros, setFiltros] = useState<Filtros>(FILTROS_VAZIOS);
@@ -66,7 +63,7 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
   const erroDoServidor = (err: unknown) =>
     alert(err instanceof Error ? err.message : 'Não foi possível salvar no servidor. Tente novamente.');
 
-  // Alteração de Status com Gatilho de E-mail
+  // Alteração de status (aprovar, recusar...)
   const handleStatusChange = async (beneficiaryId: string, newStatus: BeneficiaryStatus) => {
     const target = beneficiaries.find((b) => b.id === beneficiaryId);
     if (!target) return;
@@ -80,16 +77,6 @@ export const BeneficiariosCrud: React.FC<BeneficiariosCrudProps> = ({
     onUpdateBeneficiaries(
       beneficiaries.map((b) => (b.id === beneficiaryId ? { ...b, status: newStatus, atualizado_em: hoje() } : b))
     );
-
-    onRequestEmailNotification({
-      beneficiaryName: target.nome,
-      beneficiaryEmail: target.email,
-      project: target.projeto,
-      previousStatus: target.status,
-      newStatus,
-      date: hoje(),
-      messageText: mensagemMudancaStatus(target.nome, target.projeto, newStatus),
-    });
   };
 
   const handleDelete = async (id: string, name: string) => {

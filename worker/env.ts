@@ -13,7 +13,6 @@ export interface Env {
   // Variáveis comuns
   ADMIN_EMAIL?: string;
   EMAIL_FROM?: string;
-  COORDINATION_EMAIL?: string;
   SEED_DEMO_DATA?: string;
   DEV_MODE?: string;
 }

@@ -1,10 +1,8 @@
 // Voluntários: inscrição pública, listagem e edição pela equipe.
-import { defer } from '../http';
 import type { Req as Request, Res as Response, AuthenticatedRequest } from '../http';
 import { db, logAudit } from '../db';
 import { authenticateToken, requireRole, getOptionalUser } from '../auth';
 import { validatePhone, validateEmail, sanitizeString, checkHoneypot, checkRateLimit } from '../validation';
-import { notifyCoordinationNewVolunteer, sendVolunteerConfirmation } from '../email';
 import { apiRouter } from './router';
 
 // =========================================================================
@@ -80,23 +78,6 @@ apiRouter.post('/volunteers', async (req: Request, res: Response) => {
     details: `Novo voluntário cadastrado no banco: ${nome} (${area})`,
     ipAddress: clientIp,
   });
-
-  // Notificação por E-mail automática para a coordenação e confirmação para o voluntário
-  defer(req, notifyCoordinationNewVolunteer({
-    nome: sanitizeString(nome, 100),
-    telefone: sanitizeString(telefone, 30),
-    email: sanitizeString(email || '', 100),
-    area: sanitizeString(area, 60),
-    disponibilidade: sanitizeString(disponibilidade || 'Finais de Semana', 60),
-  }), 'Erro ao despachar e-mail de voluntario para coordenacao');
-
-  if (email) {
-    defer(req, sendVolunteerConfirmation({
-      nome: sanitizeString(nome, 100),
-      email: sanitizeString(email, 100),
-      area: sanitizeString(area, 60),
-    }), 'Erro ao despachar confirmacao ao voluntario');
-  }
 
   return res.status(201).json({ message: 'Inscrição de voluntário gravada no banco com sucesso! Entraremos em contato via WhatsApp.', id });
 });

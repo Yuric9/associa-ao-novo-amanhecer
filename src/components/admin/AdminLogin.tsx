@@ -169,6 +169,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onBackTo
                     <button type="submit" disabled={isLoading} className="btn-primary min-h-12 w-full">{isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}<span>Salvar nova senha</span></button>
                   </form>
                 )}
+                <p className="rounded-md bg-sand px-3.5 py-3 text-[13px] leading-relaxed text-body">
+                  <strong>Não recebeu o e-mail?</strong> Peça ao administrador do painel para redefinir sua senha. Ele cria
+                  uma senha provisória para você na aba Usuários.
+                </p>
                 <button type="button" onClick={() => { setIsResetMode(false); setError(''); setResetMessage(''); }} className="min-h-11 text-center text-sm font-semibold text-brand hover:text-brand-dark">Voltar para o login</button>
               </div>
             )}

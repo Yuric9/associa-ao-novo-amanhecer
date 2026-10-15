@@ -114,16 +114,6 @@ export interface AdminUser {
   criado_em: string;
 }
 
-export interface StatusEmailNotification {
-  beneficiaryName: string;
-  beneficiaryEmail: string;
-  project: string;
-  previousStatus: BeneficiaryStatus;
-  newStatus: BeneficiaryStatus;
-  date: string;
-  messageText: string;
-}
-
 export type VolunteerArea =
   | 'Oficina de Ballet'
   | 'Treinos de Futebol'
