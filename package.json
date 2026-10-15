@@ -14,7 +14,8 @@
     "clean": "rm -rf dist .wrangler",
     "test": "vitest run",
     "test:watch": "vitest",
-    "fotos": "bash scripts/otimizar-fotos.sh"
+    "fotos": "bash scripts/otimizar-fotos.sh",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.0",
     "@cloudflare/workers-types": "^4.20250901.0",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22.14.0",
