@@ -157,3 +157,15 @@ describe('restaurar backup (POST /api/backups/restaurar)', () => {
     expect((await api('/backups/restaurar', { method: 'POST', cookie, body: { beneficiarios: [], projetos: [] } })).status).toBe(403);
   });
 });
+
+describe('registro de atividades do backup', () => {
+  it('o backup feito pelo painel fica registrado com quem pediu; o agendado, sem usuário', async () => {
+    const { cookie } = await login();
+    await api('/backups', { method: 'POST', cookie });
+    await agendar('2026-04-01T06:00:00Z');
+    const logs = await (await api('/audit-logs', { cookie })).json<{ action: string; user_email: string | null; details: string }[]>();
+    const backups = logs.filter((l) => l.action === 'BACKUP_CREATED');
+    expect(backups.find((l) => l.details.includes('(manual)'))?.user_email).toBe('coordenacao@novoamanhecer.org.br');
+    expect(backups.find((l) => l.details.includes('(agendado)'))?.user_email).toBeNull();
+  });
+});

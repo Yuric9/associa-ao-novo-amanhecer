@@ -19,11 +19,12 @@ export function cpfAleatorio(): string {
 /** Nome único para achar o registro depois, sem confundir com os de outros testes. */
 export const nomeUnico = (prefixo: string) => `${prefixo} ${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
 
-export async function entrarNoPainel(page: Page) {
+/** Sessão do painel guardada por e2e/login.setup.ts */
+export const SESSAO = 'e2e/.sessao.json';
+
+/** Abre o painel já logado (use junto com test.use({ storageState: SESSAO })). */
+export async function abrirPainel(page: Page) {
   await page.goto('/admin');
-  await page.getByLabel('E-mail', { exact: true }).fill(ADMIN_EMAIL);
-  await page.getByLabel('Senha', { exact: true }).fill(ADMIN_SENHA);
-  await page.getByRole('button', { name: /^Entrar/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Visão geral' })).toBeVisible();
 }
 

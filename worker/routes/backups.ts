@@ -6,19 +6,21 @@ import { logAudit } from '../db';
 import { BackupInvalido, PASTA, fazerBackup, listarBackups, nomeValido, restaurarBackup } from '../backup';
 import { apiRouter } from './router';
 
+const quemPediu = (req: AuthenticatedRequest) => ({ id: req.user?.id, email: req.user?.email, role: req.user?.role });
+
 apiRouter.get('/backups', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
   return res.json(await listarBackups());
 });
 
-apiRouter.post('/backups', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
-  const feito = await fazerBackup(new Date(), 'manual');
+apiRouter.post('/backups', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  const feito = await fazerBackup(new Date(), 'manual', quemPediu(req));
   return res.status(201).json(feito);
 });
 
 // Restaurar: o corpo é o próprio arquivo de backup (JSON). Substitui os dados atuais.
 apiRouter.post('/backups/restaurar', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const resultado = await restaurarBackup(req.body);
+    const resultado = await restaurarBackup(req.body, new Date(), quemPediu(req));
     await logAudit({
       userId: req.user?.id,
       userEmail: req.user?.email,

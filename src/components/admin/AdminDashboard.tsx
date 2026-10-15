@@ -23,6 +23,7 @@ import {
   ChevronDown,
   BarChart3,
   HandHeart,
+  History,
 } from 'lucide-react';
 import { Beneficiary, ProjectCard, GalleryPhoto, SiteContent, AdminUser, StatusEmailNotification, Volunteer, AuthUser } from '../../types';
 import { NovoAmanhecerLogo } from '../brand/NovoAmanhecerLogo';
@@ -32,6 +33,7 @@ import { CmsConteudo } from './CmsConteudo';
 import { GaleriaCrud } from './GaleriaCrud';
 import { AdminUsers } from './AdminUsers';
 import { BackupModal } from './BackupModal';
+import { RegistroAtividades } from './RegistroAtividades';
 import { AnalyticsCharts } from './AnalyticsCharts';
 import { VoluntariosRoscaChart } from './VoluntariosRoscaChart';
 import {
@@ -92,7 +94,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const isAdmin = userRole === 'admin';
 
   const [activeTab, setActiveTab] = useState<
-    'visao-geral' | 'graficos' | 'beneficiarios' | 'projetos' | 'voluntarios' | 'conteudo' | 'galeria' | 'usuarios' | 'backup'
+    'visao-geral' | 'graficos' | 'beneficiarios' | 'projetos' | 'voluntarios' | 'conteudo' | 'galeria' | 'usuarios' | 'backup' | 'atividades'
   >('visao-geral');
 
   // Estado para feedback de exportação CSV
@@ -160,6 +162,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     { id: 'galeria', label: `Galeria (${gallery.length})`, icon: ImageIcon, show: !isVolunteer },
     { id: 'usuarios', label: 'Usuários e papéis', icon: Shield, show: isAdmin },
     { id: 'backup', label: 'Backup e dados', icon: Download, show: isAdmin },
+    { id: 'atividades', label: 'Registro de atividades', icon: History, show: isAdmin },
   ];
   const visibleTabs = tabs.filter((t) => t.show);
   const activeLabel = tabs.find((t) => t.id === activeTab)?.label ?? '';
@@ -648,6 +651,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             admins={admins}
           />
         )}
+
+        {/* ABA: REGISTRO DE ATIVIDADES (auditoria) */}
+        {activeTab === 'atividades' && <RegistroAtividades />}
 
         {/* Rodapé do Painel Administrativo com Assinatura */}
         <footer className="pt-8 pb-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">

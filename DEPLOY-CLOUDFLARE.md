@@ -53,7 +53,7 @@ Login: `ADMIN_EMAIL` + `ADMIN_INITIAL_PASSWORD` do `.dev.vars`.
   o sistema guarda uma cópia do estado atual (`backup-AAAA-MM-DD-antes-da-restauracao.json`).
   Contas de usuário não são restauradas (as atuais continuam) e senhas nunca vão para o backup.
 - Para ver se o agendamento rodou: painel da Cloudflare → Worker → **Settings → Trigger Events**
-  (ou a aba Auditoria do painel, ação `BACKUP_CREATED`).
+  (ou a aba **Registro de atividades** do painel, item "Backup gerado").
 - Para testar no computador: `npx wrangler dev --test-scheduled` e abra
   `http://localhost:8787/cdn-cgi/local/scheduled`.
 - As prévias (branches) não rodam o agendamento; lá, use o botão **Fazer backup agora**.

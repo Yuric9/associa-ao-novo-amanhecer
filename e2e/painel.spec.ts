@@ -1,14 +1,21 @@
 // Painel da equipe: login, aprovação de uma inscrição e o que fica gravado no banco.
 import { expect, test } from '@playwright/test';
-import { ADMIN_EMAIL, abrirAba, cpfAleatorio, entrarNoPainel, nomeUnico } from './ajuda';
+import { ADMIN_EMAIL, SESSAO, abrirAba, abrirPainel, cpfAleatorio, nomeUnico } from './ajuda';
 
-test('senha errada não entra no painel', async ({ page }) => {
-  await page.goto('/admin');
-  await page.getByLabel('E-mail', { exact: true }).fill(ADMIN_EMAIL);
-  await page.getByLabel('Senha', { exact: true }).fill('senha-errada-123');
-  await page.getByRole('button', { name: /^Entrar/ }).click();
-  await expect(page.getByRole('alert').or(page.getByText(/inválid|incorret/i)).first()).toBeVisible();
-  await expect(page.getByRole('heading', { level: 1, name: 'Visão geral' })).toBeHidden();
+// Os testes do painel usam a sessão do login.setup.ts (um login só para todos)
+test.use({ storageState: SESSAO });
+
+test.describe('sem sessão', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('senha errada não entra no painel', async ({ page }) => {
+    await page.goto('/admin');
+    await page.getByLabel('E-mail', { exact: true }).fill(ADMIN_EMAIL);
+    await page.getByLabel('Senha', { exact: true }).fill('senha-errada-123');
+    await page.getByRole('button', { name: /^Entrar/ }).click();
+    await expect(page.getByRole('alert').or(page.getByText(/inválid|incorret/i)).first()).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Visão geral' })).toBeHidden();
+  });
 });
 
 test('a coordenação aprova uma inscrição e a mudança fica gravada', async ({ page, request }) => {
@@ -29,7 +36,7 @@ test('a coordenação aprova uma inscrição e a mudança fica gravada', async (
   });
   expect(res.ok()).toBe(true);
 
-  await entrarNoPainel(page);
+  await abrirPainel(page);
   await abrirAba(page, /^Beneficiários/);
   const linha = page.locator('.divide-y > div').filter({ hasText: nome });
   await expect(linha).toBeVisible();
@@ -48,10 +55,28 @@ test('a coordenação aprova uma inscrição e a mudança fica gravada', async (
 });
 
 test('a aba de backup gera e lista um backup', async ({ page }) => {
-  await entrarNoPainel(page);
+  await abrirPainel(page);
   await abrirAba(page, /^Backup/);
   await page.getByRole('button', { name: 'Fazer backup agora' }).click();
   const lista = page.locator('section[aria-labelledby=backups-automaticos-titulo] li');
   await expect(lista.first()).toContainText('mais recente');
   await expect(lista.first().getByRole('link', { name: /Baixar backup de/ })).toBeVisible();
+});
+
+test('o registro de atividades mostra o login e a tentativa com senha errada', async ({ page, request }) => {
+  // Uma tentativa com senha errada, antes de entrar
+  const errada = await request.post('/api/auth/login', { data: { email: ADMIN_EMAIL, password: 'senha-errada-456' } });
+  expect(errada.status()).toBe(401);
+
+  await abrirPainel(page);
+  await abrirAba(page, /^Registro de atividades/);
+  const lista = page.locator('section[aria-labelledby=atividades-titulo] li');
+  await expect(lista.filter({ hasText: 'Entrou no painel' }).first()).toContainText(`por ${ADMIN_EMAIL}`);
+  const recusada = lista.filter({ hasText: 'Tentativa de login recusada' }).first();
+  await expect(recusada).toBeVisible();
+  await expect(recusada.getByLabel('Atenção')).toBeVisible();
+
+  // Filtro: só "Site" não mostra logins
+  await page.getByRole('button', { name: /^Site/ }).click();
+  await expect(lista.filter({ hasText: 'Entrou no painel' })).toHaveCount(0);
 });

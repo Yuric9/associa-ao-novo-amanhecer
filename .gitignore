@@ -14,3 +14,4 @@ data/*.db-*
 # Testes de navegador (Playwright)
 /test-results/
 /playwright-report/
+/e2e/.sessao.json

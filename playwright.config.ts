@@ -21,8 +21,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'computador', use: { ...devices['Desktop Chrome'] } },
-    { name: 'celular', use: { ...devices['Pixel 7'] } },
+    // Entra no painel uma vez e guarda a sessão (e2e/login.setup.ts)
+    { name: 'login', testMatch: /login\.setup\.ts/ },
+    { name: 'computador', use: { ...devices['Desktop Chrome'] }, dependencies: ['login'] },
+    { name: 'celular', use: { ...devices['Pixel 7'] }, dependencies: ['login'] },
   ],
   webServer: {
     command: 'node e2e/servidor.mjs',
